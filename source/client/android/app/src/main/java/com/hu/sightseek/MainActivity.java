@@ -1,0 +1,197 @@
+package com.hu.sightseek;
+
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Looper;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+public class MainActivity extends AppCompatActivity {
+    private static final int UPDATE_INTERVAL_MAX = 2000;
+    private static final int UPDATE_INTERVAL_MIN = 1000;
+
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+    private MapView mapView;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
+    private MyLocationNewOverlay locationOverlay;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Configuration.getInstance().load(
+                getApplicationContext(),
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+        );
+        Configuration.getInstance().setUserAgentValue(getPackageName());
+        setContentView(R.layout.activity_main);
+
+        // Add Menu
+        Toolbar toolbar = findViewById(R.id.menubar_record);
+        setSupportActionBar(toolbar);
+
+        // Initialize MapView
+        mapView = findViewById(R.id.map);
+        mapView.setBackgroundColor(Color.BLACK);
+        mapView.getOverlayManager().getTilesOverlay().setLoadingLineColor(Color.TRANSPARENT);
+        mapView.setMultiTouchControls(true);
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.getController().setZoom(15.0);
+        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+
+        // Marker for current location
+        locationOverlay = new MyLocationNewOverlay(
+                new GpsMyLocationProvider(this), mapView
+        );
+        locationOverlay.enableMyLocation();
+        mapView.getOverlays().add(locationOverlay);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Ask for permissions
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+        }
+        else {
+            startLocationUpdates();
+        }
+    }
+
+    private void startLocationUpdates() {
+        // Set update intervals
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(UPDATE_INTERVAL_MAX);
+        locationRequest.setFastestInterval(UPDATE_INTERVAL_MIN);
+        locationRequest.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+            return;
+        }
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if(location != null) {
+                    GeoPoint point = new GeoPoint(
+                            location.getLatitude(),
+                            location.getLongitude()
+                    );
+                    mapView.getController().animateTo(point);
+                    mapView.getController().setCenter(new GeoPoint(location));
+                }
+            }
+        };
+
+        fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+        );
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if(location != null) {
+                    GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    mapView.getController().animateTo(point);
+                }
+            }
+        };
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        locationOverlay.enableMyLocation();
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdates();
+            }
+            else {
+                // Check if user clicked on "Don't ask again"
+                // Handled later when buttons exist
+                /*
+                if(!ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                    Toast.makeText(this, "You must enable precise location permission to track your precision!", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(this, "Precise location permission is required to track your position!", Toast.LENGTH_LONG).show();
+                }
+                */
+            }
+        }
+    }
+
+    // MENU BAR
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_top, menu);
+        return true;
+    }
+
+    // MENU STUFF
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.menu_profile) {
+            // TODO
+            // Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            // startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
