@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_profile"
+        android:id="@+id/topmenu_profile"
         android:title="Profile"
         android:icon="@drawable/baseline_person_24"
         app:showAsAction="ifRoom"

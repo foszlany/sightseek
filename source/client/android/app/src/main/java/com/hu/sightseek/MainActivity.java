@@ -1,6 +1,5 @@
 package com.hu.sightseek;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -24,6 +23,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -55,8 +55,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_record);
+        Toolbar toolbar = findViewById(R.id.menubar_main);
         setSupportActionBar(toolbar);
+
+        // Bottombar listeners
+        BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            // Recording
+            if(id == R.id.bottommenu_record) {
+                Toast.makeText(this, "recording", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            return false;
+        });
+
 
         // Initialize MapView
         mapView = findViewById(R.id.map);
@@ -109,8 +124,10 @@ public class MainActivity extends AppCompatActivity {
                             location.getLatitude(),
                             location.getLongitude()
                     );
+
+                    // Animate marker
                     mapView.getController().animateTo(point);
-                    mapView.getController().setCenter(new GeoPoint(location));
+                    mapView.getController().setCenter(point);
                 }
             }
         };
@@ -175,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // MENU BAR
+    // Create top menubar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -183,12 +200,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // MENU STUFF
+    // Top menubar actions
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.menu_profile) {
+        // Profile
+        if(id == R.id.topmenu_profile) {
             // TODO
             // Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
             // startActivity(intent);
