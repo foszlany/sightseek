@@ -92,12 +92,14 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(UPDATE_INTERVAL_MIN);
         locationRequest.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
 
+        // Check for permissions
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
             return;
         }
 
+        // Get current location
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        // Update location
         fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
