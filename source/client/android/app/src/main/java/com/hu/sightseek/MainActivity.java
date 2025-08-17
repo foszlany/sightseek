@@ -104,10 +104,6 @@ public class MainActivity extends AppCompatActivity {
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
                             .setTitle("Record");
-
-                    bottomNav.getMenu()
-                            .findItem(R.id.bottommenu_stop)
-                            .setVisible(false);
                 }
 
                 return true;
