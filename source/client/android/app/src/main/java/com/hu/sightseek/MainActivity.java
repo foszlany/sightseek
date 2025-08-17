@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.osmdroid.config.Configuration;
@@ -33,15 +34,19 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.Vector;
+
 public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 2000;
     private static final int UPDATE_INTERVAL_MIN = 1000;
-
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private MyLocationNewOverlay locationOverlay;
+    private boolean isRecording;
+    private Vector<GeoPoint> recordedPoints;
 
 
     @Override
@@ -54,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
         setContentView(R.layout.activity_main);
 
+        // Default values
+        isRecording = false;
+
         // Add Menu
         Toolbar toolbar = findViewById(R.id.menubar_main);
         setSupportActionBar(toolbar);
@@ -65,7 +73,23 @@ public class MainActivity extends AppCompatActivity {
 
             // Recording
             if(id == R.id.bottommenu_record) {
-                Toast.makeText(this, "recording", Toast.LENGTH_SHORT).show();
+                // Begin
+                if(!isRecording) {
+                    isRecording = true;
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_record)
+                            .setIcon(R.drawable.baseline_pause_circle_filled_24);
+                }
+                // Pause
+                else {
+                    isRecording = false;
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_record)
+                            .setIcon(R.drawable.baseline_play_circle_filled_24);
+                }
+
                 return true;
             }
 
@@ -128,6 +152,11 @@ public class MainActivity extends AppCompatActivity {
                     // Animate marker
                     mapView.getController().animateTo(point);
                     mapView.getController().setCenter(point);
+
+                    // Record point if needed
+                    if(isRecording) {
+                        recordedPoints.add(point);
+                    }
                 }
             }
         };
