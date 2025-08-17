@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private MyLocationNewOverlay locationOverlay;
-    private boolean isRecording;
     private Vector<GeoPoint> recordedPoints;
+    private boolean isRecording;
 
 
     @Override
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Default values
+        recordedPoints = new Vector<>();
         isRecording = false;
 
         // Add Menu
@@ -80,6 +81,14 @@ public class MainActivity extends AppCompatActivity {
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
                             .setIcon(R.drawable.baseline_pause_circle_filled_24);
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_record)
+                            .setTitle("Pause");
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_stop)
+                            .setVisible(true);
                 }
                 // Pause
                 else {
@@ -88,6 +97,14 @@ public class MainActivity extends AppCompatActivity {
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
                             .setIcon(R.drawable.baseline_play_circle_filled_24);
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_record)
+                            .setTitle("Record");
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_stop)
+                            .setVisible(false);
                 }
 
                 return true;
@@ -150,8 +167,10 @@ public class MainActivity extends AppCompatActivity {
                     );
 
                     // Animate marker
-                    mapView.getController().animateTo(point);
-                    mapView.getController().setCenter(point);
+                    if(mapView != null) {
+                        mapView.getController().animateTo(point);
+                        mapView.getController().setCenter(point);
+                    }
 
                     // Record point if needed
                     if(isRecording) {
