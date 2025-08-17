@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Bottombar listeners
         BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
+
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
-                            .setIcon(R.drawable.baseline_pause_circle_filled_24);
+                            .setIcon(R.drawable.baseline_pause_circle_24);
 
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
-                            .setIcon(R.drawable.baseline_play_circle_filled_24);
+                            .setIcon(R.drawable.baseline_play_circle_24);
 
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
