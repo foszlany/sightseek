@@ -174,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
                     JSONObject jsonObject = new JSONObject();
                     try {
+                        jsonObject.put("id", new Random().nextInt(9999999)); // TODO
                         jsonObject.put("polyline", res);
                         jsonObject.put("startdate", startTime);
                         jsonObject.put("enddate", endTime);
@@ -323,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
 
                             line.setPoints(Arrays.asList(point, point2));
                             line.getOutlinePaint().setColor(Color.BLUE);
-                            line.getOutlinePaint().setStrokeWidth(10.0f);
+                            line.getOutlinePaint().setStrokeWidth(12.0f);
 
                             mapView.getOverlayManager().add(line);
                             mapView.invalidate();
