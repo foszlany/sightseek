@@ -37,10 +37,11 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
-    implementation("org.osmdroid:osmdroid-android:6.1.20")
+    // Map libraries
+    implementation(libs.android.maps.utils)
+    implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
 
-    // implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

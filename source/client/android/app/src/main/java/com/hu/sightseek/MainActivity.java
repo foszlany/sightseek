@@ -23,7 +23,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.maps.android.PolyUtil;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -33,7 +35,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 6000;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private MyLocationNewOverlay locationOverlay;
-    private Vector<GeoPoint> recordedPoints;
+    private ArrayList<LatLng> recordedPoints;
     private boolean isRecording;
     private boolean didPressStopWhileLowPointCount;
 
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Default values
-        recordedPoints = new Vector<>();
+        recordedPoints = new ArrayList<>();
         isRecording = false;
         didPressStopWhileLowPointCount = false;
 
@@ -120,7 +122,9 @@ public class MainActivity extends AppCompatActivity {
                     isRecording = false;
                     didPressStopWhileLowPointCount = false;
 
-                    // Apply Google Encoded Polyline Algorithm
+                    // Encode and store
+                    String res = PolyUtil.encode(recordedPoints);
+                    // Do something with result...
 
                     recordedPoints.clear();
 
@@ -204,7 +208,11 @@ public class MainActivity extends AppCompatActivity {
 
                     // Record point if needed
                     if(isRecording) {
-                        recordedPoints.add(point);
+                        double lat = point.getLatitude();
+                        double lng = point.getLongitude();
+                        LatLng latLng = new LatLng(lat, lng);
+
+                        recordedPoints.add(latLng);
                     }
                 }
             }
