@@ -2,7 +2,7 @@ package com.hu.sightseek;
 
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -33,6 +34,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.IconOverlay;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -231,6 +234,18 @@ public class MainActivity extends AppCompatActivity {
                             line.getOutlinePaint().setStrokeWidth(10.0f);
 
                             mapView.getOverlayManager().add(line);
+                            mapView.invalidate();
+                        }
+                        // Mark first point
+                        else {
+                            Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_circle_24, null);
+                            if(icon != null) {
+                                icon.setTint(Color.BLUE);
+                            }
+
+                            IconOverlay firstP = new IconOverlay(point, icon);
+
+                            mapView.getOverlayManager().add(firstP);
                             mapView.invalidate();
                         }
                     }
