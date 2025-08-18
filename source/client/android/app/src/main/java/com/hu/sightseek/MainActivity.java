@@ -2,6 +2,7 @@ package com.hu.sightseek;
 
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -32,10 +33,12 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 6000;
@@ -211,10 +214,25 @@ public class MainActivity extends AppCompatActivity {
                         double lat = point.getLatitude();
                         double lng = point.getLongitude();
                         LatLng latLng = new LatLng(lat, lng);
-
                         recordedPoints.add(latLng);
 
+                        // Create line between points
+                        int totalPoints = recordedPoints.size();
+                        if(totalPoints > 1) {
+                            Polyline line = new Polyline();
 
+                            GeoPoint point2 = new GeoPoint(
+                                    recordedPoints.get(totalPoints - 2).latitude,
+                                    recordedPoints.get(totalPoints - 2).longitude
+                            );
+
+                            line.setPoints(Arrays.asList(point, point2));
+                            line.getOutlinePaint().setColor(Color.BLUE);
+                            line.getOutlinePaint().setStrokeWidth(10.0f);
+
+                            mapView.getOverlayManager().add(line);
+                            mapView.invalidate();
+                        }
                     }
                 }
             }
