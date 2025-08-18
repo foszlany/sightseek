@@ -38,6 +38,7 @@ import com.google.maps.android.PolyUtil;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
@@ -179,8 +180,18 @@ public class MainActivity extends AppCompatActivity {
         mapView.getOverlayManager().getTilesOverlay().setLoadingLineColor(Color.TRANSPARENT);
         mapView.setMultiTouchControls(true);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.getController().setZoom(15.0);
+
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        mapView.setVerticalMapRepetitionEnabled(false);
+        mapView.setScrollableAreaLimitDouble(new BoundingBox(
+                85.0,
+                180.0,
+                -85.0,
+                -180.0
+        ));
+        mapView.setMinZoomLevel(3.0);
+        mapView.setMaxZoomLevel(19.0);
+        mapView.getController().setZoom(15.0);
 
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
