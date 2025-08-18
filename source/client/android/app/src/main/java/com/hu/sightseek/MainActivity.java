@@ -202,17 +202,19 @@ public class MainActivity extends AppCompatActivity {
 
                     // Animate marker
                     if(mapView != null) {
-                        mapView.getController().animateTo(point);
-                        mapView.getController().setCenter(point);
+                        mapView.getController().animateTo(point, mapView.getZoomLevelDouble(), 666L);
                     }
 
                     // Record point if needed
                     if(isRecording) {
+                        // Record
                         double lat = point.getLatitude();
                         double lng = point.getLongitude();
                         LatLng latLng = new LatLng(lat, lng);
 
                         recordedPoints.add(latLng);
+
+
                     }
                 }
             }
