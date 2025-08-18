@@ -42,6 +42,7 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -156,6 +157,13 @@ public class MainActivity extends AppCompatActivity {
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_stop)
                             .setVisible(false);
+
+                    // Clear map
+                    for(Overlay i : mapView.getOverlays()) {
+                        if(!(i instanceof MyLocationNewOverlay)) {
+                            mapView.getOverlays().remove(i);
+                        }
+                    }
                 }
 
                 return true;
