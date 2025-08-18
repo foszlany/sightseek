@@ -1,12 +1,19 @@
 package com.hu.sightseek;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,7 +42,6 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
-import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -87,6 +93,11 @@ public class MainActivity extends AppCompatActivity {
             if(id == R.id.bottommenu_record) {
                 // Begin
                 if(!isRecording) {
+                    if(!isLocationEnabled(getApplicationContext())) {
+                        Toast.makeText(this, "Location is currently disabled!", Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+
                     isRecording = true;
 
                     bottomNav.getMenu()
@@ -164,9 +175,7 @@ public class MainActivity extends AppCompatActivity {
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
 
         // Marker for current location
-        locationOverlay = new MyLocationNewOverlay(
-                new GpsMyLocationProvider(this), mapView
-        );
+        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
         locationOverlay.enableMyLocation();
         mapView.getOverlays().add(locationOverlay);
 
@@ -179,6 +188,21 @@ public class MainActivity extends AppCompatActivity {
         else {
             startLocationUpdates();
         }
+
+        // Detects whenever location is enabled and creates a marker
+        IntentFilter filter = new IntentFilter(LocationManager.MODE_CHANGED_ACTION);
+        Context ctx = getApplicationContext();
+
+        BroadcastReceiver locationModeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), mapView);
+                locationOverlay.enableMyLocation();
+                mapView.getOverlays().add(locationOverlay);
+            }
+        };
+
+        ctx.registerReceiver(locationModeReceiver, filter);
     }
 
     private void startLocationUpdates() {
@@ -264,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -280,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         locationOverlay.enableMyLocation();
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
@@ -291,24 +317,25 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            // Start location updates
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Marker for current location
+                locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
+                locationOverlay.enableMyLocation();
+                mapView.getOverlays().add(locationOverlay);
+
                 startLocationUpdates();
             }
+            // Check if user clicked on "Don't ask again"
+            else if(!ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+                Toast.makeText(this, "You must allow precise tracking to use this feature!", Toast.LENGTH_LONG).show();
+            }
             else {
-                // Check if user clicked on "Don't ask again"
-                // Handled later when buttons exist
-                /*
-                if(!ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                    Toast.makeText(this, "You must enable precise location permission to track your precision!", Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(this, "Precise location permission is required to track your position!", Toast.LENGTH_LONG).show();
-                }
-                */
+                Toast.makeText(this, "Precise location permission is required to track your position!", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -335,5 +362,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Returns whether location **feature** is enabled
+    public boolean isLocationEnabled(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }
