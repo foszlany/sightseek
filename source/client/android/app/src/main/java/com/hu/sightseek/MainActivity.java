@@ -36,6 +36,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.PolyUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
@@ -48,8 +50,18 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Random;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 6000;
@@ -141,9 +153,36 @@ public class MainActivity extends AppCompatActivity {
                     isRecording = false;
                     didPressStopWhileLowPointCount = false;
 
-                    // Encode and store
+                    // Encode
                     String res = PolyUtil.encode(recordedPoints);
-                    // Do something with result...
+
+                    // Create JSON
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+                    sdf.setTimeZone(TimeZone.getDefault());
+                    String endTime = sdf.format(new Date());
+
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("polyline", res);
+                        jsonObject.put("startdate", endTime); // TODO
+                        jsonObject.put("enddate", endTime);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    // TEMPORARY!!! EXPORT TO EXTERNAL STORAGE
+                    String filename = "newroute" + new Random().nextInt(9999999) + ".json";
+                    File exportDir = getApplicationContext().getExternalFilesDir(null);
+                    File file = new File(exportDir, filename);
+
+                    try(FileWriter writer = new FileWriter(file)) {
+                        writer.write(jsonObject.toString());
+                        writer.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
 
                     recordedPoints.clear();
 
@@ -181,6 +220,9 @@ public class MainActivity extends AppCompatActivity {
         mapView.setMultiTouchControls(true);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
 
+        mapView.getController().setZoom(15.0);
+        mapView.setMinZoomLevel(3.0);
+        mapView.setMaxZoomLevel(19.0);
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setVerticalMapRepetitionEnabled(false);
         mapView.setScrollableAreaLimitDouble(new BoundingBox(
@@ -189,9 +231,6 @@ public class MainActivity extends AppCompatActivity {
                 -85.0,
                 -180.0
         ));
-        mapView.setMinZoomLevel(3.0);
-        mapView.setMaxZoomLevel(19.0);
-        mapView.getController().setZoom(15.0);
 
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
