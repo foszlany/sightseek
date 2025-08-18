@@ -35,6 +35,7 @@ import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.PolyUtil;
+import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -166,11 +167,17 @@ public class MainActivity extends AppCompatActivity {
                     // Create JSON
                     String endTime = sdf.format(new Date());
 
+                    double totalDist = 0;
+                    for(int i = 1; i < recordedPoints.size(); i++) {
+                        totalDist += SphericalUtil.computeDistanceBetween(recordedPoints.get(i - 1), recordedPoints.get(i));
+                    }
+
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put("polyline", res);
                         jsonObject.put("startdate", startTime);
                         jsonObject.put("enddate", endTime);
+                        jsonObject.put("dist", totalDist);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -362,7 +369,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
     }
 
     @Override
