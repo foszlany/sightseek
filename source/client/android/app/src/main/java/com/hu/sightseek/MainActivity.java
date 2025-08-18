@@ -51,10 +51,11 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,11 +72,14 @@ public class MainActivity extends AppCompatActivity {
 
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationClient;
+    private SimpleDateFormat sdf;
     private LocationCallback locationCallback;
     private MyLocationNewOverlay locationOverlay;
+
     private ArrayList<LatLng> recordedPoints;
     private boolean isRecording;
     private boolean didPressStopWhileLowPointCount;
+    private String startTime;
 
 
     @Override
@@ -89,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Default values
+        sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        sdf.setTimeZone(TimeZone.getDefault());
+
         recordedPoints = new ArrayList<>();
         isRecording = false;
         didPressStopWhileLowPointCount = false;
@@ -157,14 +164,12 @@ public class MainActivity extends AppCompatActivity {
                     String res = PolyUtil.encode(recordedPoints);
 
                     // Create JSON
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-                    sdf.setTimeZone(TimeZone.getDefault());
                     String endTime = sdf.format(new Date());
 
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put("polyline", res);
-                        jsonObject.put("startdate", endTime); // TODO
+                        jsonObject.put("startdate", startTime);
                         jsonObject.put("enddate", endTime);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -175,14 +180,12 @@ public class MainActivity extends AppCompatActivity {
                     File exportDir = getApplicationContext().getExternalFilesDir(null);
                     File file = new File(exportDir, filename);
 
-                    try(FileWriter writer = new FileWriter(file)) {
+                    try(Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
                         writer.write(jsonObject.toString());
-                        writer.flush();
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e) {
                         e.printStackTrace();
                     }
-
-
 
                     recordedPoints.clear();
 
@@ -222,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
         mapView.getController().setZoom(15.0);
         mapView.setMinZoomLevel(3.0);
-        mapView.setMaxZoomLevel(19.0);
+        mapView.setMaxZoomLevel(20.0);
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setVerticalMapRepetitionEnabled(false);
         mapView.setScrollableAreaLimitDouble(new BoundingBox(
@@ -318,8 +321,10 @@ public class MainActivity extends AppCompatActivity {
                             mapView.getOverlayManager().add(line);
                             mapView.invalidate();
                         }
-                        // Mark first point
+                        // Mark first point, record start time
                         else {
+                            startTime = sdf.format(new Date());
+
                             Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_circle_24, null);
                             if(icon != null) {
                                 icon.setTint(Color.BLUE);
