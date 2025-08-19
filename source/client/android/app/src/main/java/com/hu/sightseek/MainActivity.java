@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private String startTime;
     private Polyline route;
     private Chronometer chronometer;
+    private long elapsedTime;
 
 
     @Override
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         isRecording = false;
         didPressStopWhileLowPointCount = false;
         route = new Polyline();
+        elapsedTime = 0;
 
         BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
         chronometer = findViewById(R.id.bottommenu_chronometer);
@@ -135,9 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
                     isRecording = true;
 
-                    if(recordedPoints.isEmpty()) {
-                        chronometer.setBase(SystemClock.elapsedRealtime());
-                    }
+                    chronometer.setBase(SystemClock.elapsedRealtime() - elapsedTime);
                     chronometer.start();
 
                     bottomNav.getMenu()
@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     isRecording = false;
                     chronometer.stop();
+                    elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
 
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
@@ -186,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     isRecording = false;
                     didPressStopWhileLowPointCount = false;
                     chronometer.stop();
+                    elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
 
                     // Encode
                     String res = PolyUtil.encode(recordedPoints);
@@ -204,11 +206,14 @@ public class MainActivity extends AppCompatActivity {
                         jsonObject.put("polyline", res);
                         jsonObject.put("startdate", startTime);
                         jsonObject.put("enddate", endTime);
+                        jsonObject.put("elapsedtime", elapsedTime / 1000.0);
                         jsonObject.put("dist", totalDist);
                     }
                     catch(JSONException e) {
                         e.printStackTrace();
                     }
+
+                    Log.d("asd", "elapsed:" + elapsedTime / 1000.0);
 
                     // TEMPORARY!!! EXPORT TO EXTERNAL STORAGE
                     String filename = "newroute" + new Random().nextInt(9999999) + ".json";
@@ -241,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                             .setVisible(false);
 
                     chronometer.setVisibility(INVISIBLE);
+                    elapsedTime = 0;
 
                     // Clear map
                     for(Overlay i : mapView.getOverlays()) {
