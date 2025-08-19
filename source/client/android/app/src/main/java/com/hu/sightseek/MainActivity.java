@@ -206,14 +206,12 @@ public class MainActivity extends AppCompatActivity {
                         jsonObject.put("polyline", res);
                         jsonObject.put("startdate", startTime);
                         jsonObject.put("enddate", endTime);
-                        jsonObject.put("elapsedtime", elapsedTime / 1000.0);
+                        jsonObject.put("elapsedtime", Math.floor(elapsedTime / 1000.0));
                         jsonObject.put("dist", totalDist);
                     }
                     catch(JSONException e) {
                         e.printStackTrace();
                     }
-
-                    Log.d("asd", "elapsed:" + elapsedTime / 1000.0);
 
                     // TEMPORARY!!! EXPORT TO EXTERNAL STORAGE
                     String filename = "newroute" + new Random().nextInt(9999999) + ".json";
