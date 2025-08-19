@@ -59,7 +59,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
@@ -81,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isRecording;
     private boolean didPressStopWhileLowPointCount;
     private String startTime;
+    private Polyline route;
 
 
     @Override
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         recordedPoints = new ArrayList<>();
         isRecording = false;
         didPressStopWhileLowPointCount = false;
+        route = new Polyline();
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.menubar_main);
@@ -243,6 +244,11 @@ public class MainActivity extends AppCompatActivity {
                 -180.0
         ));
 
+        // Initialize route overlay
+        route.getOutlinePaint().setColor(Color.BLUE);
+        route.getOutlinePaint().setStrokeWidth(7.0f);
+        mapView.getOverlayManager().add(route);
+
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
         locationOverlay.enableMyLocation();
@@ -313,24 +319,11 @@ public class MainActivity extends AppCompatActivity {
                         recordedPoints.add(latLng);
 
                         // Create line between points
-                        int totalPoints = recordedPoints.size();
-                        if(totalPoints > 1) {
-                            Polyline line = new Polyline();
+                        route.addPoint(point);
+                        mapView.invalidate();
 
-                            GeoPoint point2 = new GeoPoint(
-                                    recordedPoints.get(totalPoints - 2).latitude,
-                                    recordedPoints.get(totalPoints - 2).longitude
-                            );
-
-                            line.setPoints(Arrays.asList(point, point2));
-                            line.getOutlinePaint().setColor(Color.BLUE);
-                            line.getOutlinePaint().setStrokeWidth(12.0f);
-
-                            mapView.getOverlayManager().add(line);
-                            mapView.invalidate();
-                        }
                         // Mark first point, record start time
-                        else {
+                        if(recordedPoints.size() == 1) {
                             startTime = sdf.format(new Date());
 
                             Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_circle_24, null);
