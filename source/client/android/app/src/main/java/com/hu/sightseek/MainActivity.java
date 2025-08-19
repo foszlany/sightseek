@@ -1,26 +1,35 @@
 package com.hu.sightseek;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Chronometer;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -81,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean didPressStopWhileLowPointCount;
     private String startTime;
     private Polyline route;
+    private Chronometer chronometer;
 
 
     @Override
@@ -102,13 +112,15 @@ public class MainActivity extends AppCompatActivity {
         didPressStopWhileLowPointCount = false;
         route = new Polyline();
 
+        BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
+        chronometer = findViewById(R.id.bottommenu_chronometer);
+        chronometer.setVisibility(INVISIBLE);
+
         // Add Menu
         Toolbar toolbar = findViewById(R.id.menubar_main);
         setSupportActionBar(toolbar);
 
-        // Bottombar listeners
-        BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
-
+        // Bottombar listener
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -123,6 +135,11 @@ public class MainActivity extends AppCompatActivity {
 
                     isRecording = true;
 
+                    if(recordedPoints.isEmpty()) {
+                        chronometer.setBase(SystemClock.elapsedRealtime());
+                    }
+                    chronometer.start();
+
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
                             .setIcon(R.drawable.baseline_pause_circle_24);
@@ -134,10 +151,17 @@ public class MainActivity extends AppCompatActivity {
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_stop)
                             .setVisible(true);
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_timer_container)
+                            .setVisible(true);
+
+                    chronometer.setVisibility(VISIBLE);
                 }
                 // Pause
                 else {
                     isRecording = false;
+                    chronometer.stop();
 
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_record)
@@ -161,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     isRecording = false;
                     didPressStopWhileLowPointCount = false;
+                    chronometer.stop();
 
                     // Encode
                     String res = PolyUtil.encode(recordedPoints);
@@ -180,7 +205,8 @@ public class MainActivity extends AppCompatActivity {
                         jsonObject.put("startdate", startTime);
                         jsonObject.put("enddate", endTime);
                         jsonObject.put("dist", totalDist);
-                    } catch (JSONException e) {
+                    }
+                    catch(JSONException e) {
                         e.printStackTrace();
                     }
 
@@ -192,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                     try(Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
                         writer.write(jsonObject.toString());
                     }
-                    catch (IOException e) {
+                    catch(IOException e) {
                         e.printStackTrace();
                     }
 
@@ -209,6 +235,12 @@ public class MainActivity extends AppCompatActivity {
                     bottomNav.getMenu()
                             .findItem(R.id.bottommenu_stop)
                             .setVisible(false);
+
+                    bottomNav.getMenu()
+                            .findItem(R.id.bottommenu_timer_container)
+                            .setVisible(false);
+
+                    chronometer.setVisibility(INVISIBLE);
 
                     // Clear map
                     for(Overlay i : mapView.getOverlays()) {
@@ -246,8 +278,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize route overlay
         route.getOutlinePaint().setColor(Color.BLUE);
-        route.getOutlinePaint().setStrokeWidth(7.0f);
+        route.getOutlinePaint().setStrokeWidth(6.0f);
         mapView.getOverlayManager().add(route);
+        // Smoothen?
+        Paint paint = route.getOutlinePaint();
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setAntiAlias(true);
 
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
@@ -318,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                         LatLng latLng = new LatLng(lat, lng);
                         recordedPoints.add(latLng);
 
-                        // Create line between points
+                        // Add point to the route
                         route.addPoint(point);
                         mapView.invalidate();
 

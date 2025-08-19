@@ -6,14 +6,19 @@
         android:id="@+id/bottommenu_record"
         android:title="@string/main_record"
         android:icon="@drawable/baseline_play_circle_24"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/bottommenu_timer_container"
         app:showAsAction="ifRoom"
-        />
+        android:enabled="false"
+        android:title="@string/main_time"
+        android:visible="false"/>
 
     <item
         android:id="@+id/bottommenu_stop"
         android:title="@string/main_stop"
         android:icon="@drawable/baseline_stop_circle_24"
         app:showAsAction="ifRoom"
-        android:visible="false"
-        />
+        android:visible="false"/>
 </menu>

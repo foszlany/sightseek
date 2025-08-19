@@ -2,4 +2,5 @@
     <string name="app_name">sightseek</string>
     <string name="main_stop">Stop</string>
     <string name="main_record">Record</string>
+    <string name="main_time">Time</string>
 </resources>
