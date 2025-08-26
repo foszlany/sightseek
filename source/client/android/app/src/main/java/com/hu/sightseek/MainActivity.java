@@ -19,17 +19,14 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Chronometer;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -279,6 +276,10 @@ public class MainActivity extends AppCompatActivity {
                 -85.0,
                 -180.0
         ));
+
+        // Default to Budapest
+        GeoPoint point = new GeoPoint(47.499, 19.044);
+        mapView.getController().animateTo(point);
 
         // Initialize route overlay
         route.getOutlinePaint().setColor(Color.BLUE);
