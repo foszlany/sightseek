@@ -19,10 +19,13 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Chronometer;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -71,14 +74,14 @@ import java.util.Random;
 import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int UPDATE_INTERVAL_MAX = 6000;
+    private static final int UPDATE_INTERVAL_MAX = 4000;
     private static final int UPDATE_INTERVAL_MIN = 4000;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private static final int MINIMUM_REQUIRED_POINTS_PER_ACTIVITY = 15;
 
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationClient;
-    private SimpleDateFormat sdf;
+    private SimpleDateFormat dateFormat;
     private LocationCallback locationCallback;
     private MyLocationNewOverlay locationOverlay;
 
@@ -89,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private Polyline route;
     private Chronometer chronometer;
     private long elapsedTime;
+    private double totalDist;
+    private double currentSpeed;
 
 
     @Override
@@ -102,18 +107,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Default values
-        sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-        sdf.setTimeZone(TimeZone.getDefault());
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getDefault());
 
         recordedPoints = new ArrayList<>();
         isRecording = false;
         didPressStopWhileLowPointCount = false;
         route = new Polyline();
         elapsedTime = 0;
+        totalDist = 0;
+        currentSpeed = 0;
 
         BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
         chronometer = findViewById(R.id.bottommenu_chronometer);
         chronometer.setVisibility(INVISIBLE);
+
+        LinearLayout statOverlay = findViewById(R.id.main_statoverlay);
+        statOverlay.setVisibility(INVISIBLE);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.menubar_main);
@@ -130,6 +140,17 @@ public class MainActivity extends AppCompatActivity {
                     if(!isLocationEnabled(getApplicationContext())) {
                         Toast.makeText(this, "Location is currently disabled!", Toast.LENGTH_LONG).show();
                         return true;
+                    }
+
+                    // Initialize overlay
+                    if(recordedPoints.isEmpty()) {
+                        statOverlay.setVisibility(VISIBLE);
+
+                        TextView distanceView = findViewById(R.id.main_distance);
+                        distanceView.setText(getString(R.string.main_distance, 0.0));
+
+                        TextView speedView = findViewById(R.id.main_speed);
+                        speedView.setText(getString(R.string.main_speed, 0.0));
                     }
 
                     isRecording = true;
@@ -190,12 +211,7 @@ public class MainActivity extends AppCompatActivity {
                     String res = PolyUtil.encode(recordedPoints);
 
                     // Create JSON
-                    String endTime = sdf.format(new Date());
-
-                    double totalDist = 0;
-                    for(int i = 1; i < recordedPoints.size(); i++) {
-                        totalDist += SphericalUtil.computeDistanceBetween(recordedPoints.get(i - 1), recordedPoints.get(i));
-                    }
+                    String endTime = dateFormat.format(new Date());
 
                     JSONObject jsonObject = new JSONObject();
                     try {
@@ -242,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
 
                     chronometer.setVisibility(INVISIBLE);
                     elapsedTime = 0;
+                    totalDist = 0;
 
                     // Clear map
                     for(Overlay i : mapView.getOverlays()) {
@@ -353,11 +370,23 @@ public class MainActivity extends AppCompatActivity {
 
                     // Record point if needed
                     if(isRecording) {
-                        // Record
+                        // Get current location
                         double lat = point.getLatitude();
                         double lng = point.getLongitude();
-                        LatLng latLng = new LatLng(lat, lng);
-                        recordedPoints.add(latLng);
+                        LatLng newPoint = new LatLng(lat, lng);
+
+                        int maxRecordedPoints = recordedPoints.size() - 1;
+
+                        // Prevent small changes from occurring in the final data
+                        if(recordedPoints.size() > 1) {
+                            double newDistanceLength = SphericalUtil.computeDistanceBetween(newPoint, recordedPoints.get(maxRecordedPoints));
+                            if(newDistanceLength < 0.25) {
+                                return;
+                            }
+                        }
+
+                        // Record
+                        recordedPoints.add(newPoint);
 
                         // Add point to the route
                         route.addPoint(point);
@@ -365,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Mark first point, record start time
                         if(recordedPoints.size() == 1) {
-                            startTime = sdf.format(new Date());
+                            startTime = dateFormat.format(new Date());
 
                             Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_circle_24, null);
                             if(icon != null) {
@@ -377,7 +406,28 @@ public class MainActivity extends AppCompatActivity {
                             mapView.getOverlayManager().add(firstP);
                             mapView.invalidate();
                         }
+                        // Update variables
+                        else {
+                            maxRecordedPoints++;
+                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(maxRecordedPoints - 1), recordedPoints.get(maxRecordedPoints));
+
+                            // Speed
+                            currentSpeed = (newDistanceLength / (UPDATE_INTERVAL_MIN / 1000.0)) * 3.6;
+
+                            TextView speedView = findViewById(R.id.main_speed);
+                            speedView.setText(getString(R.string.main_speed, currentSpeed));
+
+                            // Distance
+                            totalDist += newDistanceLength;
+
+                            TextView distanceView = findViewById(R.id.main_distance);
+                            distanceView.setText(getString(R.string.main_distance, totalDist / 1000.0));
+
+                            Log.d("DEBUG", "Distance: " + newDistanceLength + " m, Speed: " + currentSpeed + " km/h");
+                        }
                     }
+
+                    System.out.println(recordedPoints);
                 }
             }
         };

@@ -3,6 +3,6 @@
     <string name="main_stop">Stop</string>
     <string name="main_record">Record</string>
     <string name="main_time">Time</string>
-    <string name="main_defaultspeed">Speed: 0 km/s</string>
-    <string name="main_defaultdistance">Distance: 0 km</string>
+    <string name="main_speed">Speed: %1$.2f km/h</string>
+    <string name="main_distance">Distance: %1$.2f km</string>
 </resources>
