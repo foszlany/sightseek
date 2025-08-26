@@ -44,6 +44,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
@@ -154,6 +155,16 @@ public class MainActivity extends AppCompatActivity {
             if(isLocked) {
                 Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_outline_24, null);
                 lockButton.setImageDrawable(lock);
+
+                // Attempt to recenter
+                if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                        if(location != null) {
+                            GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
+                            mapView.getController().setCenter(point);
+                        }
+                    });
+                }
             }
             else {
                 Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_open_24, null);
