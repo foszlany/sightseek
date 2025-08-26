@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -17,27 +16,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleTextColor="@color/white"/>
+        app:titleTextColor="@color/white" />
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/menubar_main"
         app:layout_constraintBottom_toTopOf="@id/menubar_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-    </org.osmdroid.views.MapView>
+        app:layout_constraintTop_toBottomOf="@id/menubar_main"/>
 
     <LinearLayout
         android:id="@+id/main_statoverlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/stat_overlay_bg"
-        android:padding="4dp"
-        android:orientation="vertical"
-        android:radius="30dp"
         android:elevation="3dp"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:radius="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/menubar_main">
 
@@ -47,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="@string/main_speed"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/main_distance"
@@ -55,8 +53,20 @@
             android:layout_height="wrap_content"
             android:text="@string/main_distance"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/main_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/circle_button_bg"
+        android:elevation="3dp"
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/baseline_lock_outline_24" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/menubar_bottom"
@@ -64,12 +74,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
+        app:itemActiveIndicatorStyle="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map"
-        app:menu="@menu/menu_bottom"
-        app:itemActiveIndicatorStyle="@null"/>
+        app:menu="@menu/menu_bottom" />
 
     <Chronometer
         android:id="@+id/bottommenu_chronometer"
@@ -77,9 +87,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="12dp"
-        android:textSize="32sp"
         android:elevation="8dp"
         android:textColor="@android:color/white"
+        android:textSize="32sp"
         android:visible="false"
         app:layout_constraintBottom_toBottomOf="@+id/menubar_bottom"
         app:layout_constraintEnd_toEndOf="parent"

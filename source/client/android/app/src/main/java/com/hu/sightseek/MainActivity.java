@@ -24,12 +24,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Chronometer;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private long elapsedTime;
     private double totalDist;
     private double currentSpeed;
+    private boolean isLocked;
 
 
     @Override
@@ -117,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
         elapsedTime = 0;
         totalDist = 0;
         currentSpeed = 0;
+        isLocked = true;
 
-        BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
         chronometer = findViewById(R.id.bottommenu_chronometer);
         chronometer.setVisibility(INVISIBLE);
 
@@ -129,7 +132,23 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.menubar_main);
         setSupportActionBar(toolbar);
 
+        // Lock listener
+        ImageButton lockButton = findViewById(R.id.main_lock);
+        lockButton.setOnClickListener(item -> {
+            isLocked = !isLocked;
+
+            if(isLocked) {
+                Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_outline_24, null);
+                lockButton.setImageDrawable(lock);
+            }
+            else {
+                Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_open_24, null);
+                lockButton.setImageDrawable(lock);
+            }
+        });
+
         // Bottombar listener
+        BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -310,6 +329,9 @@ public class MainActivity extends AppCompatActivity {
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
         locationOverlay.enableMyLocation();
+
+        locationOverlay.setDrawAccuracyEnabled(false);
+
         mapView.getOverlays().add(locationOverlay);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -364,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
                     );
 
                     // Animate marker
-                    if(mapView != null) {
+                    if(mapView != null && isLocked) {
                         mapView.getController().animateTo(point, mapView.getZoomLevelDouble(), 666L);
                     }
 
@@ -419,12 +441,8 @@ public class MainActivity extends AppCompatActivity {
 
                             TextView distanceView = findViewById(R.id.main_distance);
                             distanceView.setText(getString(R.string.main_distance, totalDist / 1000.0));
-
-                            Log.d("DEBUG", "Distance: " + newDistanceLength + " m, Speed: " + currentSpeed + " km/h");
                         }
                     }
-
-                    System.out.println(recordedPoints);
                 }
             }
         };
@@ -447,7 +465,9 @@ public class MainActivity extends AppCompatActivity {
                 Location location = locationResult.getLastLocation();
                 if(location != null) {
                     GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    mapView.getController().animateTo(point);
+                    if(isLocked) {
+                        mapView.getController().animateTo(point);
+                    }
                 }
             }
         };
