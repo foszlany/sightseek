@@ -377,15 +377,11 @@ public class MainActivity extends AppCompatActivity {
 
                         // Prevent small changes from occurring in the final polyline
                         if(!recordedPoints.isEmpty()) {
-                            double newDistanceLength = SphericalUtil.computeDistanceBetween(newPoint, recordedPoints.get(recordedPoints.size() - 1));
+                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(recordedPoints.size() - 1), newPoint);
                             if(newDistanceLength < 0.25) {
                                 return;
                             }
                         }
-
-                        // Record
-                        recordedPoints.add(newPoint);
-
 
                         // Record
                         recordedPoints.add(newPoint);
