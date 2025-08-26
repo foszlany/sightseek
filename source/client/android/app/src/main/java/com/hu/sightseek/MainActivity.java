@@ -375,15 +375,17 @@ public class MainActivity extends AppCompatActivity {
                         double lng = point.getLongitude();
                         LatLng newPoint = new LatLng(lat, lng);
 
-                        int maxRecordedPoints = recordedPoints.size() - 1;
-
-                        // Prevent small changes from occurring in the final data
-                        if(recordedPoints.size() > 1) {
-                            double newDistanceLength = SphericalUtil.computeDistanceBetween(newPoint, recordedPoints.get(maxRecordedPoints));
+                        // Prevent small changes from occurring in the final polyline
+                        if(!recordedPoints.isEmpty()) {
+                            double newDistanceLength = SphericalUtil.computeDistanceBetween(newPoint, recordedPoints.get(recordedPoints.size() - 1));
                             if(newDistanceLength < 0.25) {
                                 return;
                             }
                         }
+
+                        // Record
+                        recordedPoints.add(newPoint);
+
 
                         // Record
                         recordedPoints.add(newPoint);
@@ -408,8 +410,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         // Update variables
                         else {
-                            maxRecordedPoints++;
-                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(maxRecordedPoints - 1), recordedPoints.get(maxRecordedPoints));
+                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(recordedPoints.size() - 2), recordedPoints.get(recordedPoints.size() - 1));
 
                             // Speed
                             currentSpeed = (newDistanceLength / (UPDATE_INTERVAL_MIN / 1000.0)) * 3.6;
