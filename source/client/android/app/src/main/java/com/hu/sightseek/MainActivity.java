@@ -3,6 +3,7 @@ package com.hu.sightseek;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -19,7 +21,6 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +32,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -135,6 +135,19 @@ public class MainActivity extends AppCompatActivity {
         // Lock listener
         ImageButton lockButton = findViewById(R.id.main_lock);
         lockButton.setOnClickListener(item -> {
+            ValueAnimator animator = ValueAnimator.ofArgb(
+                    ContextCompat.getColor(this, R.color.lock_overlay),
+                    ContextCompat.getColor(this, R.color.lock_overlay_blink)
+            );
+
+            GradientDrawable lockBackground = (GradientDrawable) lockButton.getBackground();
+            animator.addUpdateListener(valueAnimator -> lockBackground.setColor((Integer) valueAnimator.getAnimatedValue()));
+
+            animator.setDuration(144);
+            animator.setRepeatMode(ValueAnimator.REVERSE);
+            animator.setRepeatCount(1);
+            animator.start();
+
             isLocked = !isLocked;
 
             if(isLocked) {
