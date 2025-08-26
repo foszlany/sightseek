@@ -46,12 +46,15 @@ import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.TileStates;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -157,14 +160,7 @@ public class MainActivity extends AppCompatActivity {
                 lockButton.setImageDrawable(lock);
 
                 // Attempt to recenter
-                if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                        if(location != null) {
-                            GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
-                            mapView.getController().setCenter(point);
-                        }
-                    });
-                }
+                centerToCurrentLocation();
             }
             else {
                 Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_open_24, null);
@@ -320,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Initialize MapView
-        Configuration.getInstance().setUserAgentValue(getApplicationContext().getPackageName());
+        Configuration.getInstance().setUserAgentValue(BuildConfig.LIBRARY_PACKAGE_NAME);
         Configuration.getInstance().setOsmdroidBasePath(getCacheDir());
         Configuration.getInstance().setOsmdroidTileCache(getCacheDir());
         Configuration.getInstance().setCacheMapTileCount((short) 2000);
@@ -348,10 +344,6 @@ public class MainActivity extends AppCompatActivity {
         ));
 
         mapView.setTileSource(TileSourceFactory.MAPNIK);
-
-        // Default to Budapest
-        GeoPoint point = new GeoPoint(47.499, 19.044);
-        mapView.getController().setCenter(point);
 
         // Initialize route overlay
         route.getOutlinePaint().setColor(Color.BLUE);
@@ -405,9 +397,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Check for permissions
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Default to Budapest
+            GeoPoint point = new GeoPoint(47.499, 19.044);
+            mapView.getController().setCenter(point);
+
             Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
             return;
+        }
+        else {
+            centerToCurrentLocation();
         }
 
         // Get current location
@@ -576,5 +575,16 @@ public class MainActivity extends AppCompatActivity {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    public void centerToCurrentLocation() {
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if(location != null) {
+                    GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    mapView.getController().setCenter(point);
+                }
+            });
+        }
     }
 }
