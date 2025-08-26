@@ -59,6 +59,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -308,13 +309,22 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Initialize MapView
-        mapView = findViewById(R.id.map);
-        mapView.setBackgroundColor(Color.BLACK);
-        mapView.getOverlayManager().getTilesOverlay().setLoadingLineColor(Color.TRANSPARENT);
-        mapView.setMultiTouchControls(true);
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        Configuration.getInstance().setUserAgentValue(getApplicationContext().getPackageName());
+        Configuration.getInstance().setOsmdroidBasePath(getCacheDir());
+        Configuration.getInstance().setOsmdroidTileCache(getCacheDir());
+        Configuration.getInstance().setCacheMapTileCount((short) 2000);
+        Configuration.getInstance().setCacheMapTileOvershoot((short) 800);
 
-        mapView.getController().setZoom(15.0);
+        mapView = findViewById(R.id.map);
+        mapView.setBackgroundColor(Color.TRANSPARENT);
+        mapView.setMultiTouchControls(true);
+        mapView.setUseDataConnection(true);
+
+        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+        mapView.getController().setZoom(14.0);
         mapView.setMinZoomLevel(3.0);
         mapView.setMaxZoomLevel(20.0);
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
@@ -326,9 +336,11 @@ public class MainActivity extends AppCompatActivity {
                 -180.0
         ));
 
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+
         // Default to Budapest
         GeoPoint point = new GeoPoint(47.499, 19.044);
-        mapView.getController().animateTo(point);
+        mapView.getController().setCenter(point);
 
         // Initialize route overlay
         route.getOutlinePaint().setColor(Color.BLUE);
@@ -479,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
                 if(location != null) {
                     GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
                     if(isLocked) {
-                        mapView.getController().animateTo(point);
+                        mapView.getController().setCenter(point);
                     }
                 }
             }
