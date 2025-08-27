@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -111,10 +112,14 @@ public class SaveActivity extends AppCompatActivity {
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
+            EditText titleEditText = findViewById(R.id.save_edittext_title);
+            String title = titleEditText.getText().toString();
+
             // Create JSON
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("id", new Random().nextInt(9999999)); // TODO
+                jsonObject.put("title", title.isBlank() ? "Untitled Activity" : title);
                 jsonObject.put("polyline", polylineString);
                 jsonObject.put("starttime", startTime);
                 jsonObject.put("endtime", endTime);
