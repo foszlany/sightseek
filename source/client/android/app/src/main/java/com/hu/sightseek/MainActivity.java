@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 4000;
     private static final int UPDATE_INTERVAL_MIN = 4000;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-    private static final int MINIMUM_REQUIRED_POINTS_PER_ACTIVITY = 15;
+    private static final int MINIMUM_REQUIRED_POINTS_PER_ACTIVITY = 4;
 
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationClient;
@@ -244,36 +244,19 @@ public class MainActivity extends AppCompatActivity {
                     chronometer.stop();
                     elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
 
-                    // Encode
-                    String res = PolyUtil.encode(recordedPoints);
+                    Intent intent = new Intent(this, SaveActivity.class);
 
-                    // Create JSON
-                    String endTime = dateFormat.format(new Date());
+                    Bundle bundle = new Bundle();
 
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("id", new Random().nextInt(9999999)); // TODO
-                        jsonObject.put("polyline", res);
-                        jsonObject.put("startdate", startTime);
-                        jsonObject.put("enddate", endTime);
-                        jsonObject.put("elapsedtime", Math.floor(elapsedTime / 1000.0));
-                        jsonObject.put("dist", totalDist);
-                    }
-                    catch(JSONException e) {
-                        e.printStackTrace();
-                    }
+                    bundle.putString("polyline", PolyUtil.encode(recordedPoints));
+                    bundle.putString("starttime", startTime);
+                    bundle.putString("endtime", dateFormat.format(new Date()));
+                    bundle.putDouble("elapsedtime", Math.floor(elapsedTime / 1000.0));
+                    bundle.putDouble("dist", totalDist);
 
-                    // TEMPORARY!!! EXPORT TO EXTERNAL STORAGE
-                    String filename = "newroute" + new Random().nextInt(9999999) + ".json";
-                    File exportDir = this.getExternalFilesDir(null);
-                    File file = new File(exportDir, filename);
+                    intent.putExtras(bundle);
 
-                    try(Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
-                        writer.write(jsonObject.toString());
-                    }
-                    catch(IOException e) {
-                        e.printStackTrace();
-                    }
+                    startActivity(intent);
 
                     recordedPoints.clear();
 

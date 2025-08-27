@@ -5,4 +5,8 @@
     <string name="main_time">Time</string>
     <string name="main_speed">Speed: %1$.2f km/h</string>
     <string name="main_distance">Distance: %1$.2f km</string>
+    <string name="save_title">Save your Activity</string>
+    <string name="save_discard">Discard</string>
+    <string name="save_save">Save</string>
+    <string name="save_titlehint">Title</string>
 </resources>

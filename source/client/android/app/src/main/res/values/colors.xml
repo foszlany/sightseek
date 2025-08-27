@@ -3,6 +3,8 @@
     <color name="transparent">#00000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#FFFF0000</color>
+
     <color name="theme_main">#FF3ABA91</color>
     <color name="stat_overlay">#55000000</color>
     <color name="lock_overlay">#AA000000</color>
