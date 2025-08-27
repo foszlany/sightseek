@@ -1,16 +1,25 @@
 package com.hu.sightseek;
 
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.BoundingBox;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Random;
 
 public class SaveActivity extends AppCompatActivity {
@@ -34,11 +44,69 @@ public class SaveActivity extends AppCompatActivity {
         // Retrieve data
         Bundle extras = getIntent().getExtras();
 
-        String polyline = extras.getString("polyline");
+        String polylineString = extras.getString("polyline");
         String startTime = extras.getString("starttime");
         String endTime = extras.getString("endtime");
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
+
+        // Initialize mapview
+        MapView mapView = findViewById(R.id.save_map);
+        mapView.setBackgroundColor(Color.TRANSPARENT);
+        mapView.setMultiTouchControls(true);
+        mapView.setUseDataConnection(true);
+
+        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+        // Setup polyline
+        List<LatLng> pointList = PolyUtil.decode(polylineString);
+        Polyline polyline = new Polyline();
+        for(LatLng point : pointList) {
+            polyline.addPoint(new GeoPoint(point.latitude, point.longitude));
+        }
+
+        polyline.getOutlinePaint().setColor(Color.BLUE);
+        polyline.getOutlinePaint().setStrokeWidth(7.0f);
+        mapView.getOverlayManager().add(polyline);
+
+        // Calculate bounding box
+        double minLat = Double.MAX_VALUE;
+        double maxLat = -Double.MAX_VALUE;
+        double minLon = Double.MAX_VALUE;
+        double maxLon = -Double.MAX_VALUE;
+
+        for(LatLng p : pointList) {
+            if(p.latitude < minLat) {
+                minLat = p.latitude;
+            }
+            if(p.latitude > maxLat) {
+                maxLat = p.latitude;
+            }
+            if(p.longitude < minLon) {
+                minLon = p.longitude;
+            }
+            if(p.longitude > maxLon) {
+                maxLon = p.longitude;
+            }
+        }
+
+        BoundingBox box = new BoundingBox(maxLat, maxLon, minLat, minLon);
+
+        // Set zoom based on bounding box
+        mapView.getViewTreeObserver().addOnGlobalLayoutListener(() ->
+            // Wait for the map to initialize
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
+                }
+            }
+        );
+        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        mapView.setVerticalMapRepetitionEnabled(true);
 
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
@@ -47,7 +115,7 @@ public class SaveActivity extends AppCompatActivity {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("id", new Random().nextInt(9999999)); // TODO
-                jsonObject.put("polyline", polyline);
+                jsonObject.put("polyline", polylineString);
                 jsonObject.put("starttime", startTime);
                 jsonObject.put("endtime", endTime);
                 jsonObject.put("elapsedtime", elapsedTime);

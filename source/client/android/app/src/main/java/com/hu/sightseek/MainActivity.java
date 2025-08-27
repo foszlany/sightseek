@@ -253,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
                     bundle.putString("endtime", dateFormat.format(new Date()));
                     bundle.putDouble("elapsedtime", Math.floor(elapsedTime / 1000.0));
                     bundle.putDouble("dist", totalDist);
-
                     intent.putExtras(bundle);
 
                     startActivity(intent);
@@ -323,16 +322,10 @@ public class MainActivity extends AppCompatActivity {
                 -180.0
         ));
 
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
-
         // Initialize route overlay
         route.getOutlinePaint().setColor(Color.BLUE);
         route.getOutlinePaint().setStrokeWidth(7.0f);
         mapView.getOverlayManager().add(route);
-        // Smoothen?
-        Paint paint = route.getOutlinePaint();
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setAntiAlias(true);
 
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
