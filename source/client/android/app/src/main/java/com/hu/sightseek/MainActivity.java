@@ -105,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().load(
-                getApplicationContext(),
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                this,
+                PreferenceManager.getDefaultSharedPreferences(this)
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
         setContentView(R.layout.activity_main);
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             if(id == R.id.bottommenu_record) {
                 // Begin
                 if(!isRecording) {
-                    if(!isLocationEnabled(getApplicationContext())) {
+                    if(!isLocationEnabled(this)) {
                         Toast.makeText(this, "Location is currently disabled!", Toast.LENGTH_LONG).show();
                         return true;
                     }
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // TEMPORARY!!! EXPORT TO EXTERNAL STORAGE
                     String filename = "newroute" + new Random().nextInt(9999999) + ".json";
-                    File exportDir = getApplicationContext().getExternalFilesDir(null);
+                    File exportDir = this.getExternalFilesDir(null);
                     File file = new File(exportDir, filename);
 
                     try(Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize route overlay
         route.getOutlinePaint().setColor(Color.BLUE);
-        route.getOutlinePaint().setStrokeWidth(6.0f);
+        route.getOutlinePaint().setStrokeWidth(7.0f);
         mapView.getOverlayManager().add(route);
         // Smoothen?
         Paint paint = route.getOutlinePaint();
@@ -371,18 +371,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Detects whenever location is enabled and creates a marker
         IntentFilter filter = new IntentFilter(LocationManager.MODE_CHANGED_ACTION);
-        Context ctx = getApplicationContext();
 
         BroadcastReceiver locationModeReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), mapView);
+                locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), mapView);
                 locationOverlay.enableMyLocation();
                 mapView.getOverlays().add(locationOverlay);
             }
         };
 
-        ctx.registerReceiver(locationModeReceiver, filter);
+        this.registerReceiver(locationModeReceiver, filter);
     }
 
     private void startLocationUpdates() {
