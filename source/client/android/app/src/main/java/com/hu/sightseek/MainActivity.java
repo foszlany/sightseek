@@ -44,7 +44,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
@@ -53,8 +52,6 @@ import com.google.maps.android.SphericalUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.MapTileProviderBase;
-import org.osmdroid.tileprovider.TileStates;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -398,12 +395,15 @@ public class MainActivity extends AppCompatActivity {
         // Check for permissions
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Default to Budapest
-            GeoPoint point = new GeoPoint(47.499, 19.044);
-            mapView.getController().setCenter(point);
+            defaultToBudapest();
 
             Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
             return;
+        }
+        else if(!isLocationEnabled(this)) {
+            // Default to Budapest
+            defaultToBudapest();
         }
         else {
             centerToCurrentLocation();
@@ -586,5 +586,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void defaultToBudapest() {
+        GeoPoint point = new GeoPoint(47.499, 19.044);
+        mapView.getController().setCenter(point);
     }
 }
