@@ -98,18 +98,16 @@ public class SaveActivity extends AppCompatActivity {
         BoundingBox box = new BoundingBox(maxLat, maxLon, minLat, minLon);
 
         // Set zoom based on bounding box
-        mapView.getViewTreeObserver().addOnGlobalLayoutListener(() ->
-            // Wait for the map to initialize
-            new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
-                }
+        mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
             }
-        );
+        });
+
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        mapView.setVerticalMapRepetitionEnabled(true);
+        mapView.setVerticalMapRepetitionEnabled(false);
 
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
