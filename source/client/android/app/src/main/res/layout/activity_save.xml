@@ -49,8 +49,8 @@
 
         <org.osmdroid.views.MapView
             android:id="@+id/save_map"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="360dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
             android:layout_margin="30dp"
             app:layout_constraintBottom_toTopOf="@id/menubar_bottom"

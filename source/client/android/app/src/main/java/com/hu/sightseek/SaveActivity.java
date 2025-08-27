@@ -1,5 +1,6 @@
 package com.hu.sightseek;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -7,6 +8,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -148,7 +150,20 @@ public class SaveActivity extends AppCompatActivity {
         // Discard button
         Button discardButton = findViewById(R.id.save_discardbtn);
         discardButton.setOnClickListener(view -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Confirmation")
+                    .setMessage("Are you sure you want to discard this activity? This cannot be undone!")
+                    .setPositiveButton("Yes", (d, which) -> {
+                        Intent intent = new Intent(this, MainActivity.class);
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("No", (d, which) -> {
+                        d.dismiss();
+                    })
+                    .setCancelable(true)
+                    .create();
 
+            dialog.show();
         });
     }
 }
