@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Random;
 
 public class SaveActivity extends AppCompatActivity {
+    private TravelCategory categoryIndex;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,10 +58,15 @@ public class SaveActivity extends AppCompatActivity {
         String endTime = extras.getString("endtime");
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
+        categoryIndex = TravelCategory.LOCOMOTOR;
 
         // Spinner
         Spinner spinner = findViewById(R.id.save_category);
-        String[] categories = {"On foot", "On bike", "Other"};
+        String[] categories = {
+            TravelCategory.LOCOMOTOR.toString(),
+            TravelCategory.MICROMOBILITY.toString(),
+            TravelCategory.OTHER.toString()
+        };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -68,7 +75,7 @@ public class SaveActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
               @Override
               public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                  String selected = parent.getItemAtPosition(position).toString();
+                  categoryIndex = TravelCategory.values()[position];
               }
 
               @Override
@@ -142,6 +149,7 @@ public class SaveActivity extends AppCompatActivity {
             try {
                 jsonObject.put("id", new Random().nextInt(9999999)); // TODO
                 jsonObject.put("title", title.isBlank() ? "Untitled Activity" : title);
+                jsonObject.put("category", categoryIndex.getIndex());
                 jsonObject.put("polyline", polylineString);
                 jsonObject.put("starttime", startTime);
                 jsonObject.put("endtime", endTime);

@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
                     bundle.putString("endtime", dateFormat.format(new Date()));
                     bundle.putDouble("elapsedtime", Math.floor(elapsedTime / 1000.0));
                     bundle.putDouble("dist", totalDist);
+                    bundle.putDouble("type", totalDist);
                     intent.putExtras(bundle);
 
                     startActivity(intent);
