@@ -31,11 +31,13 @@
 
         <EditText
             android:id="@+id/save_edittext_title"
+            android:background="@drawable/edittext_outline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textColorHint="@color/hint"
             android:layout_marginHorizontal="40dp"
+            android:padding="11dp"
             android:maxLength="32"
             android:ems="10"
             android:inputType="text"
@@ -54,7 +56,8 @@
             android:layout_width="360dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
-            android:layout_margin="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginHorizontal="30dp"
             app:layout_constraintBottom_toTopOf="@id/menubar_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:columnCount="2"
-            android:padding="8dp"
+            android:padding="5dp"
             android:rowCount="2">
 
             <TextView
@@ -102,7 +105,8 @@
             app:backgroundTint="@color/theme_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="14dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp"
             android:textSize="27sp"
             android:textColor="@color/white"
             android:text="@string/save_save"/>
