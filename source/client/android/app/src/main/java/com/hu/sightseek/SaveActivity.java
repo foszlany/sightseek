@@ -74,6 +74,18 @@ public class SaveActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        // Set default value based on average speed
+        double avgSpeed = totalDist / elapsedTime;
+        if(avgSpeed < 4.2) {
+            spinner.setSelection(TravelCategory.LOCOMOTOR.getIndex());
+        }
+        else if(avgSpeed < 15) {
+            spinner.setSelection(TravelCategory.MICROMOBILITY.getIndex());
+        }
+        else {
+            spinner.setSelection(TravelCategory.OTHER.getIndex());
+        }
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
               @Override
               public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

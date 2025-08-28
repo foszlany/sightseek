@@ -101,7 +101,6 @@
                 android:gravity="center"
                 android:text="@string/save_distance"
                 android:textColor="@color/dark_gray"/>
-
         </GridLayout>
 
         <Button
