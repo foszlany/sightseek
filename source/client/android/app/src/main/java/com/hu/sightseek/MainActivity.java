@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
@@ -49,10 +48,7 @@ import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
@@ -64,17 +60,10 @@ import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
@@ -331,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
         locationOverlay.enableMyLocation();
-
+        locationOverlay.setDirectionIcon(null);
         locationOverlay.setDrawAccuracyEnabled(false);
 
         mapView.getOverlays().add(locationOverlay);

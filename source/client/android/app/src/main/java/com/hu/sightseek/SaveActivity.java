@@ -76,10 +76,10 @@ public class SaveActivity extends AppCompatActivity {
 
         // Set default value based on average speed
         double avgSpeed = totalDist / elapsedTime;
-        if(avgSpeed < 4.2) {
+        if(avgSpeed < 4.17) { // 15 km/h
             spinner.setSelection(TravelCategory.LOCOMOTOR.getIndex());
         }
-        else if(avgSpeed < 15) {
+        else if(avgSpeed < 15) { // 54 km/h
             spinner.setSelection(TravelCategory.MICROMOBILITY.getIndex());
         }
         else {
