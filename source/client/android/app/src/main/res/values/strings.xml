@@ -9,4 +9,6 @@
     <string name="save_discard">Discard</string>
     <string name="save_save">Save</string>
     <string name="save_titlehint">Title</string>
+    <string name="save_distance">Distance</string>
+    <string name="main_distancevalue">%1$.2f km</string>
 </resources>

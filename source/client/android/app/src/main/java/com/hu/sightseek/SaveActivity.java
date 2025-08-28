@@ -36,6 +36,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class SaveActivity extends AppCompatActivity {
@@ -139,6 +140,18 @@ public class SaveActivity extends AppCompatActivity {
 
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setVerticalMapRepetitionEnabled(false);
+
+        // Set time and distance
+        int hours = (int) elapsedTime / 3600;
+        int minutes = ((int) elapsedTime % 3600) / 60;
+        int seconds = (int) elapsedTime % 60;
+
+        String formattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
+        TextView timeText = findViewById(R.id.save_time);
+        timeText.setText(formattedTime);
+
+        TextView distanceText = findViewById(R.id.save_distance);
+        distanceText.setText(getString(R.string.main_distancevalue, totalDist / 1000.0));
 
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
