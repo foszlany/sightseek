@@ -34,6 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
+            android:textColorHint="@color/hint"
             android:layout_marginHorizontal="40dp"
             android:maxLength="32"
             android:ems="10"
@@ -62,10 +63,12 @@
         <Button
             android:id="@+id/save_savebtn"
             android:background="@drawable/save_button_bg"
+            app:backgroundTint="@color/theme_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="14dp"
             android:textSize="27sp"
+            android:textColor="@color/white"
             android:text="@string/save_save"/>
 
         <Button

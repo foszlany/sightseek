@@ -9,4 +9,5 @@
     <color name="stat_overlay">#55000000</color>
     <color name="lock_overlay">#AA000000</color>
     <color name="lock_overlay_blink">#AA202020</color>
+    <color name="hint">#646464</color>
 </resources>
