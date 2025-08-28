@@ -63,7 +63,7 @@ public class SaveActivity extends AppCompatActivity {
         categoryIndex = TravelCategory.LOCOMOTOR;
 
         // Spinner
-        Spinner spinner = findViewById(R.id.save_category);
+        Spinner spinner = findViewById(R.id.save_category); // TODO ADD ICONS
         String[] categories = {
             TravelCategory.LOCOMOTOR.toString(),
             TravelCategory.MICROMOBILITY.toString(),

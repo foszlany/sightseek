@@ -45,23 +45,23 @@
 
         <Spinner
             android:id="@+id/save_category"
+            android:background="@drawable/edittext_outline"
             android:layout_marginHorizontal="40dp"
             android:layout_marginTop="10dp"
-            android:padding="10dp"
+            android:padding="11dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <org.osmdroid.views.MapView
             android:id="@+id/save_map"
-            android:layout_width="360dp"
+            android:layout_width="330dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
-            android:layout_marginHorizontal="30dp"
             app:layout_constraintBottom_toTopOf="@id/menubar_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/menubar_main" />
+            app:layout_constraintTop_toBottomOf="@id/menubar_main"/>
 
         <GridLayout
             android:layout_width="wrap_content"
@@ -74,29 +74,34 @@
                 android:id="@+id/save_time"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="14dp"
+                android:textSize="26sp"
                 android:gravity="center"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/save_distance"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:textSize="26sp"
                 android:gravity="center"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"/>
 
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="14dp"
                 android:gravity="center"
                 android:text="@string/main_time"
-                android:textColor="@color/black" />
+                android:textColor="@color/dark_gray"/>
 
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/save_distance"
-                android:textColor="@color/black" />
+                android:textColor="@color/dark_gray"/>
+
         </GridLayout>
 
         <Button
