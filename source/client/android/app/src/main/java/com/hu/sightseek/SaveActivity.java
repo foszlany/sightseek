@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +56,24 @@ public class SaveActivity extends AppCompatActivity {
         String endTime = extras.getString("endtime");
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
+
+        // Spinner
+        Spinner spinner = findViewById(R.id.save_category);
+        String[] categories = {"On foot", "On bike", "Other"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+              @Override
+              public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                  String selected = parent.getItemAtPosition(position).toString();
+              }
+
+              @Override
+              public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         // Initialize mapview
         MapView mapView = findViewById(R.id.save_map);

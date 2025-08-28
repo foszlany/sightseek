@@ -33,6 +33,7 @@
             android:id="@+id/save_edittext_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:layout_marginHorizontal="40dp"
             android:maxLength="32"
             android:ems="10"
@@ -40,7 +41,7 @@
             android:hint="@string/save_titlehint"/>
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/save_category"
             android:layout_marginHorizontal="40dp"
             android:layout_marginTop="10dp"
             android:padding="10dp"
@@ -63,6 +64,7 @@
             android:background="@drawable/save_button_bg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:textSize="27sp"
             android:text="@string/save_save"/>
 
