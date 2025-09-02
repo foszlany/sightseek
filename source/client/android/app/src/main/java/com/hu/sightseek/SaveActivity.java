@@ -45,12 +45,12 @@ public class SaveActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_save);
         Configuration.getInstance().load(
                 getApplicationContext(),
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
-        setContentView(R.layout.activity_save);
 
         // Retrieve data
         Bundle extras = getIntent().getExtras();

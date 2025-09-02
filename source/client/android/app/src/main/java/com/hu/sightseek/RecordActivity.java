@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -93,12 +94,23 @@ public class RecordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_record);
         Configuration.getInstance().load(
                 this,
                 PreferenceManager.getDefaultSharedPreferences(this)
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
-        setContentView(R.layout.activity_record);
+
+        // TODO: MOVE THIS TO MAIN ACTIVITY!!!
+        // Show banner when launching for the first time
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        boolean isFirstLaunch = prefs.getBoolean("isFirstLaunch", true);
+
+        if(isFirstLaunch) {
+            startActivity(new Intent(this, BannerActivity.class));
+            prefs.edit().putBoolean("isFirstLaunch", false).apply();
+            finish();
+        }
 
         // Default values
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
