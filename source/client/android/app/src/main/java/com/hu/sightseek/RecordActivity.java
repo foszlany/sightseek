@@ -98,7 +98,7 @@ public class RecordActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(this)
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_record);
 
         // Default values
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);

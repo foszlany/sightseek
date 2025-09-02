@@ -5,6 +5,94 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".BannerActivity">
+
+    <ImageView
+        android:id="@+id/banner_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.6"
+        android:contentDescription="@string/banner_imgdesc"
+        android:scaleType="centerCrop"
+        android:src="@drawable/banner"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/banner_backbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:text="Back"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/banner_loginbtn" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="371dp"
+        android:layout_height="78dp"
+        android:layout_marginTop="108dp"
+        android:elevation="5dp"
+        android:shadowColor="@color/black"
+        android:shadowDx="1.0"
+        android:shadowDy="2.0"
+        android:shadowRadius="55"
+        android:text="@string/banner_main"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="233dp"
+        android:layout_height="69dp"
+        android:elevation="5dp"
+        android:shadowColor="@color/black"
+        android:shadowRadius="50"
+        android:text="@string/banner_extrafeatures"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <Button
+        android:id="@+id/banner_registerbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="192dp"
+        android:backgroundTint="@color/dark_gray"
+        android:paddingHorizontal="33dp"
+        android:paddingVertical="6dp"
+        android:text="@string/banner_register"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <Button
+        android:id="@+id/banner_loginbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:text="@string/banner_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/banner_registerbtn" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,4 +11,9 @@
     <string name="save_titlehint">Title</string>
     <string name="save_distance">Distance</string>
     <string name="main_distancevalue">%1$.2f km</string>
+    <string name="banner_imgdesc">This image features a map with a cup of coffee on top and various other travel-related items.</string>
+    <string name="banner_main">There is a whole world out ready to be explored.</string>
+    <string name="banner_extrafeatures">Creating an account will grant access to leaderboards and much more.</string>
+    <string name="banner_register">Register</string>
+    <string name="banner_login">Already have an account?</string>
 </resources>
