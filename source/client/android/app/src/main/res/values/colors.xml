@@ -9,6 +9,7 @@
     <color name="stat_overlay">#55000000</color>
     <color name="lock_overlay">#AA000000</color>
     <color name="lock_overlay_blink">#AA202020</color>
-    <color name="hint">#646464</color>
+    <color name="hint">#FF646464</color>
+    <color name="light_gray">#FFBBBBBB</color>
     <color name="dark_gray">#FF444444</color>
 </resources>

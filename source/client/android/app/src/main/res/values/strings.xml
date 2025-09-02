@@ -16,4 +16,5 @@
     <string name="banner_extrafeatures">Creating an account will grant access to leaderboards and much more.</string>
     <string name="banner_register">Register</string>
     <string name="banner_login">Already have an account?</string>
+    <string name="banner_useoffline">Use app offline</string>
 </resources>
