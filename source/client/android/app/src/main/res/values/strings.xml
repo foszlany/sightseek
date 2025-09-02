@@ -17,4 +17,7 @@
     <string name="banner_register">Register</string>
     <string name="banner_login">Already have an account?</string>
     <string name="banner_useoffline">Use app offline</string>
+    <string name="login_login">Log in</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
 </resources>

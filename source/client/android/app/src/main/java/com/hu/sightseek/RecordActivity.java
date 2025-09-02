@@ -104,7 +104,7 @@ public class RecordActivity extends AppCompatActivity {
         // TODO: MOVE THIS TO MAIN ACTIVITY!!!
         // Show banner when launching for the first time
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        boolean isFirstLaunch = prefs.getBoolean("isFirstLauncha", true);
+        boolean isFirstLaunch = prefs.getBoolean("isFirstLauncha", true); // TODO: Remove 'a' once done testing
 
         if(isFirstLaunch) {
             startActivity(new Intent(this, BannerActivity.class));
