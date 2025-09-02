@@ -27,4 +27,5 @@
     <string name="register_password2">Password again</string>
     <string name="register_alreadyhaveaccount">I already have an account</string>
     <string name="login_imgdesc">This image serves as a simple background for the login page.</string>
+    <string name="register_createaccount">Create an account</string>
 </resources>

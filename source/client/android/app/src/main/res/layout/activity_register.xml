@@ -9,7 +9,7 @@
     tools:context=".RegisterActivity">
 
     <ImageView
-        android:id="@+id/login_banner"
+        android:id="@+id/register_banner"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.4"
@@ -36,7 +36,7 @@
 
     <TextView
         android:id="@+id/register_registerntv"
-        android:layout_width="337dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:elevation="5dp"
@@ -44,7 +44,7 @@
         android:shadowDx="1.0"
         android:shadowDy="2.0"
         android:shadowRadius="11"
-        android:text="@string/register_register"
+        android:text="@string/register_createaccount"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="42sp"
