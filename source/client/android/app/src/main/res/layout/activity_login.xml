@@ -23,6 +23,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <Button
+        android:id="@+id/login_registerbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:text="@string/login_noaccount"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_loginbtn" />
+
     <TextView
         android:id="@+id/login_logintv"
         android:layout_width="337dp"
@@ -71,7 +82,7 @@
         android:backgroundTint="@color/white"
         android:ems="10"
         android:hint="@string/login_password"
-        android:inputType="textEmailAddress"
+        android:inputType="textPassword"
         android:maxLength="32"
         android:padding="11dp"
         android:textColor="@color/black"
@@ -96,6 +107,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_edittext_pw" />
+        app:layout_constraintTop_toBottomOf="@+id/login_edittext_pw"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
