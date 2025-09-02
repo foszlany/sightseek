@@ -66,7 +66,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class MainActivity extends AppCompatActivity {
+public class RecordActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 4000;
     private static final int UPDATE_INTERVAL_MIN = 4000;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;

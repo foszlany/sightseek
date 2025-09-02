@@ -209,7 +209,7 @@ public class SaveActivity extends AppCompatActivity {
                     .setTitle("Confirmation")
                     .setMessage("Are you sure you want to discard this activity? This cannot be undone!")
                     .setPositiveButton("Yes", (d, which) -> {
-                        Intent intent = new Intent(this, MainActivity.class);
+                        Intent intent = new Intent(this, RecordActivity.class);
                         startActivity(intent);
                     })
                     .setNegativeButton("No", (d, which) -> {

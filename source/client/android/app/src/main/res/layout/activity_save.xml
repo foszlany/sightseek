@@ -109,7 +109,7 @@
             app:backgroundTint="@color/theme_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="28dp"
             android:layout_marginHorizontal="20dp"
             android:textSize="27sp"
             android:textColor="@color/white"
