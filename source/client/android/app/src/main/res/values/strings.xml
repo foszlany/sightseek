@@ -21,4 +21,10 @@
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_noaccount">I don\'t have an account yet.</string>
+    <string name="register_register">Register</string>
+    <string name="register_username">Username (3-18 characters)</string>
+    <string name="register_password1">Password (8-32 characters)</string>
+    <string name="register_password2">Password again</string>
+    <string name="register_alreadyhaveaccount">I already have an account</string>
+    <string name="login_imgdesc">This image serves as a simple background for the login page.</string>
 </resources>
