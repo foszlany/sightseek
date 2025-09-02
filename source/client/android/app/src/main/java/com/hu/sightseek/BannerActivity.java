@@ -29,7 +29,7 @@ public class BannerActivity extends AppCompatActivity {
 
         // Login button
         Button loginButton = findViewById(R.id.banner_loginbtn);
-        registerButton.setOnClickListener(view -> {
+        loginButton.setOnClickListener(view -> {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         });
