@@ -133,7 +133,7 @@ public class RecordActivity extends AppCompatActivity {
         statOverlay.setVisibility(INVISIBLE);
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_main);
+        Toolbar toolbar = findViewById(R.id.menubar_record);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);

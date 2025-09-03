@@ -8,7 +8,7 @@
     tools:context=".activity.RecordActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/menubar_main"
+        android:id="@+id/menubar_record"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"
@@ -24,7 +24,7 @@
         app:layout_constraintBottom_toTopOf="@id/menubar_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/menubar_main"/>
+        app:layout_constraintTop_toBottomOf="@id/menubar_record"/>
 
     <LinearLayout
         android:id="@+id/main_statoverlay"
@@ -36,7 +36,7 @@
         android:padding="4dp"
         android:radius="30dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_main">
+        app:layout_constraintTop_toBottomOf="@+id/menubar_record">
 
         <TextView
             android:id="@+id/main_speed"
