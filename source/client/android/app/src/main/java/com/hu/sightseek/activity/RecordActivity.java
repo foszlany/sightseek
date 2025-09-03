@@ -126,14 +126,14 @@ public class RecordActivity extends AppCompatActivity {
         currentSpeed = 0;
         isLocked = true;
 
-        chronometer = findViewById(R.id.bottommenu_chronometer);
+        chronometer = findViewById(R.id.record_chronometer);
         chronometer.setVisibility(INVISIBLE);
 
-        LinearLayout statOverlay = findViewById(R.id.main_statoverlay);
+        LinearLayout statOverlay = findViewById(R.id.record_statoverlay);
         statOverlay.setVisibility(INVISIBLE);
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_record);
+        Toolbar toolbar = findViewById(R.id.record_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -147,7 +147,7 @@ public class RecordActivity extends AppCompatActivity {
         });
 
         // Lock listener
-        ImageButton lockButton = findViewById(R.id.main_lock);
+        ImageButton lockButton = findViewById(R.id.record_lock);
         lockButton.setOnClickListener(item -> {
             ValueAnimator animator = ValueAnimator.ofArgb(
                     ContextCompat.getColor(this, R.color.lock_overlay),
@@ -178,7 +178,7 @@ public class RecordActivity extends AppCompatActivity {
         });
 
         // Bottombar listener
-        BottomNavigationView bottomNav = findViewById(R.id.menubar_bottom);
+        BottomNavigationView bottomNav = findViewById(R.id.record_bottommenu);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -195,10 +195,10 @@ public class RecordActivity extends AppCompatActivity {
                     if(recordedPoints.isEmpty()) {
                         statOverlay.setVisibility(VISIBLE);
 
-                        TextView distanceView = findViewById(R.id.main_distance);
+                        TextView distanceView = findViewById(R.id.record_distance);
                         distanceView.setText(getString(R.string.main_distance, 0.0));
 
-                        TextView speedView = findViewById(R.id.main_speed);
+                        TextView speedView = findViewById(R.id.record_speed);
                         speedView.setText(getString(R.string.main_speed, 0.0));
                     }
 
@@ -309,7 +309,6 @@ public class RecordActivity extends AppCompatActivity {
             return false;
         });
 
-
         // Initialize MapView
         Configuration.getInstance().setUserAgentValue(BuildConfig.LIBRARY_PACKAGE_NAME);
         Configuration.getInstance().setOsmdroidBasePath(getCacheDir());
@@ -317,7 +316,7 @@ public class RecordActivity extends AppCompatActivity {
         Configuration.getInstance().setCacheMapTileCount((short) 2000);
         Configuration.getInstance().setCacheMapTileOvershoot((short) 800);
 
-        mapView = findViewById(R.id.map);
+        mapView = findViewById(R.id.record_map);
         mapView.setBackgroundColor(Color.TRANSPARENT);
         mapView.setMultiTouchControls(true);
         mapView.setUseDataConnection(true);
@@ -458,13 +457,13 @@ public class RecordActivity extends AppCompatActivity {
                             // Speed
                             currentSpeed = (newDistanceLength / (UPDATE_INTERVAL_MIN / 1000.0)) * 3.6;
 
-                            TextView speedView = findViewById(R.id.main_speed);
+                            TextView speedView = findViewById(R.id.record_speed);
                             speedView.setText(getString(R.string.main_speed, currentSpeed));
 
                             // Distance
                             totalDist += newDistanceLength;
 
-                            TextView distanceView = findViewById(R.id.main_distance);
+                            TextView distanceView = findViewById(R.id.record_distance);
                             distanceView.setText(getString(R.string.main_distance, totalDist / 1000.0));
                         }
                     }

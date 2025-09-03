@@ -6,19 +6,17 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_main);
+        Toolbar toolbar = findViewById(R.id.main_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -40,6 +38,26 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.baseline_home_24);
         toolbar.setNavigationOnClickListener(v -> {
             // scroll to top
+        });
+
+        // Bottombar listener
+        BottomNavigationView bottomNav = findViewById(R.id.main_bottommenu);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            // Ideas
+            if(id == R.id.bottommenu_main_ideas) {
+                // TODO
+            }
+            else if (id == R.id.bottommenu_main_record) {
+                Intent intent = new Intent(this, RecordActivity.class);
+                startActivity(intent);
+            }
+            else if (id == R.id.bottommenu_main_leaderboard) {
+                // TODO
+            }
+
+            return true;
         });
     }
 

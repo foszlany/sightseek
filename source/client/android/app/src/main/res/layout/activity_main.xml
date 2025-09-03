@@ -8,7 +8,7 @@
     tools:context=".activity.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/menubar_main"
+        android:id="@+id/main_topmenu"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"
@@ -16,5 +16,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/main_bottommenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        app:itemActiveIndicatorStyle="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_main_bottom"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

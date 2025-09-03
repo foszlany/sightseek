@@ -40,4 +40,6 @@
     <string name="topmenu_home">Home</string>
     <string name="topmenu_statistics">Statistics</string>
     <string name="topmenu_profile">Profile</string>
+    <string name="main_ideas">Ideas</string>
+    <string name="main_leaderboard">Leaderboards</string>
 </resources>

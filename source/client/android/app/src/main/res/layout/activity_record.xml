@@ -8,7 +8,7 @@
     tools:context=".activity.RecordActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/menubar_record"
+        android:id="@+id/record_topmenu"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"
@@ -18,16 +18,16 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <org.osmdroid.views.MapView
-        android:id="@+id/map"
+        android:id="@+id/record_map"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/menubar_bottom"
+        app:layout_constraintBottom_toTopOf="@id/record_bottommenu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/menubar_record"/>
+        app:layout_constraintTop_toBottomOf="@id/record_topmenu"/>
 
     <LinearLayout
-        android:id="@+id/main_statoverlay"
+        android:id="@+id/record_statoverlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/stat_overlay_bg"
@@ -36,39 +36,39 @@
         android:padding="4dp"
         android:radius="30dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_record">
+        app:layout_constraintTop_toBottomOf="@+id/record_topmenu">
 
         <TextView
-            android:id="@+id/main_speed"
+            android:id="@+id/record_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_speed"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/main_distance"
+            android:id="@+id/record_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_distance"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/main_lock"
+        android:id="@+id/record_lock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/circle_button_bg"
         android:elevation="3dp"
         android:padding="16dp"
         android:layout_margin="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintBottom_toBottomOf="@+id/record_map"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/baseline_lock_outline_24" />
+        app:srcCompat="@drawable/baseline_lock_outline_24"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/menubar_bottom"
+        android:id="@+id/record_bottommenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -77,11 +77,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/map"
-        app:menu="@menu/menu_record_bottom" />
+        app:layout_constraintTop_toBottomOf="@+id/record_map"
+        app:menu="@menu/menu_record_bottom"/>
 
     <Chronometer
-        android:id="@+id/bottommenu_chronometer"
+        android:id="@+id/record_chronometer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
@@ -90,9 +90,9 @@
         android:textColor="@android:color/white"
         android:textSize="32sp"
         android:visible="false"
-        app:layout_constraintBottom_toBottomOf="@+id/menubar_bottom"
+        app:layout_constraintBottom_toBottomOf="@+id/record_bottommenu"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/menubar_bottom"
-        app:layout_constraintTop_toTopOf="@+id/menubar_bottom" />
+        app:layout_constraintStart_toStartOf="@+id/record_bottommenu"
+        app:layout_constraintTop_toTopOf="@+id/record_bottommenu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
