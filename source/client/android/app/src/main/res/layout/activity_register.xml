@@ -15,7 +15,7 @@
         android:alpha="0.4"
         android:contentDescription="@string/banner_imgdesc"
         android:scaleType="centerCrop"
-        android:src="@drawable/login_bg"
+        android:src="@drawable/register_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
