@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:showAsAction="always">
+
+    <item
+        android:id="@+id/topmenu_statistics"
+        android:title="@string/topmenu_statistics"
+        android:icon="@drawable/baseline_auto_graph_24"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/topmenu_profile"
-        android:title="Profile"
+        android:title="@string/topmenu_profile"
         android:icon="@drawable/baseline_person_24"
         app:showAsAction="ifRoom"/>
 </menu>

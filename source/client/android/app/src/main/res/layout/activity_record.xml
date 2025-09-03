@@ -79,7 +79,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map"
-        app:menu="@menu/menu_bottom" />
+        app:menu="@menu/menu_record_bottom" />
 
     <Chronometer
         android:id="@+id/bottommenu_chronometer"

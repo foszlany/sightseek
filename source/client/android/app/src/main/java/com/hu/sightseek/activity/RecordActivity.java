@@ -135,6 +135,16 @@ public class RecordActivity extends AppCompatActivity {
         // Add Menu
         Toolbar toolbar = findViewById(R.id.menubar_main);
         setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        // Home button
+        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
 
         // Lock listener
         ImageButton lockButton = findViewById(R.id.main_lock);
