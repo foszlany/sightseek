@@ -104,7 +104,7 @@ public class RecordActivity extends AppCompatActivity {
         // TODO: MOVE THIS TO MAIN ACTIVITY!!!
         // Show banner when launching for the first time
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        boolean isFirstLaunch = prefs.getBoolean("isFirstLauncha", true); // TODO: Remove 'a' once done testing
+        boolean isFirstLaunch = prefs.getBoolean("isFirstLaunch", true); // TODO: Remove 'a' once done testing
 
         if(isFirstLaunch) {
             startActivity(new Intent(this, BannerActivity.class));
@@ -246,7 +246,6 @@ public class RecordActivity extends AppCompatActivity {
                     elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
 
                     Intent intent = new Intent(this, SaveActivity.class);
-
                     Bundle bundle = new Bundle();
 
                     bundle.putString("polyline", PolyUtil.encode(recordedPoints));
@@ -257,7 +256,9 @@ public class RecordActivity extends AppCompatActivity {
                     bundle.putDouble("type", totalDist);
                     intent.putExtras(bundle);
 
-                    startActivity(intent);
+                    if(recordedPoints.size() >= MINIMUM_REQUIRED_POINTS_PER_ACTIVITY) {
+                        startActivity(intent);
+                    }
 
                     recordedPoints.clear();
 
