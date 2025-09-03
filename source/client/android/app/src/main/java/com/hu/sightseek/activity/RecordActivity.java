@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -73,6 +72,8 @@ public class RecordActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MIN = 4000;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private static final int MINIMUM_REQUIRED_POINTS_PER_ACTIVITY = 4;
+
+    private BottomNavigationView bottomNav;
 
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationClient;
@@ -167,7 +168,7 @@ public class RecordActivity extends AppCompatActivity {
         });
 
         // Bottombar listener
-        BottomNavigationView bottomNav = findViewById(R.id.record_bottommenu);
+        bottomNav = findViewById(R.id.record_bottommenu);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -216,17 +217,7 @@ public class RecordActivity extends AppCompatActivity {
                 }
                 // Pause
                 else {
-                    isRecording = false;
-                    chronometer.stop();
-                    elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
-
-                    bottomNav.getMenu()
-                            .findItem(R.id.bottommenu_record)
-                            .setIcon(R.drawable.baseline_play_circle_24);
-
-                    bottomNav.getMenu()
-                            .findItem(R.id.bottommenu_record)
-                            .setTitle("Record");
+                    pauseRecord();
                 }
 
                 return true;
@@ -349,19 +340,43 @@ public class RecordActivity extends AppCompatActivity {
             startLocationUpdates();
         }
 
-        // Detects whenever location is enabled and creates a marker
+        // Detects whenever location access is changed
         IntentFilter filter = new IntentFilter(LocationManager.MODE_CHANGED_ACTION);
-
         BroadcastReceiver locationModeReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), mapView);
-                locationOverlay.enableMyLocation();
-                mapView.getOverlays().add(locationOverlay);
+                if(LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) {
+                    if(!isLocationEnabled(RecordActivity.this)) { // Something's not right here...
+                        locationOverlay.enableMyLocation();
+                        locationOverlay.enableFollowLocation();
+                    }
+                    else {
+                        if(isRecording) {
+                            pauseRecord();
+                            Toast.makeText(RecordActivity.this, "Location is disabled, recording has been paused.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    mapView.invalidate();
+                }
             }
         };
 
         this.registerReceiver(locationModeReceiver, filter);
+    }
+
+    private void pauseRecord() {
+        isRecording = false;
+        chronometer.stop();
+        elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
+
+        bottomNav.getMenu()
+                .findItem(R.id.bottommenu_record)
+                .setIcon(R.drawable.baseline_play_circle_24);
+
+        bottomNav.getMenu()
+                .findItem(R.id.bottommenu_record)
+                .setTitle("Record");
     }
 
     private void startLocationUpdates() {
@@ -557,9 +572,8 @@ public class RecordActivity extends AppCompatActivity {
 
     // Returns whether location **feature** is enabled
     public boolean isLocationEnabled(Context context) {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     public void centerToCurrentLocation() {
