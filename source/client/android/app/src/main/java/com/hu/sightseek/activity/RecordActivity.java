@@ -1,4 +1,4 @@
-package com.hu.sightseek;
+package com.hu.sightseek.activity;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -48,6 +48,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
+import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
@@ -104,7 +105,7 @@ public class RecordActivity extends AppCompatActivity {
         // TODO: MOVE THIS TO MAIN ACTIVITY!!!
         // Show banner when launching for the first time
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        boolean isFirstLaunch = prefs.getBoolean("isFirstLauncha", true); // TODO: Remove 'a' once done testing
+        boolean isFirstLaunch = prefs.getBoolean("isFirstLaunch", true); // TODO: Remove 'a' once done testing
 
         if(isFirstLaunch) {
             startActivity(new Intent(this, BannerActivity.class));

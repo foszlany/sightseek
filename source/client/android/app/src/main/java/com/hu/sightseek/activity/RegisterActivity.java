@@ -1,4 +1,4 @@
-package com.hu.sightseek;
+package com.hu.sightseek.activity;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
 

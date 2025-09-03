@@ -21,19 +21,19 @@
         android:theme="@style/Theme.Sightseek"
         tools:targetApi="31">
         <activity
-            android:name=".BannerActivity"
+            android:name=".activity.BannerActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".SaveActivity"
+            android:name=".activity.SaveActivity"
             android:exported="false" />
         <activity
-            android:name=".RecordActivity"
+            android:name=".activity.RecordActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

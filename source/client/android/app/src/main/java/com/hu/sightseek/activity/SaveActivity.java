@@ -1,4 +1,4 @@
-package com.hu.sightseek;
+package com.hu.sightseek.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,9 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.hu.sightseek.R;
+import com.hu.sightseek.TravelCategory;
+import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -29,18 +30,15 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SaveActivity extends AppCompatActivity {
+    private String title;
     private TravelCategory categoryIndex;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,37 +167,20 @@ public class SaveActivity extends AppCompatActivity {
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
             EditText titleEditText = findViewById(R.id.save_edittext_title);
-            String title = titleEditText.getText().toString();
-
-            // Create JSON
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put("id", new Random().nextInt(9999999)); // TODO
-                jsonObject.put("title", title.isBlank() ? "Untitled Activity" : title);
-                jsonObject.put("category", categoryIndex.getIndex());
-                jsonObject.put("polyline", polylineString);
-                jsonObject.put("starttime", startTime);
-                jsonObject.put("endtime", endTime);
-                jsonObject.put("elapsedtime", elapsedTime);
-                jsonObject.put("dist", totalDist);
-            }
-            catch(JSONException e) {
-                e.printStackTrace();
+            title = titleEditText.getText().toString();
+            if(title.isBlank()) {
+                title = "Untitled activity";
             }
 
-            System.out.println(jsonObject);
+            executor.execute(() -> {
+                LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist);
 
-            // TEMPORARY!!! EXPORT TO EXTERNAL STORAGE
-            String filename = "newroute" + new Random().nextInt(9999999) + ".json";
-            File exportDir = this.getExternalFilesDir(null);
-            File file = new File(exportDir, filename);
+                dao.printAllActivities();
+            });
 
-            try(Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
-                writer.write(jsonObject.toString());
-            }
-            catch(IOException e) {
-                e.printStackTrace();
-            }
+            Intent intent = new Intent(this, RecordActivity.class); // TODO: CHANGE TO MAINACTIVITY
+            startActivity(intent);
         });
 
         // Discard button

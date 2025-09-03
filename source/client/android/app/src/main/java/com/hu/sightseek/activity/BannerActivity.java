@@ -1,4 +1,4 @@
-package com.hu.sightseek;
+package com.hu.sightseek.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
 
