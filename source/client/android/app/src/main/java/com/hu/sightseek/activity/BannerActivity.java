@@ -39,7 +39,7 @@ public class BannerActivity extends AppCompatActivity {
         // Offline button
         Button offlineButton = findViewById(R.id.banner_backbtn);
         offlineButton.setOnClickListener(view -> {
-            Intent intent = new Intent(this, RecordActivity.class); // TODO: Change this later to MainActivity
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
     }

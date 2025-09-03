@@ -184,7 +184,7 @@ public class SaveActivity extends AppCompatActivity {
                 LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
                 dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist);
 
-                dao.printAllActivities();
+                // dao.printAllActivities();
             });
 
             Intent intent = new Intent(this, MainActivity.class);

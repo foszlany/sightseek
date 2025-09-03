@@ -366,10 +366,9 @@ public class RecordActivity extends AppCompatActivity {
 
     private void startLocationUpdates() {
         // Set update intervals
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(UPDATE_INTERVAL_MAX);
-        locationRequest.setFastestInterval(UPDATE_INTERVAL_MIN);
-        locationRequest.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL_MAX)
+                .setMinUpdateIntervalMillis(UPDATE_INTERVAL_MIN)
+                .build();
 
         // Check for permissions
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
