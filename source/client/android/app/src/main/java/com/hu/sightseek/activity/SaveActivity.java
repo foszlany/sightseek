@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
 public class SaveActivity extends AppCompatActivity {
     private String title;
     private TravelCategory categoryIndex;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,13 @@ public class SaveActivity extends AppCompatActivity {
 
         // Retrieve data
         Bundle extras = getIntent().getExtras();
+
+        if(extras == null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
 
         String polylineString = extras.getString("polyline");
         String startTime = extras.getString("starttime");
@@ -106,6 +113,7 @@ public class SaveActivity extends AppCompatActivity {
         tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
         // Setup polyline
+        assert polylineString != null : "Polyline string is null, unable to save activity!";
         List<LatLng> pointList = PolyUtil.decode(polylineString);
         Polyline polyline = new Polyline();
         for(LatLng point : pointList) {
@@ -179,7 +187,7 @@ public class SaveActivity extends AppCompatActivity {
                 dao.printAllActivities();
             });
 
-            Intent intent = new Intent(this, RecordActivity.class); // TODO: CHANGE TO MAINACTIVITY
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
 
@@ -193,9 +201,7 @@ public class SaveActivity extends AppCompatActivity {
                         Intent intent = new Intent(this, RecordActivity.class);
                         startActivity(intent);
                     })
-                    .setNegativeButton("No", (d, which) -> {
-                        d.dismiss();
-                    })
+                    .setNegativeButton("No", (d, which) -> d.dismiss())
                     .setCancelable(true)
                     .create();
 
