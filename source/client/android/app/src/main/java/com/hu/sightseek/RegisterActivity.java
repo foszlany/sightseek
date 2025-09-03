@@ -1,5 +1,6 @@
 package com.hu.sightseek;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Patterns;
@@ -28,8 +29,9 @@ public class RegisterActivity extends AppCompatActivity {
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
-        Button loginButton = findViewById(R.id.register_registerbtn);
-        loginButton.setOnClickListener(view -> {
+        // Register button
+        Button registerButton = findViewById(R.id.register_registerbtn);
+        registerButton.setOnClickListener(view -> {
 
             EditText emailEditText = findViewById(R.id.register_edittext_email);
             String email = emailEditText.getText().toString();
@@ -83,6 +85,13 @@ public class RegisterActivity extends AppCompatActivity {
 
             // Intent intent = new Intent(this, MainActivity.class);
             // startActivity(intent);
+        });
+
+        // Login button
+        Button loginButton = findViewById(R.id.register_loginbtn);
+        loginButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         });
     }
 }
