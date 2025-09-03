@@ -102,17 +102,6 @@ public class RecordActivity extends AppCompatActivity {
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
-        // TODO: MOVE THIS TO MAIN ACTIVITY!!!
-        // Show banner when launching for the first time
-        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        boolean isFirstLaunch = prefs.getBoolean("isFirstLaunch", true); // TODO: Remove 'a' once done testing
-
-        if(isFirstLaunch) {
-            startActivity(new Intent(this, BannerActivity.class));
-            prefs.edit().putBoolean("isFirstLaunch", false).apply();
-            finish();
-        }
-
         // Default values
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
         dateFormat.setTimeZone(TimeZone.getDefault());

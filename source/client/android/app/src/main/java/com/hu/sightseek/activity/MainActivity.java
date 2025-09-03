@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -26,6 +27,16 @@ public class MainActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
+
+        // Show banner when launching for the first time
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        boolean isFirstLaunch = prefs.getBoolean("isFirstLaunch", true);
+
+        if(isFirstLaunch) {
+            startActivity(new Intent(this, BannerActivity.class));
+            prefs.edit().putBoolean("isFirstLaunch", false).apply();
+            finish();
+        }
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.main_topmenu);
