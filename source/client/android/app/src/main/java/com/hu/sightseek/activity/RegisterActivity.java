@@ -20,7 +20,6 @@ import com.hu.sightseek.R;
 import org.osmdroid.config.Configuration;
 
 public class RegisterActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

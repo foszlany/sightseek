@@ -269,6 +269,8 @@ public class RecordActivity extends AppCompatActivity {
 
                     if(recordedPoints.size() >= MINIMUM_REQUIRED_POINTS_PER_ACTIVITY) {
                         startActivity(intent);
+                        finish();
+                        return true;
                     }
 
                     recordedPoints.clear();
@@ -547,10 +549,17 @@ public class RecordActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        // Profile
         if(id == R.id.topmenu_profile) {
             // TODO
-            // Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            // Intent intent = new Intent(this, ProfileActivity.class);
+            // startActivity(intent);
+            return true;
+        }
+
+        // Statistics
+        if(id == R.id.topmenu_statistics) {
+            // TODO
+            // Intent intent = new Intent(this, StatisticsActivity.class);
             // startActivity(intent);
             return true;
         }
