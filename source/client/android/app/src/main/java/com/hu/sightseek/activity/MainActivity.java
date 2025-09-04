@@ -87,8 +87,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Profile
         if(id == R.id.topmenu_profile) {
-            // TODO
-            // Intent intent = new Intent(this, ProfileActivity.class);
+            // TODO: Check whether user is logged in
+            Intent intent = new Intent(this, BannerActivity.class);
+            startActivity(intent);
             return true;
         }
 

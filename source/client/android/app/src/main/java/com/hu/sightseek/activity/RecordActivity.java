@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -80,6 +81,7 @@ public class RecordActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat;
     private LocationCallback locationCallback;
     private MyLocationNewOverlay locationOverlay;
+    private BroadcastReceiver locationModeReceiver;
 
     private ArrayList<LatLng> recordedPoints;
     private boolean isRecording;
@@ -324,10 +326,9 @@ public class RecordActivity extends AppCompatActivity {
 
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
-        locationOverlay.enableMyLocation();
-        locationOverlay.setDirectionIcon(null);
         locationOverlay.setDrawAccuracyEnabled(false);
 
+        locationOverlay.enableMyLocation();
         mapView.getOverlays().add(locationOverlay);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -342,27 +343,25 @@ public class RecordActivity extends AppCompatActivity {
 
         // Detects whenever location access is changed
         IntentFilter filter = new IntentFilter(LocationManager.MODE_CHANGED_ACTION);
-        BroadcastReceiver locationModeReceiver = new BroadcastReceiver() {
+        locationModeReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) {
-                    if(!isLocationEnabled(RecordActivity.this)) { // Something's not right here...
+                    if(!isLocationEnabled(RecordActivity.this)) {
                         locationOverlay.enableMyLocation();
-                        locationOverlay.enableFollowLocation();
                     }
                     else {
+                        locationOverlay.disableMyLocation();
                         if(isRecording) {
                             pauseRecord();
-                            Toast.makeText(RecordActivity.this, "Location is disabled, recording has been paused.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(RecordActivity.this, "Location disabled, recording paused", Toast.LENGTH_LONG).show();
                         }
                     }
-
                     mapView.invalidate();
                 }
             }
         };
-
-        this.registerReceiver(locationModeReceiver, filter);
+        registerReceiver(locationModeReceiver, filter);
     }
 
     private void pauseRecord() {
@@ -472,6 +471,9 @@ public class RecordActivity extends AppCompatActivity {
                         }
                     }
                 }
+                else {
+                    System.out.println("NULL LOCATION"); // TODO: Bad connection?
+                }
             }
         };
 
@@ -508,6 +510,14 @@ public class RecordActivity extends AppCompatActivity {
         locationOverlay.enableMyLocation();
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(locationModeReceiver != null) {
+            unregisterReceiver(locationModeReceiver);
         }
     }
 
