@@ -5,28 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="10dp"
+    android:paddingVertical="5dp"
     android:background="@color/card_bg"
-    android:layout_marginTop="2dp"
-    android:paddingBottom="15dp">
+    android:layout_marginTop="2dp">
 
     <GridLayout
         android:id="@+id/card_leftpanel"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:layout_marginStart="16dp"
         android:columnCount="2"
+        android:padding="8dp"
         android:rowCount="5"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="8dp"
-        android:layout_margin="8dp">
+        app:layout_constraintVertical_bias="1.0">
 
         <!-- please test further -->
         <TextView
             android:id="@+id/card_activity_title"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
             android:layout_columnSpan="2"
             android:layout_marginBottom="2dp"
             android:ellipsize="none"
@@ -34,64 +35,65 @@
             android:scrollHorizontally="false"
             android:singleLine="false"
             android:text="@string/example_sampletext"
+            android:textColor="@color/white"
             android:textSize="28sp" />
 
         <TextView
             android:id="@+id/card_activity_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="12sp"
             android:layout_columnSpan="2"
-            android:text="@string/example_example" />
+            android:text="@string/example_example"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/card_activity_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="12sp"
             android:layout_columnSpan="2"
             android:layout_marginBottom="20dp"
-            android:text="@string/example_example"/>
+            android:text="@string/example_example"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/card_activity_timevalue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="20sp"
             android:layout_gravity="center"
             android:layout_marginEnd="20dp"
-            android:text="@string/example_value"/>
+            android:text="@string/example_value"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/card_activity_distancevalue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="20sp"
             android:layout_gravity="center"
-            android:text="@string/example_value"/>
+            android:text="@string/example_value"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/card_activity_timetext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
             android:layout_gravity="center"
             android:layout_marginEnd="20dp"
             android:text="@string/main_time"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/card_activity_distancetext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textAlignment="center"
             android:layout_gravity="center"
-            android:text="@string/save_distance"/>
+            android:text="@string/save_distance"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
     </GridLayout>
 
     <ImageView
@@ -99,9 +101,10 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        app:layout_constraintStart_toEndOf="@id/card_leftpanel"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/card_leftpanel"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintVertical_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

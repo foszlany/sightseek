@@ -41,8 +41,8 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
     public ActivityAdapter(Context context, ArrayList<Activity> activityList) {
         this.context = context;
-        this.activityListFull = activityList;
-        this.activityListFiltered = activityList;
+        this.activityListFull = new ArrayList<>(activityList);
+        this.activityListFiltered = new ArrayList<>(activityList);
         this.imageCache = new HashMap<>();
     }
 
@@ -222,7 +222,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             activityListFiltered = (ArrayList<Activity>) results.values;
-            notifyDataSetChanged(); // TODO: Fix this
+            notifyDataSetChanged();
         }
     };
 
