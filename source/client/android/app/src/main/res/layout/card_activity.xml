@@ -7,7 +7,7 @@
 
     <GridLayout
         android:id="@+id/leftPanel"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:columnCount="2"
         android:rowCount="5"
@@ -83,11 +83,10 @@
 
     <!-- Right Panel -->
     <org.osmdroid.views.MapView
-        android:id="@+id/save_map"
+        android:id="@+id/card_map"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="160dp"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
         app:layout_constraintStart_toEndOf="@id/leftPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
