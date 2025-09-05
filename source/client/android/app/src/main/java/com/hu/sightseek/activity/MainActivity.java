@@ -11,13 +11,26 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hu.sightseek.Activity;
 import com.hu.sightseek.R;
+import com.hu.sightseek.adapter.ActivityAdapter;
+import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+    private LocalActivityDatabaseDAO dao;
+    private RecyclerView recyclerView;
+    private ActivityAdapter adapter;
+    private List<Activity> activities;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +50,18 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putBoolean("isFirstLaunch", false).apply();
             finish();
         }
+
+        // Setup adapter
+        dao = new LocalActivityDatabaseDAO(this);
+
+        recyclerView = findViewById(R.id.main_activities);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        activities = new ArrayList<>();
+        activities = dao.getAllActivities();
+
+        adapter = new ActivityAdapter(this, activities);
+        recyclerView.setAdapter(adapter);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.main_topmenu);

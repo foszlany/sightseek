@@ -5,6 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.hu.sightseek.Activity;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class LocalActivityDatabaseDAO {
     private final LocalActivityDatabaseImpl dbHelper;
 
@@ -29,9 +34,11 @@ public class LocalActivityDatabaseDAO {
         return id;
     }
 
-    public Cursor getAllActivities() {
+    public List<Activity> getAllActivities() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        return db.query(
+        List<Activity> activities = new ArrayList<>();
+
+        Cursor cursor = db.query(
                 LocalActivityDatabaseImpl.ACTIVITIES_TABLE,
                 null,
                 null,
@@ -40,31 +47,43 @@ public class LocalActivityDatabaseDAO {
                 null,
                 LocalActivityDatabaseImpl.ACTIVITIES_ENDTIME + " DESC"
         );
+
+        if(cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow("category"));
+                String polyline = cursor.getString(cursor.getColumnIndexOrThrow("polyline"));
+                String starttime = cursor.getString(cursor.getColumnIndexOrThrow("starttime"));
+                String endtime = cursor.getString(cursor.getColumnIndexOrThrow("endtime"));
+                double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow("elapsedtime"));
+                double distance = cursor.getDouble(cursor.getColumnIndexOrThrow("distance"));
+
+                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance));
+            } while(cursor.moveToNext());
+
+            cursor.close();
+        }
+
+        cursor.close();
+
+        return activities;
     }
 
     public void printAllActivities() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        Cursor cursor = getAllActivities();
+        List<Activity> activities = getAllActivities();
 
-        if(cursor.moveToFirst()) {
-            do {
-                StringBuilder row = new StringBuilder();
-                for(int i = 0; i < cursor.getColumnCount(); i++) {
-                    row.append(cursor.getColumnName(i))
-                            .append("=")
-                            .append(cursor.getString(i))
-                            .append("  ");
-                }
-                System.out.println(row);
+        if(!activities.isEmpty()) {
+            for(Activity a : activities) {
+                System.out.println(a.toString());
             }
-            while(cursor.moveToNext());
         }
         else {
             System.out.println("No rows found.");
         }
 
-        cursor.close();
         db.close();
     }
 
