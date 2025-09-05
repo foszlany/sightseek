@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/main_bottommenu"
@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_main_bottom" />
+        app:menu="@menu/menu_main_bottom"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -47,19 +47,18 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/transparent"
             app:srcCompat="@drawable/baseline_filter_alt_24"
-            app:tint="@color/black" />
+            app:tint="@color/black"/>
 
         <SearchView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layoutDirection="rtl" />
-
+            android:layoutDirection="rtl"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_activities"
-        android:layout_width="385dp"
-        android:layout_height="518dp"
+        android:layout_width="match_parent"
+        android:layout_height="543dp"
         android:layout_marginHorizontal="10dp"
         app:layout_constraintBottom_toTopOf="@+id/main_bottommenu"
         app:layout_constraintEnd_toEndOf="parent"

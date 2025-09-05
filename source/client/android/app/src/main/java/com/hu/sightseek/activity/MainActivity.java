@@ -74,9 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Home button
         toolbar.setNavigationIcon(R.drawable.baseline_home_24);
-        toolbar.setNavigationOnClickListener(v -> {
-            // TODO: scroll to top
-        });
+        toolbar.setNavigationOnClickListener(v -> recyclerView.scrollToPosition(0));
 
         // Bottombar listener
         BottomNavigationView bottomNav = findViewById(R.id.main_bottommenu);
