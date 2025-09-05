@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Searchbar
         SearchView searchView = findViewById(R.id.main_searchbar);
-
         searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

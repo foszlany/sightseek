@@ -55,7 +55,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
     @Override
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
-        Activity activity = activityListFull.get(position);
+        Activity activity = activityListFiltered.get(position);
 
         // Values
         holder.name.setText(activity.getName());
@@ -221,7 +221,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            activityListFiltered = (ArrayList) results.values;
+            activityListFiltered = (ArrayList<Activity>) results.values;
             notifyDataSetChanged(); // TODO: Fix this
         }
     };
