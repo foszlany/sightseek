@@ -159,7 +159,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         mapView.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));
         mapView.layout(0, 0, w, h);
 
-        // Bounding box
+        // Bounding box TODO: REFACTOR
         double minLat = Double.MAX_VALUE;
         double maxLat = -Double.MAX_VALUE;
         double minLon = Double.MAX_VALUE;
