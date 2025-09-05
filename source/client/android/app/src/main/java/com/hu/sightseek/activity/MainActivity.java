@@ -2,11 +2,15 @@ package com.hu.sightseek.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,8 +78,10 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> recyclerView.scrollToPosition(0));
 
         // Searchbar
-        SearchView search_view = findViewById(R.id.main_searchbar);
-        search_view.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        SearchView searchView = findViewById(R.id.main_searchbar);
+
+        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 adapter.getFilter().filter(s);

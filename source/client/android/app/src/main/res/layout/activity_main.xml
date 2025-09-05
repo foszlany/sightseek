@@ -46,13 +46,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/transparent"
+            android:contentDescription="@string/main_filterdesc"
             app:srcCompat="@drawable/baseline_filter_alt_24"
             app:tint="@color/black"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/hint"/>
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/main_searchbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:closeIcon="@drawable/baseline_close_24"
+            app:searchHintIcon="@null"
+            app:searchIcon="@drawable/baseline_search_24"
+            android:clickable="true"
+            android:focusable="true"
+            app:queryHint="@string/main_searchhint"
             android:layoutDirection="rtl"/>
     </LinearLayout>
 
