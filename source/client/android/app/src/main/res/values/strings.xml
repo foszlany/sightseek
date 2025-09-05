@@ -50,4 +50,12 @@
     <string name="example_value">432567</string>
     <string name="main_filterdesc">Filter button</string>
     <string name="main_searchhint">Search for title...</string>
+    <string name="menu_filter_recent">New</string>
+    <string name="menu_filter_old">Old</string>
+    <string name="menu_filter_az">A-Z</string>
+    <string name="menu_filter_za">Z-A</string>
+    <string name="menu_filter_smalldist">Distance (Low to High)</string>
+    <string name="menu_filter_bigdist">Distance (High to Low)</string>
+    <string name="menu_filter_short">Elapsed time (Short to Long)</string>
+    <string name="menu_filter_long">Elapsed time (Long to Short)</string>
 </resources>

@@ -2,15 +2,14 @@ package com.hu.sightseek.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +27,7 @@ import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -94,6 +94,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Filter button
+        ImageButton filterButton = findViewById(R.id.main_filterbtn);
+        filterButton.setOnClickListener(v -> {
+            PopupMenu popup = initFilterPopup(v);
+            popup.show();
+        });
+
         // Bottombar listener
         BottomNavigationView bottomNav = findViewById(R.id.main_bottommenu);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -144,5 +151,48 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Filter popup
+    @NonNull
+    private PopupMenu initFilterPopup(View menuItemView) {
+        PopupMenu popup = new PopupMenu(this, menuItemView);
+
+        popup.inflate(R.menu.menu_main_filter);
+        popup.setOnMenuItemClickListener(menuItem -> {
+            int menuId = menuItem.getItemId();
+
+            if(menuId == R.id.menu_filter_date_recent) {
+                Collections.sort(activities, (a1, a2) -> a2.getStarttime().compareTo(a1.getStarttime()));
+            }
+            else if(menuId == R.id.menu_filter_date_old) {
+                Collections.sort(activities, (a1, a2) -> a1.getStarttime().compareTo(a2.getStarttime()));
+            }
+            else if(menuId == R.id.menu_filter_alpha_az) {
+                Collections.sort(activities, (a1, a2) -> a1.getName().compareToIgnoreCase(a2.getName()));
+            }
+            else if(menuId == R.id.menu_filter_alpha_za) {
+                Collections.sort(activities, (a1, a2) -> a2.getName().compareToIgnoreCase(a1.getName()));
+            }
+            else if(menuId == R.id.menu_filter_dist_lth) {
+                Collections.sort(activities, (a1, a2) -> Double.compare(a1.getDistance(), a2.getDistance()));
+            }
+            else if(menuId == R.id.menu_filter_dist_htl) {
+                Collections.sort(activities, (a1, a2) -> Double.compare(a2.getDistance(), a1.getDistance()));
+            }
+            else if(menuId == R.id.menu_filter_time_lth) {
+                Collections.sort(activities, (a1, a2) -> Double.compare(a1.getElapsedtime(), a2.getElapsedtime()));
+            }
+            else if(menuId == R.id.menu_filter_time_htl) {
+                Collections.sort(activities, (a1, a2) -> Double.compare(a2.getElapsedtime(), a1.getElapsedtime()));
+            }
+
+            adapter.setActivityListFiltered(activities);
+            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+
+            return true;
+        });
+
+        return popup;
     }
 }

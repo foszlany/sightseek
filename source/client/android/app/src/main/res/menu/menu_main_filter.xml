@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_filter_date_recent"
+        android:title="@string/menu_filter_recent"/>
+    <item
+        android:id="@+id/menu_filter_date_old"
+        android:title="@string/menu_filter_old"/>
+    <item
+        android:id="@+id/menu_filter_alpha_az"
+        android:title="@string/menu_filter_az" />
+    <item
+        android:id="@+id/menu_filter_alpha_za"
+        android:title="@string/menu_filter_za" />
+    <item
+        android:id="@+id/menu_filter_dist_lth"
+        android:title="@string/menu_filter_smalldist"/>
+    <item
+        android:id="@+id/menu_filter_dist_htl"
+        android:title="@string/menu_filter_bigdist"/>
+    <item
+        android:id="@+id/menu_filter_time_lth"
+        android:title="@string/menu_filter_short"/>
+    <item
+        android:id="@+id/menu_filter_time_htl"
+        android:title="@string/menu_filter_long"/>
+</menu>
