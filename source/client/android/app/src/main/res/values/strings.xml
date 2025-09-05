@@ -42,4 +42,10 @@
     <string name="topmenu_profile">Profile</string>
     <string name="main_ideas">Ideas</string>
     <string name="main_leaderboard">Leaderboards</string>
+    <string name="travelmethod_other">Other</string>
+    <string name="travelmethod_micro">Micromobility</string>
+    <string name="travelmethod_loco">Locomotor</string>
+    <string name="example_sampletext">SAMPLE TEXT</string>
+    <string name="example_example">EXAMPLE</string>
+    <string name="example_value">432567</string>
 </resources>

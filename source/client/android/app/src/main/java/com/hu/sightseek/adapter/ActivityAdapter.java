@@ -1,7 +1,6 @@
 package com.hu.sightseek.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder> {
-
     private List<Activity> activityList;
     private Context context;
 
@@ -37,27 +35,41 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
         Activity activity = activityList.get(position);
 
-        System.out.println(activity);
-
         holder.nameText.setText(activity.getName());
-        holder.categoryText.setText(activity.getCategory().toString());
-        holder.startTimeText.setText(activity.getStarttime());
+
+        switch(activity.getCategory()) {
+            case LOCOMOTOR:
+                holder.categoryText.setText(R.string.travelmethod_loco);
+                break;
+
+            case MICROMOBILITY:
+                holder.categoryText.setText(R.string.travelmethod_micro);
+                break;
+
+            case OTHER:
+                holder.categoryText.setText(R.string.travelmethod_other);
+                break;
+        }
+
+        String startTime = activity.getStarttime().replace("T", ". ").replace("-", ".");
+        holder.startTimeText.setText(startTime);
+
         holder.distanceText.setText(String.format(Locale.US, "%.2f km", activity.getDistance() / 1000.0));
 
-        double elapsedSeconds = activity.getElapsedtime();
-        long hours = (long) (elapsedSeconds / 3600);
-        long minutes = (long) ((elapsedSeconds % 3600) / 60);
-        long seconds = (long) (elapsedSeconds % 60);
+        double elapsedTime = activity.getElapsedtime();
+        int hours = (int) elapsedTime / 3600;
+        int minutes = ((int) elapsedTime % 3600) / 60;
+        int seconds = (int) elapsedTime % 60;
 
-        String elapsedTime;
+        String elapsedTimeStr;
         if(hours > 0) {
-            elapsedTime = String.format(Locale.US, "%dh %dm", hours, minutes);
+            elapsedTimeStr = String.format(Locale.US, "%dh %dm", hours, minutes);
         }
         else {
-            elapsedTime = String.format(Locale.US, "%dm %ds", minutes, seconds);
+            elapsedTimeStr = String.format(Locale.US, "%dm %ds", minutes, seconds);
         }
 
-        holder.elapsedTimeText.setText(elapsedTime);
+        holder.elapsedTimeText.setText(elapsedTimeStr);
     }
 
     @Override

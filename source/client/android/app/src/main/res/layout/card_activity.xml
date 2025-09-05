@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:columnCount="2"
-        android:rowCount="4"
+        android:rowCount="5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,39 +21,52 @@
             android:id="@+id/card_activity_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="28sp"
             android:layout_columnSpan="2"
-            android:text="Sample title"/>
-
+            android:text="@string/example_sampletext"/>
 
         <TextView
             android:id="@+id/card_activity_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"/>
+            android:textSize="12sp"
+            android:layout_columnSpan="2"
+            android:text="@string/example_example" />
 
         <TextView
             android:id="@+id/card_activity_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"/>
+            android:textSize="12sp"
+            android:layout_columnSpan="2"
+            android:layout_marginBottom="20dp"
+            android:text="@string/example_example"/>
 
 
         <TextView
             android:id="@+id/card_activity_timevalue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"/>
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+            android:text="@string/example_value"/>
 
         <TextView
             android:id="@+id/card_activity_distancevalue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"/>
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:text="@string/example_value"/>
 
         <TextView
             android:id="@+id/card_activity_timetext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+
             android:text="@string/main_time"
             android:textAlignment="center" />
 
@@ -62,6 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
+            android:layout_gravity="center"
             android:text="@string/save_distance"/>
 
 
