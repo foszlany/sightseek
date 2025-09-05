@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
             // Client-side verifications
             // Email verifications
             if(email.isBlank()) {
-                errorTextView.setText(R.string.register_error_username_empty);
+                errorTextView.setText(R.string.register_error_email_empty);
                 errorTextView.setVisibility(VISIBLE);
                 emailEditText.startAnimation(shakeAnim);
                 return;
