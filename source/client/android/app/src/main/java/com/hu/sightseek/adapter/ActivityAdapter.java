@@ -115,44 +115,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         return activityListFiltered.size();
     }
 
-    private final Filter activityFilter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            ArrayList<Activity> filtered_list = new ArrayList<>();
-            FilterResults res = new FilterResults();
-
-            if(constraint == null || constraint.length() == 0) {
-                res.count = activityListFull.size();
-                res.values = activityListFull;
-            }
-            else {
-                String filter_pattern = constraint.toString().toLowerCase().trim();
-
-                for(Activity i : activityListFull) {
-                    if(i.getName().toLowerCase().contains(filter_pattern)) {
-                        filtered_list.add(i);
-                    }
-                }
-
-                res.count = filtered_list.size();
-                res.values = filtered_list;
-            }
-
-            return res;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            activityListFiltered = (ArrayList) results.values;
-            notifyDataSetChanged();
-        }
-    };
-
-    @Override
-    public Filter getFilter() {
-        return activityFilter;
-    }
-
     public static class ActivityViewHolder extends RecyclerView.ViewHolder {
         TextView name, category, startTime, distance, elapsedTime;
         ImageView map;
@@ -227,5 +189,45 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         mapView.onPause();
 
         return bmp;
+    }
+
+
+    // Filters
+    private final Filter activityFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            ArrayList<Activity> filtered_list = new ArrayList<>();
+            FilterResults res = new FilterResults();
+
+            if(constraint == null || constraint.length() == 0) {
+                res.count = activityListFull.size();
+                res.values = activityListFull;
+            }
+            else {
+                String filter_pattern = constraint.toString().toLowerCase().trim();
+
+                for(Activity i : activityListFull) {
+                    if(i.getName().toLowerCase().contains(filter_pattern)) {
+                        filtered_list.add(i);
+                    }
+                }
+
+                res.count = filtered_list.size();
+                res.values = filtered_list;
+            }
+
+            return res;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            activityListFiltered = (ArrayList) results.values;
+            notifyDataSetChanged(); // TODO: Fix this
+        }
+    };
+
+    @Override
+    public Filter getFilter() {
+        return activityFilter;
     }
 }
