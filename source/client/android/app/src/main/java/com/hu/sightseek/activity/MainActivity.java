@@ -1,9 +1,7 @@
 package com.hu.sightseek.activity;
 
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -12,6 +10,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,13 +24,11 @@ import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private LocalActivityDatabaseDAO dao;
     private RecyclerView recyclerView;
     private ActivityAdapter adapter;
-    private List<Activity> activities;
+    private ArrayList<Activity> activities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Setup adapter
-        dao = new LocalActivityDatabaseDAO(this);
+        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
 
         recyclerView = findViewById(R.id.main_activities);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -75,6 +72,22 @@ public class MainActivity extends AppCompatActivity {
         // Home button
         toolbar.setNavigationIcon(R.drawable.baseline_home_24);
         toolbar.setNavigationOnClickListener(v -> recyclerView.scrollToPosition(0));
+
+        // Searchbar
+        SearchView search_view = findViewById(R.id.main_searchbar);
+        search_view.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                adapter.getFilter().filter(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                adapter.getFilter().filter(s);
+                return false;
+            }
+        });
 
         // Bottombar listener
         BottomNavigationView bottomNav = findViewById(R.id.main_bottommenu);

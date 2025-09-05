@@ -34,9 +34,9 @@ public class LocalActivityDatabaseDAO {
         return id;
     }
 
-    public List<Activity> getAllActivities() {
+    public ArrayList<Activity> getAllActivities() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        List<Activity> activities = new ArrayList<>();
+        ArrayList<Activity> activities = new ArrayList<>();
 
         Cursor cursor = db.query(
                 LocalActivityDatabaseImpl.ACTIVITIES_TABLE,
