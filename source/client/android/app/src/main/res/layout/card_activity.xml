@@ -83,7 +83,7 @@
     </GridLayout>
 
     <!-- Right Panel -->
-    <org.osmdroid.views.MapView
+    <ImageView
         android:id="@+id/card_map"
         android:layout_width="150dp"
         android:layout_height="150dp"

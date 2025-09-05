@@ -1,11 +1,13 @@
 package com.hu.sightseek.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,23 +18,28 @@ import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.Activity;
 import com.hu.sightseek.R;
 
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder> {
-    private List<Activity> activityList;
-    private Context context;
+    private final List<Activity> activityList;
+    private final Context context;
+    private final Map<Integer, Bitmap> imageCache;
+
 
     public ActivityAdapter(Context context, List<Activity> activityList) {
         this.context = context;
         this.activityList = activityList;
+        this.imageCache = new HashMap<>();
     }
 
     @NonNull
@@ -83,33 +90,74 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
         holder.elapsedTime.setText(elapsedTimeStr);
 
-        // Setup map
-        holder.map.setBackgroundColor(Color.TRANSPARENT);
-        holder.map.setMultiTouchControls(false);
-        holder.map.setUseDataConnection(true);
+        // Setup map previews
+        Bitmap cache = imageCache.get(activity.getId());
+        if(cache == null) {
+            List<LatLng> points = PolyUtil.decode(activity.getPolyline());
+            try {
+                cache = renderMapImage(points, holder.itemView.getContext());
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
-        TilesOverlay tilesOverlay = holder.map.getOverlayManager().getTilesOverlay();
-        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
-
-        // Setup polyline
-        List<LatLng> pointList = PolyUtil.decode(activity.getPolyline());
-        Polyline polyline = new Polyline();
-        for(LatLng point : pointList) {
-            polyline.addPoint(new GeoPoint(point.latitude, point.longitude));
+            imageCache.put(activity.getId(), cache);
         }
+        holder.map.setImageBitmap(cache);
+    }
 
-        polyline.getOutlinePaint().setColor(Color.BLUE);
-        polyline.getOutlinePaint().setStrokeWidth(7.0f);
-        holder.map.getOverlayManager().add(polyline);
+    @Override
+    public int getItemCount() {
+        return activityList.size();
+    }
 
-        // Calculate bounding box
+    public static class ActivityViewHolder extends RecyclerView.ViewHolder {
+        TextView name, category, startTime, distance, elapsedTime;
+        ImageView map;
+
+        public ActivityViewHolder(@NonNull View itemView) {
+            super(itemView);
+            name = itemView.findViewById(R.id.card_activity_title);
+            category = itemView.findViewById(R.id.card_activity_category);
+            startTime = itemView.findViewById(R.id.card_activity_date);
+            distance = itemView.findViewById(R.id.card_activity_distancevalue);
+            elapsedTime = itemView.findViewById(R.id.card_activity_timevalue);
+            map = itemView.findViewById(R.id.card_map);
+        }
+    }
+
+    private Bitmap renderMapImage(List<LatLng> points, Context context) throws InterruptedException {
+        // Basic map settings
+        MapView mapView = new MapView(context);
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setUseDataConnection(true);
+        mapView.setLayoutParams(new ViewGroup.LayoutParams(800, 800));
+
+        // Tiles
+        TilesOverlay tilesOverlay = new TilesOverlay(mapView.getTileProvider(), context);
+        mapView.getOverlayManager().add(0, tilesOverlay);
+
+        // Polyline
+        Polyline line = new Polyline();
+        for(LatLng p : points) {
+            line.addPoint(new GeoPoint(p.latitude, p.longitude));
+        }
+        line.getOutlinePaint().setColor(Color.BLUE);
+        line.getOutlinePaint().setStrokeWidth(7f);
+        mapView.getOverlayManager().add(line);
+
+        // Position layout
+        int w = 800, h = 800;
+        mapView.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));
+        mapView.layout(0, 0, w, h);
+
+        // Bounding box
         double minLat = Double.MAX_VALUE;
         double maxLat = -Double.MAX_VALUE;
         double minLon = Double.MAX_VALUE;
         double maxLon = -Double.MAX_VALUE;
 
-        for(LatLng p : pointList) {
+        for(LatLng p : points) {
             if(p.latitude < minLat) {
                 minLat = p.latitude;
             }
@@ -124,38 +172,18 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             }
         }
 
+        // Zoom
         BoundingBox box = new BoundingBox(maxLat, maxLon, minLat, minLon);
+        mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
 
-        // Set zoom based on bounding box
-        holder.map.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                holder.map.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                holder.map.zoomToBoundingBox(box.increaseByScale(1.4f), false);
-            }
-        });
+        // Render
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+        mapView.draw(canvas);
 
-        holder.map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        holder.map.setVerticalMapRepetitionEnabled(false);
-    }
+        // Clean up
+        mapView.onPause();
 
-    @Override
-    public int getItemCount() {
-        return activityList.size();
-    }
-
-    public static class ActivityViewHolder extends RecyclerView.ViewHolder {
-        TextView name, category, startTime, distance, elapsedTime;
-        MapView map;
-
-        public ActivityViewHolder(@NonNull View itemView) {
-            super(itemView);
-            name = itemView.findViewById(R.id.card_activity_title);
-            category = itemView.findViewById(R.id.card_activity_category);
-            startTime = itemView.findViewById(R.id.card_activity_date);
-            distance = itemView.findViewById(R.id.card_activity_distancevalue);
-            elapsedTime = itemView.findViewById(R.id.card_activity_timevalue);
-            map = itemView.findViewById(R.id.card_map);
-        }
+        return bmp;
     }
 }

@@ -1,7 +1,9 @@
 package com.hu.sightseek.activity;
 
+import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
