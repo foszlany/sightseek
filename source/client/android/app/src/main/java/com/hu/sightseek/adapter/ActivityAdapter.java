@@ -43,7 +43,21 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         holder.categoryText.setText(activity.getCategory().toString());
         holder.startTimeText.setText(activity.getStarttime());
         holder.distanceText.setText(String.format(Locale.US, "%.2f km", activity.getDistance() / 1000.0));
-        holder.elapsedTimeText.setText(String.format(Locale.US,"%.1f min", activity.getElapsedtime()));
+
+        double elapsedSeconds = activity.getElapsedtime();
+        long hours = (long) (elapsedSeconds / 3600);
+        long minutes = (long) ((elapsedSeconds % 3600) / 60);
+        long seconds = (long) (elapsedSeconds % 60);
+
+        String elapsedTime;
+        if(hours > 0) {
+            elapsedTime = String.format(Locale.US, "%dh %dm", hours, minutes);
+        }
+        else {
+            elapsedTime = String.format(Locale.US, "%dm %ds", minutes, seconds);
+        }
+
+        holder.elapsedTimeText.setText(elapsedTime);
     }
 
     @Override

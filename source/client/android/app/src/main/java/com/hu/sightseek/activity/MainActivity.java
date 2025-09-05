@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         // Home button
         toolbar.setNavigationIcon(R.drawable.baseline_home_24);
         toolbar.setNavigationOnClickListener(v -> {
-            // scroll to top
+            // TODO: scroll to top
         });
 
         // Bottombar listener
