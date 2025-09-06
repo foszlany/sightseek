@@ -1,12 +1,11 @@
 package com.hu.sightseek.adapter;
 
-import static com.hu.sightseek.SightseekUtils.getBoundingBox;
-import static com.hu.sightseek.SightseekUtils.setupRouteLine;
+import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
-import com.hu.sightseek.Activity;
+import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;

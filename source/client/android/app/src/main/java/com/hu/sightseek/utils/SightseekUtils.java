@@ -1,4 +1,4 @@
-package com.hu.sightseek;
+package com.hu.sightseek.utils;
 
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;

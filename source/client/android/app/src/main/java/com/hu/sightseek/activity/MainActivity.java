@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hu.sightseek.Activity;
+import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ActivityAdapter;
 import com.hu.sightseek.db.LocalActivityDatabaseDAO;

@@ -1,5 +1,7 @@
 package com.hu.sightseek;
 
+import com.hu.sightseek.model.Activity;
+
 // Temporarily here
 public class OnlineActivity extends Activity {
     private boolean isPublic;

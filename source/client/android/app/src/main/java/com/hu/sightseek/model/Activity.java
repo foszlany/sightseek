@@ -1,8 +1,9 @@
-package com.hu.sightseek;
+package com.hu.sightseek.model;
 
 import androidx.annotation.NonNull;
 
-// Temporarily here
+import com.hu.sightseek.TravelCategory;
+
 public class Activity {
     private int id;
     private String name;

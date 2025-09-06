@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.hu.sightseek.Activity;
+import com.hu.sightseek.model.Activity;
 
 import java.util.ArrayList;
 import java.util.List;

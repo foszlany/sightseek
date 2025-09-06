@@ -3,7 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-import static com.hu.sightseek.SightseekUtils.setupRouteLine;
+import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
 
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
