@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:background="@color/white"
+    android:background="@color/black"
     android:layout_height="match_parent"
     tools:context=".activity.SaveActivity">
 
@@ -16,20 +16,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <ImageView
+        android:id="@+id/login_banner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:alpha="0.27"
+        android:contentDescription="@string/login_imgdesc"
+        android:scaleType="centerCrop"
+        android:src="@drawable/save_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menubar_save"
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/transparent"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_save">
+        app:layout_constraintTop_toBottomOf="@+id/menubar_save"
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/save_maintext"
@@ -38,7 +54,7 @@
             android:layout_margin="20dp"
             android:text="@string/save_title"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="36sp" />
 
         <EditText
@@ -52,8 +68,8 @@
             android:inputType="text"
             android:maxLength="32"
             android:padding="11dp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/hint" />
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_light" />
 
         <Spinner
             android:id="@+id/save_category"
@@ -88,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="14dp"
                 android:gravity="center"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="26sp" />
 
             <TextView
@@ -96,7 +112,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="26sp" />
 
             <TextView
@@ -105,14 +121,14 @@
                 android:layout_marginEnd="14dp"
                 android:gravity="center"
                 android:text="@string/main_time"
-                android:textColor="@color/dark_gray" />
+                android:textColor="@color/white" />
 
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/save_distance"
-                android:textColor="@color/dark_gray" />
+                android:textColor="@color/white" />
         </GridLayout>
 
         <Button

@@ -110,7 +110,7 @@ public class SaveActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
               @Override
               public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                  ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+                  ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
                   categoryIndex = TravelCategory.values()[position];
               }
 
