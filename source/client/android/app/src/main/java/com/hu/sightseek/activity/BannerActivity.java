@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
@@ -21,6 +22,12 @@ public class BannerActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
+
+        // Auth
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null) {
+            finish();
+        }
 
         // Register button
         Button registerButton = findViewById(R.id.banner_registerbtn);

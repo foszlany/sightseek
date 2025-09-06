@@ -12,14 +12,17 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
 
 public class LoginActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,12 @@ public class LoginActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
+
+        // Auth
+        mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null) {
+            finish();
+        }
 
         // Login button
         Button loginButton = findViewById(R.id.login_loginbtn);
@@ -42,18 +51,17 @@ public class LoginActivity extends AppCompatActivity {
 
             TextView errorTextView = findViewById(R.id.login_error);
             Animation shakeAnim = AnimationUtils.loadAnimation(this, R.anim.invalid_input_shake);
+            errorTextView.setVisibility(VISIBLE);
 
             // Client-side verifications
             // Email verifications
             if(email.isBlank()) {
                 errorTextView.setText(R.string.register_error_email_empty);
-                errorTextView.setVisibility(VISIBLE);
                 emailEditText.startAnimation(shakeAnim);
                 return;
             }
             else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 errorTextView.setText(R.string.register_error_email_invalidformat);
-                errorTextView.setVisibility(VISIBLE);
                 emailEditText.startAnimation(shakeAnim);
                 return;
             }
@@ -61,21 +69,27 @@ public class LoginActivity extends AppCompatActivity {
             // Password verifications
             if(password.isBlank()) {
                 errorTextView.setText(R.string.register_error_password_1empty);
-                errorTextView.setVisibility(VISIBLE);
                 passwordEditText.startAnimation(shakeAnim);
                 return;
             }
             if(password.length() < 8) {
                 errorTextView.setText(R.string.register_error_password_1short);
-                errorTextView.setVisibility(VISIBLE);
                 passwordEditText.startAnimation(shakeAnim);
                 return;
             }
 
-            errorTextView.setVisibility(INVISIBLE);
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
+                if(task.isSuccessful()) {
+                    errorTextView.setVisibility(INVISIBLE);
+                    Toast.makeText(LoginActivity.this, "Successful login!", Toast.LENGTH_LONG).show();
 
-            // Intent intent = new Intent(this, MainActivity.class);
-            // startActivity(intent);
+                    Intent intent = new Intent(this, MainActivity.class); // TODO: Change to ProfileActivity?
+                    startActivity(intent);
+                }
+                else {
+                    errorTextView.setText(R.string.register_error_unknown);
+                }
+            });
         });
 
         // Register button

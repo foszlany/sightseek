@@ -35,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
+        // Auth
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null) {
             finish();
@@ -57,6 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             TextView errorTextView = findViewById(R.id.register_error);
             Animation shakeAnim = AnimationUtils.loadAnimation(this, R.anim.invalid_input_shake);
+            errorTextView.setVisibility(VISIBLE);
 
             // Client-side verifications
             // Username verification
@@ -117,7 +119,7 @@ public class RegisterActivity extends AppCompatActivity {
                     errorTextView.setVisibility(INVISIBLE);
                     Toast.makeText(RegisterActivity.this, "Successful registration!", Toast.LENGTH_LONG).show();
 
-                    Intent intent = new Intent(this, MainActivity.class); // TODO: Change to ProfileActivity?
+                    Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                 }
                 else {
