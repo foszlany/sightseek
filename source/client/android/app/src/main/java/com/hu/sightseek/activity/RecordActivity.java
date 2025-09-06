@@ -3,6 +3,8 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import static com.hu.sightseek.SightseekUtils.setupRouteLine;
+
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,8 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.CornerPathEffect;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
@@ -321,15 +321,8 @@ public class RecordActivity extends AppCompatActivity {
         ));
 
         // Initialize route overlay
-        route.getOutlinePaint().setColor(Color.BLUE);
-        route.getOutlinePaint().setStrokeWidth(9.0f);
+        setupRouteLine(route);
         mapView.getOverlayManager().add(route);
-
-        // Smoothen
-        Paint paint = route.getOutlinePaint();
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setPathEffect(new CornerPathEffect(30f));
 
         // Marker for current location
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);

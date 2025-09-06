@@ -1,6 +1,7 @@
 package com.hu.sightseek.adapter;
 
 import static com.hu.sightseek.SightseekUtils.getBoundingBox;
+import static com.hu.sightseek.SightseekUtils.setupRouteLine;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -152,15 +153,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         for(LatLng p : points) {
             line.addPoint(new GeoPoint(p.latitude, p.longitude));
         }
-        line.getOutlinePaint().setColor(Color.BLUE);
-        line.getOutlinePaint().setStrokeWidth(7f);
+        setupRouteLine(line);
         mapView.getOverlayManager().add(line);
 
         // Position layout
         int w = 800, h = 800;
         mapView.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));
         mapView.layout(0, 0, w, h);
-        
+
         // Zoom
         BoundingBox box = getBoundingBox(points);
         mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);

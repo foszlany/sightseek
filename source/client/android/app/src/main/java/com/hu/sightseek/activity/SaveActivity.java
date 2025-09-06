@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.SightseekUtils.getBoundingBox;
+import static com.hu.sightseek.SightseekUtils.setupRouteLine;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -88,7 +89,7 @@ public class SaveActivity extends AppCompatActivity {
         categoryIndex = TravelCategory.LOCOMOTOR;
 
         // Spinner
-        Spinner spinner = findViewById(R.id.save_category); // TODO ADD ICONS
+        Spinner spinner = findViewById(R.id.save_category);
         String[] categories = {
             TravelCategory.LOCOMOTOR.toString(),
             TravelCategory.MICROMOBILITY.toString(),
@@ -162,8 +163,7 @@ public class SaveActivity extends AppCompatActivity {
             polyline.addPoint(new GeoPoint(point.latitude, point.longitude));
         }
 
-        polyline.getOutlinePaint().setColor(Color.BLUE);
-        polyline.getOutlinePaint().setStrokeWidth(7.0f);
+        setupRouteLine(polyline);
         mapView.getOverlayManager().add(polyline);
 
         // Calculate bounding box

@@ -1,10 +1,15 @@
 package com.hu.sightseek;
 
+import android.graphics.Color;
+import android.graphics.CornerPathEffect;
+import android.graphics.Paint;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.BoundingBox;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.List;
 
@@ -34,5 +39,16 @@ public final class SightseekUtils {
         }
 
         return new BoundingBox(maxLat, maxLon, minLat, minLon);
+    }
+
+    public static void setupRouteLine(Polyline route) {
+        route.getOutlinePaint().setColor(Color.BLUE);
+        route.getOutlinePaint().setStrokeWidth(9.0f);
+
+        // Smoothen
+        Paint paint = route.getOutlinePaint();
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setPathEffect(new CornerPathEffect(30f));
     }
 }
