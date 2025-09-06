@@ -8,11 +8,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -91,8 +93,31 @@ public class SaveActivity extends AppCompatActivity {
             TravelCategory.OTHER.toString()
         };
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Custom icons
+        int[] icons = {
+                R.drawable.baseline_directions_run_24,
+                R.drawable.baseline_pedal_bike_24,
+                R.drawable.baseline_directions_car_24
+        };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinneritem_category, R.id.text, categories) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                ImageView icon = view.findViewById(R.id.icon);
+                icon.setImageResource(icons[position]);
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                ImageView icon = view.findViewById(R.id.icon);
+                icon.setImageResource(icons[position]);
+                return view;
+            }
+        };
         spinner.setAdapter(adapter);
 
         // Set default value based on average speed
@@ -108,14 +133,13 @@ public class SaveActivity extends AppCompatActivity {
         }
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-              @Override
-              public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                  ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
-                  categoryIndex = TravelCategory.values()[position];
-              }
-
-              @Override
-              public void onNothingSelected(AdapterView<?> parent) {}
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TextView text = view.findViewById(R.id.text);
+                text.setTextColor(Color.WHITE);
+                categoryIndex = TravelCategory.values()[position];
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         // Initialize mapview

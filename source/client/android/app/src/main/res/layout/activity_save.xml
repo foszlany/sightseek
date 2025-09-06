@@ -77,12 +77,11 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="40dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/edittext_outline"
-            android:padding="11dp" />
+            android:background="@drawable/edittext_outline" />
 
         <org.osmdroid.views.MapView
             android:id="@+id/save_map"
-            android:layout_width="330dp"
+            android:layout_width="320dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
