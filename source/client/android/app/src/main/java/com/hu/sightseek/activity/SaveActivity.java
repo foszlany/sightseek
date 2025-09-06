@@ -1,5 +1,7 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.SightseekUtils.getBoundingBox;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -165,27 +167,7 @@ public class SaveActivity extends AppCompatActivity {
         mapView.getOverlayManager().add(polyline);
 
         // Calculate bounding box
-        double minLat = Double.MAX_VALUE;
-        double maxLat = -Double.MAX_VALUE;
-        double minLon = Double.MAX_VALUE;
-        double maxLon = -Double.MAX_VALUE;
-
-        for(LatLng p : pointList) {
-            if(p.latitude < minLat) {
-                minLat = p.latitude;
-            }
-            if(p.latitude > maxLat) {
-                maxLat = p.latitude;
-            }
-            if(p.longitude < minLon) {
-                minLon = p.longitude;
-            }
-            if(p.longitude > maxLon) {
-                maxLon = p.longitude;
-            }
-        }
-
-        BoundingBox box = new BoundingBox(maxLat, maxLon, minLat, minLon);
+        BoundingBox box = getBoundingBox(pointList);
 
         // Set zoom based on bounding box
         mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

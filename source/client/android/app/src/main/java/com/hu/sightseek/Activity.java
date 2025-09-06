@@ -1,5 +1,7 @@
 package com.hu.sightseek;
 
+import androidx.annotation.NonNull;
+
 // Temporarily here
 public class Activity {
     private int id;
@@ -97,6 +99,7 @@ public class Activity {
         this.distance = distance;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Activity{" +

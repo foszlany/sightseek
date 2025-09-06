@@ -1,5 +1,7 @@
 package com.hu.sightseek.adapter;
 
+import static com.hu.sightseek.SightseekUtils.getBoundingBox;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -158,30 +160,9 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         int w = 800, h = 800;
         mapView.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));
         mapView.layout(0, 0, w, h);
-
-        // Bounding box TODO: REFACTOR
-        double minLat = Double.MAX_VALUE;
-        double maxLat = -Double.MAX_VALUE;
-        double minLon = Double.MAX_VALUE;
-        double maxLon = -Double.MAX_VALUE;
-
-        for(LatLng p : points) {
-            if(p.latitude < minLat) {
-                minLat = p.latitude;
-            }
-            if(p.latitude > maxLat) {
-                maxLat = p.latitude;
-            }
-            if(p.longitude < minLon) {
-                minLon = p.longitude;
-            }
-            if(p.longitude > maxLon) {
-                maxLon = p.longitude;
-            }
-        }
-
+        
         // Zoom
-        BoundingBox box = new BoundingBox(maxLat, maxLon, minLat, minLon);
+        BoundingBox box = getBoundingBox(points);
         mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
 
         // Render
