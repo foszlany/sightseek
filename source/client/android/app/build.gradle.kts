@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.hu.sightseek"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.play.services.location)
 
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

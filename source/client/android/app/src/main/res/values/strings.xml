@@ -58,4 +58,5 @@
     <string name="menu_filter_bigdist">Distance (High to Low)</string>
     <string name="menu_filter_short">Elapsed time (Short to Long)</string>
     <string name="menu_filter_long">Elapsed time (Long to Short)</string>
+    <string name="register_error_unknown">An unknown error has occured. Please try again later.</string>
 </resources>
