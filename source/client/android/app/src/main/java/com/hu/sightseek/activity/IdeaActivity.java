@@ -93,7 +93,7 @@ public class IdeaActivity extends AppCompatActivity {
         }
 
         medianPoint = null;
-        boundingBox = null;
+        boundingBoxPoint = null;
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.idea_topmenu);
@@ -238,7 +238,7 @@ public class IdeaActivity extends AppCompatActivity {
                 }
 
                 BoundingBox boundingBox = SightseekUtils.getBoundingBox(allPoints);
-                referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude())
+                referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude());
             }
         }
 
