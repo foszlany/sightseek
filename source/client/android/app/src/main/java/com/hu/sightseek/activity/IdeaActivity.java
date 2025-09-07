@@ -1,38 +1,38 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
-
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewTreeObserver;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
+import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.model.Activity;
 
 import org.osmdroid.config.Configuration;
-import org.osmdroid.util.BoundingBox;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class IdeaActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    private LocalActivityDatabaseDAO dao;
+    private ArrayList<Activity> activities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class IdeaActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Auth
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, BannerActivity.class);
             startActivity(intent);
@@ -65,6 +65,24 @@ public class IdeaActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+
+        // Check if there's at least one stored activity
+        dao = new LocalActivityDatabaseDAO(this);
+        activities = dao.getAllActivities();
+        if(activities.isEmpty()) {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ViewGroup root = findViewById(android.R.id.content);
+            View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
+
+            root.addView(overlayView);
+            toolbar.post(() -> {
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params.topMargin = toolbar.getHeight();
+                overlayView.setLayoutParams(params);
+            });
+            
+            return;
+        }
 
         // Setup map
         MapView mapView = findViewById(R.id.idea_map);

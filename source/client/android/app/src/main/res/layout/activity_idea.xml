@@ -55,7 +55,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/example_sampletext"
+                android:text="@string/idea_loading"
                 android:textColor="@color/white"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -78,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/example_example"
+            android:text="@string/idea_wait"
             android:textColor="@color/light_gray"
             android:textSize="18sp"/>
 
@@ -157,7 +157,7 @@
         app:layout_constraintTop_toBottomOf="@+id/idea_radiotitle">
 
         <RadioButton
-            android:id="@+id/btn_one"
+            android:id="@+id/idea_radio_locationbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -166,16 +166,17 @@
             android:textSize="17sp" />
 
         <RadioButton
-            android:id="@+id/btn_two"
+            android:id="@+id/idea_radio_medianbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:checked="true"
             android:text="@string/idea_median"
             android:textColor="@color/white"
             android:textSize="17sp" />
 
         <RadioButton
-            android:id="@+id/btn_three"
+            android:id="@+id/idea_radio_boundingboxbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -199,14 +200,13 @@
         app:layout_constraintTop_toBottomOf="@+id/idea_radiogroup" />
 
     <SeekBar
-        android:id="@+id/seekBar2"
+        android:id="@+id/idea_radiusbar"
         android:layout_width="364dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:max="100"
         android:progress="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idea_radiustitle" />
 
