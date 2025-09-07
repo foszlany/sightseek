@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,26 +12,36 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 import com.hu.sightseek.model.Activity;
+import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class IdeaActivity extends AppCompatActivity {
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
+    private LatLng medianPoint;
+    private BoundingBox boundingBox;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +88,7 @@ public class IdeaActivity extends AppCompatActivity {
                 FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 params.topMargin = toolbar.getHeight();
                 overlayView.setLayoutParams(params);
+
             });
 
             return;
@@ -100,6 +110,62 @@ public class IdeaActivity extends AppCompatActivity {
 
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setVerticalMapRepetitionEnabled(false);
+    }
+
+    public void findAttraction() {
+        int radius;
+        LatLng locationPoint;
+
+        SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
+        radius = radiusBar.getProgress();
+
+        // Get values
+        RadioGroup referenceRadioGroup = findViewById(R.id.idea_radiogroup);
+        int checkedId = referenceRadioGroup.getCheckedRadioButtonId();
+
+        // Current location
+        if(checkedId == R.id.idea_radio_locationbtn) {
+
+        }
+
+        // Median point
+        else if(checkedId == R.id.idea_radio_medianbtn && medianPoint == null) {
+            ArrayList<Double> latPoints = new ArrayList<>();
+            ArrayList<Double> lonPoints = new ArrayList<>();
+
+            for(int i = 0; i < activities.size(); i++) {
+                ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
+
+                for(LatLng p : points) {
+                    latPoints.add(p.latitude);
+                    lonPoints.add(p.longitude;
+                }
+            }
+
+            Collections.sort(latPoints);
+            Collections.sort(lonPoints);
+
+            double medianX = latPoints.get(latPoints.size() / 2);
+            double medianY = lonPoints.get(lonPoints.size() / 2);
+
+            medianPoint = new LatLng(medianX, medianY);
+        }
+
+        // Bounding box
+        else if(checkedId == R.id.idea_radio_boundingboxbtn && boundingBox == null) {
+            ArrayList<LatLng> allPoints = new ArrayList<>();
+
+            for(int i = 0; i < activities.size(); i++) {
+                ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
+
+                allPoints.addAll(points);
+            }
+            
+            boundingBox = SightseekUtils.getBoundingBox(allPoints);
+        }
+
+
+
     }
 
     // Create top menubar
