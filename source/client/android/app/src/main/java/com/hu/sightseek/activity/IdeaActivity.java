@@ -3,6 +3,9 @@ package com.hu.sightseek.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -46,6 +50,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import okhttp3.Callback;
@@ -57,6 +63,10 @@ public class IdeaActivity extends AppCompatActivity {
     private JSONArray data;
 
     private MapView mapView;
+    private Marker marker;
+    private String locationString;
+    private String type;
+
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
     private LatLng medianPoint;
@@ -127,7 +137,7 @@ public class IdeaActivity extends AppCompatActivity {
         tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
         tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
-        mapView.getController().setZoom(10.0);
+        mapView.getController().setZoom(8.0);
         mapView.setMinZoomLevel(3.0);
         mapView.setMaxZoomLevel(20.0);
 
@@ -213,11 +223,29 @@ public class IdeaActivity extends AppCompatActivity {
         // Query
         try {
             String query = "[out:json][timeout:5];"
-                    + "node[\"tourism\"][\"name\"][\"tourism\"!=\"hotel\"]"
+                    + "node[\"tourism\"][\"name\"]"
+
+                    /* Exclude accommodations */
+                    + "[\"tourism\"!=\"apartment\"]"
+                    + "[\"tourism\"!=\"guest_house\"]"
+                    + "[\"tourism\"!=\"hotel\"]"
+                    + "[\"tourism\"!=\"hostel\"]"
+                    + "[\"tourism\"!=\"motel\"]"
+                    + "[\"tourism\"!=\"alpine_hut\"]"
+                    + "[\"tourism\"!=\"camp_site\"]"
+                    + "[\"tourism\"!=\"caravan_site\"]"
+                    + "[\"tourism\"!=\"chalet\"]"
+                    + "[\"tourism\"!=\"resort\"]"
+                    + "[\"tourism\"!=\"wilderness_hut\"]"
+                    + "[\"tourism\"!=\"lodging\"]"
+
+                    + "[\"tourism\"!=\"information\"]"
+
                     + "(around:" + (radius * 1000) + ","
                     + referencePoint.latitude + ","
                     + referencePoint.longitude + ");"
                     + "out body;";
+
 
             String url = overpassUrl + "?data=" + URLEncoder.encode(query, "UTF-8");
 
@@ -239,9 +267,9 @@ public class IdeaActivity extends AppCompatActivity {
                     else {
                         try {
                             String json = response.body().string();
+
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
-
                             retrieveAndSetupElementFromJson();
                         }
                         catch(JSONException e) {
@@ -276,17 +304,55 @@ public class IdeaActivity extends AppCompatActivity {
 
             // Grab attributes
             String name = tags != null ? tags.optString("name", "") : "";
+
+            type = tags != null ? tags.optString("tourism", "") : "";
+            type = type.substring(0,1).toUpperCase() + type.substring(1).toLowerCase();
+            type = type.replace("_", " ");
+
             double latitude = randomElement.optDouble("lat", 0);
             double longitude = randomElement.optDouble("lon", 0);
-
             GeoPoint point = new GeoPoint(latitude, longitude);
+
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                if(addresses != null && !addresses.isEmpty()) {
+                    locationString = addresses.get(0).getLocality();
+
+                    if(locationString == null) {
+                        locationString = addresses.get(0).getAdminArea();
+
+                        if(locationString == null) {
+                            locationString = addresses.get(0).getCountryName();
+                        }
+                    }
+                }
+            }
+            catch(IOException e) {
+                Toast.makeText(IdeaActivity.this, "IOException", Toast.LENGTH_LONG).show();
+            }
+
+            String fallbackUrl = "https://www.google.com/search?q=" + locationString + " " + name.replace(" ", "%20");
+            String url = tags != null ? tags.optString("url", fallbackUrl) : fallbackUrl;
 
             // Set views
             runOnUiThread(() -> {
                 TextView nameTextView = findViewById(R.id.idea_name);
                 nameTextView.setText(name);
 
-                Marker marker = new Marker(mapView);
+                TextView typeTextView = findViewById(R.id.idea_type);
+                typeTextView.setText(getString(R.string.idea_typelocation, type, locationString));
+
+                ImageButton linkButton = findViewById(R.id.idea_google);
+                linkButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                });
+
+                if(marker != null) {
+                    mapView.getOverlays().remove(marker);
+                }
+                marker = new Marker(mapView);
                 marker.setPosition(point);
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
@@ -299,7 +365,7 @@ public class IdeaActivity extends AppCompatActivity {
         }
         catch(JSONException e) {
             runOnUiThread(() ->
-                    Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show()
+                Toast.makeText(IdeaActivity.this, "JSONException", Toast.LENGTH_LONG).show()
             );
         }
     }

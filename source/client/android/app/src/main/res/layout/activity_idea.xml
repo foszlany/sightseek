@@ -69,7 +69,7 @@
                 android:contentDescription="@string/idea_googleicondesc"
                 android:elevation="3dp"
                 android:padding="16dp"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"/>
         </LinearLayout>
 
 
