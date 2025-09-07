@@ -59,4 +59,8 @@
     <string name="menu_filter_short">Elapsed time (Short to Long)</string>
     <string name="menu_filter_long">Elapsed time (Long to Short)</string>
     <string name="register_error_unknown">An unknown error has occured. Please try again later.</string>
+    <string name="idea_title">How about...</string>
+    <string name="idea_ignore">Ignore</string>
+    <string name="idea_next">Next</string>
+    <string name="idea_imgdesc">An image showcasing the attraction to visit.</string>
 </resources>

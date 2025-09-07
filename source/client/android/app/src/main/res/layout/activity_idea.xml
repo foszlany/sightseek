@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg"
+    tools:context=".activity.IdeaActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/idea_topmenu"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@color/theme_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <TextView
+        android:id="@+id/idea_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="2"
+        android:layout_marginTop="28dp"
+        android:ellipsize="none"
+        android:maxWidth="160dp"
+        android:scrollHorizontally="false"
+        android:singleLine="false"
+        android:text="@string/idea_title"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.114"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/idea_topmenu" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginVertical="20dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/register_gradient"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.362"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/idea_title">
+
+        <TextView
+            android:id="@+id/idea_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/example_sampletext"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/idea_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/example_example"
+            android:textColor="@color/light_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:weightSum="2">
+
+            <org.osmdroid.views.MapView
+                android:id="@+id/idea_map"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_marginEnd="12dp"
+                app:layout_constraintBottom_toTopOf="@id/record_bottommenu"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/record_topmenu" />
+
+            <ImageView
+                android:id="@+id/idea_img"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                android:background="@drawable/placeholder"
+                android:contentDescription="@string/idea_imgdesc"
+                android:scaleType="centerCrop"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <Button
+                android:id="@+id/ignoreButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:text="@string/idea_ignore" />
+
+            <Button
+                android:id="@+id/nextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/idea_next" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
