@@ -71,7 +71,7 @@ public class IdeaActivity extends AppCompatActivity {
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
     private LatLng medianPoint;
-    private BoundingBox boundingBox;
+    private LatLng boundingBoxPoint;
 
 
     @Override
@@ -225,7 +225,10 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Bounding box
         else if(checkedId == R.id.idea_radio_boundingboxbtn) {
-            if(boundingBox == null) {
+            if(boundingBoxPoint != null) {
+                referencePoint = boundingBoxPoint;
+            }
+            else {
                 ArrayList<LatLng> allPoints = new ArrayList<>();
 
                 for (int i = 0; i < activities.size(); i++) {
@@ -234,9 +237,9 @@ public class IdeaActivity extends AppCompatActivity {
                     allPoints.addAll(points);
                 }
 
-                boundingBox = SightseekUtils.getBoundingBox(allPoints);
+                BoundingBox boundingBox = SightseekUtils.getBoundingBox(allPoints);
+                referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude())
             }
-            referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude()); // TODO: Change?
         }
 
         if(data != null && data.length() != 0) {
@@ -297,7 +300,7 @@ public class IdeaActivity extends AppCompatActivity {
                             retrieveAndSetupElementFromJson();
                         }
                         catch(JSONException e) {
-                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
+                            Toast.makeText(IdeaActivity.this, "Nothing was found or list was exhausted. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
                         }
                     }
                 }
