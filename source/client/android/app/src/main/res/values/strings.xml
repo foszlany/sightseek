@@ -63,4 +63,5 @@
     <string name="idea_ignore">Ignore</string>
     <string name="idea_next">Next</string>
     <string name="idea_imgdesc">An image showcasing the attraction to visit.</string>
+    <string name="idea_googleicondesc">An image of the Google logo.</string>
 </resources>
