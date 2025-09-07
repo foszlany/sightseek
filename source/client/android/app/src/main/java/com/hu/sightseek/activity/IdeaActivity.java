@@ -66,6 +66,7 @@ public class IdeaActivity extends AppCompatActivity {
     private Marker marker;
     private String locationString;
     private String type;
+    private int radius;
 
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
@@ -137,7 +138,7 @@ public class IdeaActivity extends AppCompatActivity {
         tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
         tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
-        mapView.getController().setZoom(8.0);
+        mapView.getController().setZoom(14.0);
         mapView.setMinZoomLevel(3.0);
         mapView.setMaxZoomLevel(20.0);
 
@@ -158,10 +159,26 @@ public class IdeaActivity extends AppCompatActivity {
         nextButton.setOnClickListener(v -> {
             findAttraction();
         });
+
+        // Radius bar
+        SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
+        radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                radius = seekBar.getProgress();
+                data = null;
+            }
+        });
+
     }
 
     public void findAttraction() {
-        int radius;
         LatLng referencePoint = new LatLng(0, 0);
 
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
@@ -177,41 +194,48 @@ public class IdeaActivity extends AppCompatActivity {
         }
 
         // Median point
-        else if(checkedId == R.id.idea_radio_medianbtn && medianPoint == null) {
-            ArrayList<Double> latPoints = new ArrayList<>();
-            ArrayList<Double> lonPoints = new ArrayList<>();
-
-            for(int i = 0; i < activities.size(); i++) {
-                ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
-
-                for(LatLng p : points) {
-                    latPoints.add(p.latitude);
-                    lonPoints.add(p.longitude);
-                }
+        else if(checkedId == R.id.idea_radio_medianbtn) {
+            if(medianPoint != null) {
+                referencePoint = medianPoint;
             }
+            else {
+                ArrayList<Double> latPoints = new ArrayList<>();
+                ArrayList<Double> lonPoints = new ArrayList<>();
 
-            Collections.sort(latPoints);
-            Collections.sort(lonPoints);
+                for(int i = 0; i < activities.size(); i++) {
+                    ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
 
-            double medianX = latPoints.get(latPoints.size() / 2);
-            double medianY = lonPoints.get(lonPoints.size() / 2);
+                    for(LatLng p : points) {
+                        latPoints.add(p.latitude);
+                        lonPoints.add(p.longitude);
+                    }
+                }
 
-            medianPoint = new LatLng(medianX, medianY);
+                Collections.sort(latPoints);
+                Collections.sort(lonPoints);
 
-            referencePoint = medianPoint;
+                double medianX = latPoints.get(latPoints.size() / 2);
+                double medianY = lonPoints.get(lonPoints.size() / 2);
+
+                medianPoint = new LatLng(medianX, medianY);
+
+                referencePoint = medianPoint;
+            }
         }
 
         // Bounding box
-        else if(checkedId == R.id.idea_radio_boundingboxbtn && boundingBox == null) {
-            ArrayList<LatLng> allPoints = new ArrayList<>();
+        else if(checkedId == R.id.idea_radio_boundingboxbtn) {
+            if(boundingBox == null) {
+                ArrayList<LatLng> allPoints = new ArrayList<>();
 
-            for(int i = 0; i < activities.size(); i++) {
-                ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
+                for (int i = 0; i < activities.size(); i++) {
+                    ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
 
-                allPoints.addAll(points);
+                    allPoints.addAll(points);
+                }
+
+                boundingBox = SightseekUtils.getBoundingBox(allPoints);
             }
-            
-            boundingBox = SightseekUtils.getBoundingBox(allPoints);
             referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude()); // TODO: Change?
         }
 
@@ -241,11 +265,10 @@ public class IdeaActivity extends AppCompatActivity {
 
                     + "[\"tourism\"!=\"information\"]"
 
-                    + "(around:" + (radius * 1000) + ","
+                    + "(around:" + (1 + (radius * 1000)) + ","
                     + referencePoint.latitude + ","
                     + referencePoint.longitude + ");"
                     + "out body;";
-
 
             String url = overpassUrl + "?data=" + URLEncoder.encode(query, "UTF-8");
 
@@ -267,13 +290,14 @@ public class IdeaActivity extends AppCompatActivity {
                     else {
                         try {
                             String json = response.body().string();
+                            System.out.println(json);
 
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
                             retrieveAndSetupElementFromJson();
                         }
                         catch(JSONException e) {
-                            Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
                         }
                     }
                 }
