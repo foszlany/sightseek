@@ -106,9 +106,9 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
-            // Ideas
             if(id == R.id.bottommenu_main_ideas) {
-                // TODO
+                Intent intent = new Intent(this, IdeaActivity.class);
+                startActivity(intent);
             }
             else if (id == R.id.bottommenu_main_record) {
                 Intent intent = new Intent(this, RecordActivity.class);
