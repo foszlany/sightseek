@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.telecom.Call;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,13 +15,13 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.common.api.Response;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
@@ -31,10 +30,15 @@ import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.utils.SightseekUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.io.IOException;
@@ -42,6 +46,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -49,7 +54,9 @@ import okhttp3.Request;
 
 public class IdeaActivity extends AppCompatActivity {
     private static final String overpassUrl = "https://overpass-api.de/api/interpreter";
+    private JSONArray data;
 
+    private MapView mapView;
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
     private LatLng medianPoint;
@@ -111,7 +118,7 @@ public class IdeaActivity extends AppCompatActivity {
         }
 
         // Setup map
-        MapView mapView = findViewById(R.id.idea_map);
+        mapView = findViewById(R.id.idea_map);
         mapView.setBackgroundColor(Color.TRANSPARENT);
         mapView.setMultiTouchControls(true);
         mapView.setUseDataConnection(true);
@@ -156,7 +163,7 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Current location
         if(checkedId == R.id.idea_radio_locationbtn) {
-
+            // TODO
         }
 
         // Median point
@@ -198,11 +205,20 @@ public class IdeaActivity extends AppCompatActivity {
             referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude()); // TODO: Change?
         }
 
+        if(data != null && data.length() != 0) {
+            retrieveAndSetupElementFromJson();
+            return;
+        }
+
         // Query
         try {
             String query = "[out:json][timeout:5];"
-                    + "node[\"tourism\"](around:" + radius * 1000 + "," + referencePoint.latitude + "," + referencePoint.longitude + ");"
+                    + "node[\"tourism\"][\"name\"][\"tourism\"!=\"hotel\"]"
+                    + "(around:" + (radius * 1000) + ","
+                    + referencePoint.latitude + ","
+                    + referencePoint.longitude + ");"
                     + "out body;";
+
             String url = overpassUrl + "?data=" + URLEncoder.encode(query, "UTF-8");
 
             OkHttpClient client = new OkHttpClient();
@@ -221,7 +237,16 @@ public class IdeaActivity extends AppCompatActivity {
                         Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
                     }
                     else {
-                        System.out.println(response.body().string());
+                        try {
+                            String json = response.body().string();
+                            JSONObject root = new JSONObject(json);
+                            data = root.getJSONArray("elements");
+
+                            retrieveAndSetupElementFromJson();
+                        }
+                        catch(JSONException e) {
+                            Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
 
@@ -233,6 +258,49 @@ public class IdeaActivity extends AppCompatActivity {
         }
         catch(UnsupportedEncodingException e) {
             Toast.makeText(IdeaActivity.this, "Unsupported encode exception, terminating query.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void retrieveAndSetupElementFromJson() {
+        if(data.length() == 0) {
+            runOnUiThread(() ->
+                    Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show() // TODO CHANGE
+            );
+            return;
+        }
+
+        try {
+            int randomIndex = new Random().nextInt(data.length());
+            JSONObject randomElement = data.getJSONObject(randomIndex);
+            JSONObject tags = randomElement.optJSONObject("tags");
+
+            // Grab attributes
+            String name = tags != null ? tags.optString("name", "") : "";
+            double latitude = randomElement.optDouble("lat", 0);
+            double longitude = randomElement.optDouble("lon", 0);
+
+            GeoPoint point = new GeoPoint(latitude, longitude);
+
+            // Set views
+            runOnUiThread(() -> {
+                TextView nameTextView = findViewById(R.id.idea_name);
+                nameTextView.setText(name);
+
+                Marker marker = new Marker(mapView);
+                marker.setPosition(point);
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+                mapView.getOverlays().add(marker);
+                mapView.getController().setCenter(point);
+                mapView.invalidate();
+            });
+
+            data.remove(randomIndex);
+        }
+        catch(JSONException e) {
+            runOnUiThread(() ->
+                    Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show()
+            );
         }
     }
 
