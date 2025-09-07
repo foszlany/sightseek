@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.telecom.Call;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,11 +16,13 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.common.api.Response;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
@@ -34,10 +37,19 @@ import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
 public class IdeaActivity extends AppCompatActivity {
+    private static final String overpassUrl = "https://overpass-api.de/api/interpreter";
+
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
     private LatLng medianPoint;
@@ -133,7 +145,7 @@ public class IdeaActivity extends AppCompatActivity {
 
     public void findAttraction() {
         int radius;
-        LatLng locationPoint;
+        LatLng referencePoint = new LatLng(0, 0);
 
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
         radius = radiusBar.getProgress();
@@ -169,7 +181,7 @@ public class IdeaActivity extends AppCompatActivity {
 
             medianPoint = new LatLng(medianX, medianY);
 
-            System.out.println(medianPoint);
+            referencePoint = medianPoint;
         }
 
         // Bounding box
@@ -183,10 +195,45 @@ public class IdeaActivity extends AppCompatActivity {
             }
             
             boundingBox = SightseekUtils.getBoundingBox(allPoints);
+            referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude()); // TODO: Change?
         }
 
+        // Query
+        try {
+            String query = "[out:json][timeout:5];"
+                    + "node[\"tourism\"](around:" + radius * 1000 + "," + referencePoint.latitude + "," + referencePoint.longitude + ");"
+                    + "out body;";
+            String url = overpassUrl + "?data=" + URLEncoder.encode(query, "UTF-8");
 
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .header("User-Agent", "com.hu.sightseek (nineforget42@gmail.com")
+                    .build();
 
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
+                    if(!response.isSuccessful()) {
+                        Toast.makeText(IdeaActivity.this, "Could not fetch data.", Toast.LENGTH_LONG).show();
+                    }
+                    else if(response.body() == null) {
+                        Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
+                    }
+                    else {
+                        System.out.println(response.body().string());
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
+                    Toast.makeText(IdeaActivity.this, "Unable to reach server. Please try again later.", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        catch(UnsupportedEncodingException e) {
+            Toast.makeText(IdeaActivity.this, "Unsupported encode exception, terminating query.", Toast.LENGTH_LONG).show();
+        }
     }
 
     // Create top menubar
