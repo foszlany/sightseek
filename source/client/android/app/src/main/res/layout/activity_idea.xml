@@ -86,20 +86,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp"
+            android:padding="2dp"
             android:weightSum="2">
 
             <org.osmdroid.views.MapView
                 android:id="@+id/idea_map"
                 android:layout_width="0dp"
-                android:layout_height="140dp"
+                android:layout_height="160dp"
                 android:layout_marginEnd="6dp"
                 android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/idea_img"
                 android:layout_width="0dp"
-                android:layout_height="140dp"
+                android:layout_height="160dp"
                 android:layout_weight="1"
                 android:background="@drawable/placeholder"
                 android:contentDescription="@string/idea_imgdesc"

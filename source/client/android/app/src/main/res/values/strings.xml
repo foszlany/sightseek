@@ -70,7 +70,7 @@
     <string name="idea_reference">Reference point</string>
     <string name="idea_radius">Radius</string>
     <string name="idea_loading">Loading...</string>
-    <string name="idea_wait">Please wait...</string>
+    <string name="idea_wait">Please wait.</string>
     <string name="ideas_sad">:(</string>
     <string name="ideas_noactivities">No activities found.</string>
     <string name="idea_typelocation">%1$s in %2$s</string>
