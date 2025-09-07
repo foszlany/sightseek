@@ -80,7 +80,7 @@ public class IdeaActivity extends AppCompatActivity {
                 params.topMargin = toolbar.getHeight();
                 overlayView.setLayoutParams(params);
             });
-            
+
             return;
         }
 
