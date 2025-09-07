@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -61,6 +62,9 @@ public class IdeaActivity extends AppCompatActivity {
             finish();
         }
 
+        medianPoint = null;
+        boundingBox = null;
+
         // Add Menu
         Toolbar toolbar = findViewById(R.id.idea_topmenu);
         setSupportActionBar(toolbar);
@@ -110,6 +114,21 @@ public class IdeaActivity extends AppCompatActivity {
 
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setVerticalMapRepetitionEnabled(false);
+
+        findAttraction();
+
+        // Ignore
+        Button ignoreButton = findViewById(R.id.idea_ignorebtn);
+        ignoreButton.setOnClickListener(v -> {
+            // TODO
+            findAttraction();
+        });
+
+        // Next
+        Button nextButton = findViewById(R.id.idea_nextbtn);
+        nextButton.setOnClickListener(v -> {
+            findAttraction();
+        });
     }
 
     public void findAttraction() {
@@ -138,7 +157,7 @@ public class IdeaActivity extends AppCompatActivity {
 
                 for(LatLng p : points) {
                     latPoints.add(p.latitude);
-                    lonPoints.add(p.longitude;
+                    lonPoints.add(p.longitude);
                 }
             }
 
@@ -149,6 +168,8 @@ public class IdeaActivity extends AppCompatActivity {
             double medianY = lonPoints.get(lonPoints.size() / 2);
 
             medianPoint = new LatLng(medianX, medianY);
+
+            System.out.println(medianPoint);
         }
 
         // Bounding box
