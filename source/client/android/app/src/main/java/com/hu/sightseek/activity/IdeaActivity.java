@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -57,6 +59,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -76,12 +79,12 @@ public class IdeaActivity extends AppCompatActivity {
     private String type;
     private int radius;
 
-    private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
 
     private TextView nameTextView;
     private TextView typeTextView;
     private TextView radiusTextView;
+    private ImageView imageView;
 
     private boolean isQuerying;
 
@@ -122,6 +125,7 @@ public class IdeaActivity extends AppCompatActivity {
         nameTextView = findViewById(R.id.idea_name);
         typeTextView = findViewById(R.id.idea_type);
         radiusTextView = findViewById(R.id.idea_radiusvalue);
+        imageView = findViewById(R.id.idea_img);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.idea_topmenu);
@@ -138,7 +142,7 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Check if there's at least one stored activity
-        dao = new LocalActivityDatabaseDAO(this);
+        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
         activities = dao.getAllActivities();
         if(activities.isEmpty()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -335,7 +339,6 @@ public class IdeaActivity extends AppCompatActivity {
         typeTextView.setText(R.string.idea_wait);
 
         // Query
-        System.out.println("query...");
         try {
             String query = "[out:json][timeout:5];"
                     + "node[\"tourism\"][\"name\"]"
@@ -373,22 +376,26 @@ public class IdeaActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
                     if(!response.isSuccessful()) {
-                        Toast.makeText(IdeaActivity.this, "Could not fetch data.", Toast.LENGTH_LONG).show();
+                        runOnUiThread(() ->
+                            Toast.makeText(IdeaActivity.this, "Could not fetch data.", Toast.LENGTH_LONG).show()
+                        );
                     }
                     else if(response.body() == null) {
-                        Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
+                        runOnUiThread(() ->
+                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show() // TODO CHANGE
+                        );
                     }
                     else {
                         try {
                             String json = response.body().string();
-                            System.out.println(json);
-
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
                             retrieveAndSetupElementFromJson();
                         }
                         catch(JSONException e) {
-                            Toast.makeText(IdeaActivity.this, "Nothing was found or list was exhausted. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
+                            runOnUiThread(() ->
+                                Toast.makeText(IdeaActivity.this, "Nothing was found or list was exhausted. Try increasing the radius.", Toast.LENGTH_LONG).show()// TODO CHANGE
+                            );
                         }
                     }
 
@@ -397,19 +404,23 @@ public class IdeaActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
-                    Toast.makeText(IdeaActivity.this, "Unable to reach server. Please try again later.", Toast.LENGTH_LONG).show();
+                    runOnUiThread(() ->
+                        Toast.makeText(IdeaActivity.this, "Unable to reach server. Please try again later.", Toast.LENGTH_LONG).show()
+                    );
                 }
             });
         }
         catch(UnsupportedEncodingException e) {
-            Toast.makeText(IdeaActivity.this, "Unsupported encode exception, terminating query.", Toast.LENGTH_LONG).show();
+            runOnUiThread(() ->
+                Toast.makeText(IdeaActivity.this, "Unsupported encode exception, terminating query.", Toast.LENGTH_LONG).show()
+            );
         }
     }
 
     public void retrieveAndSetupElementFromJson() {
         if(data.length() == 0) {
             runOnUiThread(() ->
-                    Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show() // TODO CHANGE
+                Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show() // TODO CHANGE
             );
             return;
         }
@@ -455,6 +466,9 @@ public class IdeaActivity extends AppCompatActivity {
             String fallbackUrl = "https://www.google.com/search?q=" + locationString + " " + name.replace(" ", "%20");
             String url = tags != null ? tags.optString("url", fallbackUrl) : fallbackUrl;
 
+            // Pray that there's an image
+            getAndSetImage(tags, name, locationString);
+
             // Set views
             runOnUiThread(() -> {
                 nameTextView.setText(name);
@@ -485,6 +499,105 @@ public class IdeaActivity extends AppCompatActivity {
                 Toast.makeText(IdeaActivity.this, "JSONException", Toast.LENGTH_LONG).show()
             );
         }
+    }
+
+    // Attempt to find an image using image key or Wikimedia Commons
+    public void getAndSetImage(JSONObject tags, String name, String locationString) {
+        String imageURL;
+
+        // image key
+        imageURL = tags != null ? tags.optString("image", "") : "";
+        if(!imageURL.isBlank()) {
+            Glide.with(this)
+                    .load(imageURL)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
+                    .into(imageView);
+        }
+
+        // Wikimedia Commons
+        String wikimediaReference = tags != null ? tags.optString("wikimedia_commons", "") : "";
+        String apiUrl;
+        try {
+            if(!wikimediaReference.isBlank() && wikimediaReference.startsWith("File:")) {
+                apiUrl = "https://commons.wikimedia.org/w/api.php?action=query&titles=File:"
+                        + URLEncoder.encode( wikimediaReference.substring(5), "UTF-8")
+                        + "&prop=imageinfo&iiprop=url&format=json";
+            }
+            else {
+                apiUrl = "https://commons.wikimedia.org/w/api.php?action=query"
+                        + "&generator=search"
+                        + "&gsrsearch=" + URLEncoder.encode(locationString + " " + name, "UTF-8")
+                        + "&gsrlimit=5"
+                        + "&gsrnamespace=6"
+                        + "&prop=imageinfo&iiprop=url|mime"
+                        + "&format=json";
+
+            }
+
+            // Query
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(apiUrl)
+                    .header("User-Agent", "com.hu.sightseek (nineforget42@gmail.com")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
+                    if(response.isSuccessful()) {
+                        try {
+                            if(response.body() == null) {
+                                return;
+                            }
+
+                            String json = response.body().string();
+                            JSONObject root = new JSONObject(json);
+                            JSONObject query = root.getJSONObject("query");
+                            JSONObject pages = query.getJSONObject("pages");
+
+                            Iterator<String> keys = pages.keys();
+                            while(keys.hasNext()) {
+                                String key = keys.next();
+                                JSONObject page = pages.getJSONObject(key);
+
+                                JSONArray imageInfo = page.getJSONArray("imageinfo");
+
+                                if(imageInfo.length() > 0) {
+                                    JSONObject info = imageInfo.getJSONObject(0);
+                                    String mime = info.optString("mime", "");
+                                    String imageUrl = info.optString("url", "");
+
+                                    if(mime.startsWith("image/")) {
+                                        runOnUiThread(() -> {
+                                            Glide.with(IdeaActivity.this)
+                                                    .load(imageUrl)
+                                                    .placeholder(R.drawable.placeholder)
+                                                    .error(R.drawable.placeholder)
+                                                    .into(imageView);
+                                        });
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        catch(JSONException ignored) {}
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {}
+            });
+        }
+        catch(UnsupportedEncodingException ignored) {}
+
+        runOnUiThread(() -> {
+            Glide.with(this)
+                    .load(imageURL)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
+                    .into(imageView);
+        });
     }
 
     // Create top menubar

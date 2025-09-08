@@ -43,10 +43,13 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
 
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
 
+    // Other libraries
     implementation(libs.okhttp)
+    implementation(libs.glide)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
