@@ -2,12 +2,15 @@ package com.hu.sightseek.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +28,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
@@ -59,9 +66,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class IdeaActivity extends AppCompatActivity {
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private static final String overpassUrl = "https://overpass-api.de/api/interpreter";
-    private JSONArray data;
 
+    private JSONArray data;
     private MapView mapView;
     private Marker marker;
     private String locationString;
@@ -70,8 +78,12 @@ public class IdeaActivity extends AppCompatActivity {
 
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
+
+    private LatLng referencePoint;
+    private LatLng locationPoint;
     private LatLng medianPoint;
     private LatLng boundingBoxPoint;
+    private int referenceIndex;
 
 
     @Override
@@ -92,6 +104,9 @@ public class IdeaActivity extends AppCompatActivity {
             finish();
         }
 
+        referenceIndex = -1;
+        referencePoint = null;
+        locationPoint = null;
         medianPoint = null;
         boundingBoxPoint = null;
 
@@ -145,19 +160,19 @@ public class IdeaActivity extends AppCompatActivity {
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setVerticalMapRepetitionEnabled(false);
 
-        findAttraction();
+        findReferencePoint();
 
         // Ignore
         Button ignoreButton = findViewById(R.id.idea_ignorebtn);
         ignoreButton.setOnClickListener(v -> {
             // TODO
-            findAttraction();
+            findReferencePoint();
         });
 
         // Next
         Button nextButton = findViewById(R.id.idea_nextbtn);
         nextButton.setOnClickListener(v -> {
-            findAttraction();
+            findReferencePoint();
         });
 
         // Radius bar
@@ -178,8 +193,8 @@ public class IdeaActivity extends AppCompatActivity {
 
     }
 
-    public void findAttraction() {
-        LatLng referencePoint = new LatLng(0, 0);
+    public void findReferencePoint() {
+        referencePoint = new LatLng(0, 0);
 
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
         radius = radiusBar.getProgress();
@@ -190,15 +205,43 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Current location
         if(checkedId == R.id.idea_radio_locationbtn) {
-            // TODO
+            if(locationPoint != null && referenceIndex == R.id.idea_radio_locationbtn) {
+                referencePoint = locationPoint;
+                findAttraction();
+            }
+            else {
+                LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                if(!(lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))) {
+                    Toast.makeText(IdeaActivity.this, "Please enable location to use this.", Toast.LENGTH_LONG).show();
+                }
+                else if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+                }
+                else {
+                    FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                        if(location != null) {
+                            data = null;
+                            referenceIndex = R.id.idea_radio_locationbtn;
+
+                            locationPoint = new LatLng(location.getLatitude(), location.getLongitude());
+
+                            referencePoint = locationPoint;
+                            findAttraction();
+                        }
+                        else {
+                            Toast.makeText(IdeaActivity.this, "Unable to get location. Try again later.", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
         }
 
         // Median point
         else if(checkedId == R.id.idea_radio_medianbtn) {
-            if(medianPoint != null) {
-                referencePoint = medianPoint;
-            }
-            else {
+            if(medianPoint == null || referenceIndex != R.id.idea_radio_medianbtn) {
+                data = null;
+
                 ArrayList<Double> latPoints = new ArrayList<>();
                 ArrayList<Double> lonPoints = new ArrayList<>();
 
@@ -219,16 +262,18 @@ public class IdeaActivity extends AppCompatActivity {
 
                 medianPoint = new LatLng(medianX, medianY);
 
-                referencePoint = medianPoint;
+                referenceIndex = R.id.idea_radio_medianbtn;
             }
+
+            referencePoint = medianPoint;
+            findAttraction();
         }
 
         // Bounding box
         else if(checkedId == R.id.idea_radio_boundingboxbtn) {
-            if(boundingBoxPoint != null) {
-                referencePoint = boundingBoxPoint;
-            }
-            else {
+            if(boundingBoxPoint == null || referenceIndex != R.id.idea_radio_boundingboxbtn) {
+                data = null;
+
                 ArrayList<LatLng> allPoints = new ArrayList<>();
 
                 for (int i = 0; i < activities.size(); i++) {
@@ -238,10 +283,17 @@ public class IdeaActivity extends AppCompatActivity {
                 }
 
                 BoundingBox boundingBox = SightseekUtils.getBoundingBox(allPoints);
-                referencePoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude());
-            }
-        }
+                boundingBoxPoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude());
 
+                referenceIndex = R.id.idea_radio_boundingboxbtn;
+            }
+
+            referencePoint = boundingBoxPoint;
+            findAttraction();
+        }
+    }
+
+    public void findAttraction() {
         if(data != null && data.length() != 0) {
             retrieveAndSetupElementFromJson();
             return;
@@ -249,6 +301,7 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Query
         try {
+            System.out.println("queried!");
             String query = "[out:json][timeout:5];"
                     + "node[\"tourism\"][\"name\"]"
 
@@ -293,8 +346,6 @@ public class IdeaActivity extends AppCompatActivity {
                     else {
                         try {
                             String json = response.body().string();
-                            System.out.println(json);
-
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
                             retrieveAndSetupElementFromJson();
@@ -426,5 +477,28 @@ public class IdeaActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            // Allowed, proceed to finding attractions
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                findReferencePoint();
+            }
+            // Check if user clicked on "Don't ask again"
+            else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+                Toast.makeText(this, "You must allow precise tracking to use this feature!", Toast.LENGTH_LONG).show();
+            }
+            else {
+                Toast.makeText(this, "Precise location permission is required to use current location as a reference point!", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

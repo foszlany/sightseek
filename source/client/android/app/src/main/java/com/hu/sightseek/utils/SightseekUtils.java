@@ -1,8 +1,10 @@
 package com.hu.sightseek.utils;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
+import android.location.LocationManager;
 
 import androidx.annotation.NonNull;
 
