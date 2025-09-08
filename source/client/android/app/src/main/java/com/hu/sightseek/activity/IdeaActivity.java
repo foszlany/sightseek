@@ -511,11 +511,13 @@ public class IdeaActivity extends AppCompatActivity {
         // image key
         imageURL = tags != null ? tags.optString("image", "") : "";
         if(!imageURL.isBlank()) {
-            Glide.with(this)
-                    .load(imageURL)
-                    .placeholder(R.drawable.loading)
-                    .error(R.drawable.loading)
-                    .into(imageView);
+            runOnUiThread(() -> {
+                Glide.with(this)
+                        .load(imageURL)
+                        .placeholder(R.drawable.loading)
+                        .error(R.drawable.loading)
+                        .into(imageView);
+            });
 
             return;
         }
