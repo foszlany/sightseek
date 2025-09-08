@@ -76,13 +76,14 @@ public class IdeaActivity extends AppCompatActivity {
     private String type;
     private int radius;
 
-    private TextView radiusTextView;
-
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
 
     private TextView nameTextView;
     private TextView typeTextView;
+    private TextView radiusTextView;
+
+    private boolean isQuerying;
 
     private LatLng referencePoint;
     private LatLng locationPoint;
@@ -109,14 +110,18 @@ public class IdeaActivity extends AppCompatActivity {
             finish();
         }
 
+        // Variables
         referenceIndex = -1;
         referencePoint = null;
         locationPoint = null;
         medianPoint = null;
         boundingBoxPoint = null;
 
+        isQuerying = false;
+
         nameTextView = findViewById(R.id.idea_name);
         typeTextView = findViewById(R.id.idea_type);
+        radiusTextView = findViewById(R.id.idea_radiusvalue);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.idea_topmenu);
@@ -184,7 +189,6 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Radius bar
-        radiusTextView = findViewById(R.id.idea_radiusvalue);
         radiusTextView.setText(getString(R.string.idea_radiuskm, 13.0));
 
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
@@ -216,6 +220,10 @@ public class IdeaActivity extends AppCompatActivity {
     }
 
     public void findReferencePoint() {
+        if(isQuerying) {
+            return;
+        }
+
         referencePoint = new LatLng(0, 0);
 
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
@@ -321,10 +329,13 @@ public class IdeaActivity extends AppCompatActivity {
             return;
         }
 
+        isQuerying = true;
+
         nameTextView.setText(R.string.idea_loading);
         typeTextView.setText(R.string.idea_wait);
 
         // Query
+        System.out.println("query...");
         try {
             String query = "[out:json][timeout:5];"
                     + "node[\"tourism\"][\"name\"]"
@@ -380,6 +391,8 @@ public class IdeaActivity extends AppCompatActivity {
                             Toast.makeText(IdeaActivity.this, "Nothing was found or list was exhausted. Try increasing the radius.", Toast.LENGTH_LONG).show(); // TODO CHANGE
                         }
                     }
+
+                    isQuerying = false;
                 }
 
                 @Override
