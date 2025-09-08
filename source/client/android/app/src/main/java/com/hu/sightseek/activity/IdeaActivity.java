@@ -154,7 +154,6 @@ public class IdeaActivity extends AppCompatActivity {
                 FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 params.topMargin = toolbar.getHeight();
                 overlayView.setLayoutParams(params);
-
             });
 
             return;
@@ -189,6 +188,10 @@ public class IdeaActivity extends AppCompatActivity {
         // Next
         Button nextButton = findViewById(R.id.idea_nextbtn);
         nextButton.setOnClickListener(v -> {
+            Glide.with(this)
+                    .load(R.drawable.loading)
+                    .into(imageView);
+
             findReferencePoint();
         });
 
@@ -510,9 +513,11 @@ public class IdeaActivity extends AppCompatActivity {
         if(!imageURL.isBlank()) {
             Glide.with(this)
                     .load(imageURL)
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder)
+                    .placeholder(R.drawable.loading)
+                    .error(R.drawable.loading)
                     .into(imageView);
+
+            return;
         }
 
         // Wikimedia Commons
@@ -532,7 +537,6 @@ public class IdeaActivity extends AppCompatActivity {
                         + "&gsrnamespace=6"
                         + "&prop=imageinfo&iiprop=url|mime"
                         + "&format=json";
-
             }
 
             // Query
@@ -572,7 +576,7 @@ public class IdeaActivity extends AppCompatActivity {
                                         runOnUiThread(() -> {
                                             Glide.with(IdeaActivity.this)
                                                     .load(imageUrl)
-                                                    .placeholder(R.drawable.placeholder)
+                                                    .placeholder(R.drawable.loading)
                                                     .error(R.drawable.placeholder)
                                                     .into(imageView);
                                         });
@@ -580,24 +584,34 @@ public class IdeaActivity extends AppCompatActivity {
                                     }
                                 }
                             }
+
+                            runOnUiThread(() -> {
+                                Glide.with(IdeaActivity.this)
+                                        .load(R.drawable.placeholder)
+                                        .into(imageView);
+                            });
                         }
-                        catch(JSONException ignored) {}
+                        catch(JSONException ignored) {
+                            runOnUiThread(() -> {
+                                Glide.with(IdeaActivity.this)
+                                        .load(R.drawable.placeholder)
+                                        .into(imageView);
+                            });
+                        }
                     }
                 }
 
                 @Override
-                public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {}
+                public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
+                    runOnUiThread(() -> {
+                        Glide.with(IdeaActivity.this)
+                                .load(R.drawable.placeholder)
+                                .into(imageView);
+                    });
+                }
             });
         }
         catch(UnsupportedEncodingException ignored) {}
-
-        runOnUiThread(() -> {
-            Glide.with(this)
-                    .load(imageURL)
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder)
-                    .into(imageView);
-        });
     }
 
     // Create top menubar
