@@ -74,4 +74,5 @@
     <string name="ideas_sad">:(</string>
     <string name="ideas_noactivities">No activities found.</string>
     <string name="idea_typelocation">%1$s in %2$s</string>
+    <string name="idea_radiuskm">%1$.0f km</string>
 </resources>

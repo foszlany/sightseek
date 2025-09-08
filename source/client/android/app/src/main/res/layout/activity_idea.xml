@@ -55,6 +55,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginEnd="5dp"
                 android:text="@string/idea_loading"
                 android:textColor="@color/white"
                 android:textSize="30sp"
@@ -201,13 +202,26 @@
 
     <SeekBar
         android:id="@+id/idea_radiusbar"
-        android:layout_width="364dp"
-        android:layout_height="wrap_content"
+        android:layout_width="350dp"
+        android:layout_height="22dp"
         android:layout_marginTop="12dp"
         android:max="99"
         android:progress="12"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idea_radiustitle" />
+
+    <TextView
+        android:id="@+id/idea_radiusvalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/idea_radiuskm"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/idea_radiusbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -76,6 +76,8 @@ public class IdeaActivity extends AppCompatActivity {
     private String type;
     private int radius;
 
+    private TextView radiusTextView;
+
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
 
@@ -176,10 +178,16 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Radius bar
+        radiusTextView = findViewById(R.id.idea_radiusvalue);
+        radiusTextView.setText(getString(R.string.idea_radiuskm, 13.0));
+
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
         radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                radiusTextView.setText(getString(R.string.idea_radiuskm, progress + 1.0));
+                moveText(seekBar, progress);
+            }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -188,6 +196,14 @@ public class IdeaActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 radius = seekBar.getProgress();
                 data = null;
+            }
+
+            public void moveText(SeekBar seekBar, int progress) {
+                int thumbOffset = seekBar.getThumbOffset();
+                int seekBarWidth = seekBar.getWidth() - seekBar.getPaddingLeft() - seekBar.getPaddingRight();
+                float thumbPos = seekBar.getPaddingLeft() + ((seekBarWidth * progress) / (float)seekBar.getMax());
+
+                radiusTextView.setX(thumbPos - (radiusTextView.getWidth() / 2f) + thumbOffset);
             }
         });
 
@@ -301,7 +317,6 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Query
         try {
-            System.out.println("queried!");
             String query = "[out:json][timeout:5];"
                     + "node[\"tourism\"][\"name\"]"
 
