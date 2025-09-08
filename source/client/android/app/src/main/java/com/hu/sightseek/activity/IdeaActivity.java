@@ -81,6 +81,9 @@ public class IdeaActivity extends AppCompatActivity {
     private LocalActivityDatabaseDAO dao;
     private ArrayList<Activity> activities;
 
+    private TextView nameTextView;
+    private TextView typeTextView;
+
     private LatLng referencePoint;
     private LatLng locationPoint;
     private LatLng medianPoint;
@@ -111,6 +114,9 @@ public class IdeaActivity extends AppCompatActivity {
         locationPoint = null;
         medianPoint = null;
         boundingBoxPoint = null;
+
+        nameTextView = findViewById(R.id.idea_name);
+        typeTextView = findViewById(R.id.idea_type);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.idea_topmenu);
@@ -315,6 +321,9 @@ public class IdeaActivity extends AppCompatActivity {
             return;
         }
 
+        nameTextView.setText(R.string.idea_loading);
+        typeTextView.setText(R.string.idea_wait);
+
         // Query
         try {
             String query = "[out:json][timeout:5];"
@@ -435,10 +444,7 @@ public class IdeaActivity extends AppCompatActivity {
 
             // Set views
             runOnUiThread(() -> {
-                TextView nameTextView = findViewById(R.id.idea_name);
                 nameTextView.setText(name);
-
-                TextView typeTextView = findViewById(R.id.idea_type);
                 typeTextView.setText(getString(R.string.idea_typelocation, type, locationString));
 
                 ImageButton linkButton = findViewById(R.id.idea_google);
