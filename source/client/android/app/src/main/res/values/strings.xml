@@ -75,4 +75,6 @@
     <string name="ideas_noactivities">No activities found.</string>
     <string name="idea_typelocation">%1$s in %2$s</string>
     <string name="idea_radiuskm">%1$.0f km</string>
+    <string name="idea_nothingwasfound">Nothing was found</string>
+    <string name="idea_increaseradius">Try increasing the radius</string>
 </resources>

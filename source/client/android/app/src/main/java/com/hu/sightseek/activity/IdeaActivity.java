@@ -422,9 +422,16 @@ public class IdeaActivity extends AppCompatActivity {
 
     public void retrieveAndSetupElementFromJson() {
         if(data.length() == 0) {
-            runOnUiThread(() ->
-                Toast.makeText(IdeaActivity.this, "JSON exception.", Toast.LENGTH_LONG).show() // TODO CHANGE
-            );
+            runOnUiThread(() -> {
+                    Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show();
+                    Glide.with(this)
+                            .load(R.drawable.placeholder)
+                            .into(imageView);
+
+                    nameTextView.setText(R.string.idea_nothingwasfound);
+                    typeTextView.setText(R.string.idea_increaseradius);
+
+            });
             return;
         }
 
@@ -498,9 +505,15 @@ public class IdeaActivity extends AppCompatActivity {
             data.remove(randomIndex);
         }
         catch(JSONException e) {
-            runOnUiThread(() ->
-                Toast.makeText(IdeaActivity.this, "JSONException", Toast.LENGTH_LONG).show()
-            );
+            runOnUiThread(() -> {
+                Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show();
+                Glide.with(this)
+                        .load(R.drawable.placeholder)
+                        .into(imageView);
+
+                nameTextView.setText(R.string.idea_nothingwasfound);
+                typeTextView.setText(R.string.idea_increaseradius);
+            });
         }
     }
 
