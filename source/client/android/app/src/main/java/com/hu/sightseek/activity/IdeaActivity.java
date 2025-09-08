@@ -361,6 +361,8 @@ public class IdeaActivity extends AppCompatActivity {
                     else {
                         try {
                             String json = response.body().string();
+                            System.out.println(json);
+
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
                             retrieveAndSetupElementFromJson();
@@ -401,6 +403,9 @@ public class IdeaActivity extends AppCompatActivity {
             type = tags != null ? tags.optString("tourism", "") : "";
             type = type.substring(0,1).toUpperCase() + type.substring(1).toLowerCase();
             type = type.replace("_", " ");
+            if("Yes".equals(type)) {
+                type = "Attraction";
+            }
 
             double latitude = randomElement.optDouble("lat", 0);
             double longitude = randomElement.optDouble("lon", 0);
