@@ -4,6 +4,7 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
+import static com.hu.sightseek.utils.SightseekUtils.defaultToBudapest;
 
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
@@ -387,7 +388,7 @@ public class RecordActivity extends AppCompatActivity {
         // Check for permissions
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Default to Budapest
-            defaultToBudapest();
+            defaultToBudapest(mapView);
 
             Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
@@ -395,7 +396,7 @@ public class RecordActivity extends AppCompatActivity {
         }
         else if(!isLocationEnabled(this)) {
             // Default to Budapest
-            defaultToBudapest();
+            defaultToBudapest(mapView);
         }
         else {
             centerToCurrentLocation();
@@ -595,10 +596,5 @@ public class RecordActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    public void defaultToBudapest() {
-        GeoPoint point = new GeoPoint(47.499, 19.044);
-        mapView.getController().setCenter(point);
     }
 }

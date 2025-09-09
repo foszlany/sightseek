@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +40,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
+import com.hu.sightseek.SelectLocationFragment;
 import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.utils.SightseekUtils;
@@ -85,6 +87,7 @@ public class IdeaActivity extends AppCompatActivity {
     private TextView typeTextView;
     private TextView radiusTextView;
     private ImageView imageView;
+    private RadioGroup radioGroup;
 
     private boolean isQuerying;
 
@@ -195,6 +198,15 @@ public class IdeaActivity extends AppCompatActivity {
             findReferencePoint();
         });
 
+        // Location button
+        radioGroup = findViewById(R.id.idea_radiogroup);
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId == R.id.idea_radio_locationbtn) {
+                SelectLocationFragment dialog = new SelectLocationFragment();
+                dialog.show(getSupportFragmentManager(), "selectLocationPopup");
+            }
+        });
+
         // Radius bar
         radiusTextView.setText(getString(R.string.idea_radiuskm, 13.0));
 
@@ -237,41 +249,19 @@ public class IdeaActivity extends AppCompatActivity {
         radius = radiusBar.getProgress();
 
         // Get values
-        RadioGroup referenceRadioGroup = findViewById(R.id.idea_radiogroup);
-        int checkedId = referenceRadioGroup.getCheckedRadioButtonId();
+        radioGroup = findViewById(R.id.idea_radiogroup);
+        int checkedId = radioGroup.getCheckedRadioButtonId();
 
         // Current location
         if(checkedId == R.id.idea_radio_locationbtn) {
-            if(locationPoint != null && referenceIndex == R.id.idea_radio_locationbtn) {
+            if(referenceIndex != R.id.idea_radio_locationbtn) {
+                data = null;
+
                 referencePoint = locationPoint;
-                findAttraction();
+                referenceIndex = R.id.idea_radio_locationbtn;
             }
-            else {
-                LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-                if(!(lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))) {
-                    Toast.makeText(IdeaActivity.this, "Please enable location to use this.", Toast.LENGTH_LONG).show();
-                }
-                else if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-                }
-                else {
-                    FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                        if(location != null) {
-                            data = null;
-                            referenceIndex = R.id.idea_radio_locationbtn;
 
-                            locationPoint = new LatLng(location.getLatitude(), location.getLongitude());
-
-                            referencePoint = locationPoint;
-                            findAttraction();
-                        }
-                        else {
-                            Toast.makeText(IdeaActivity.this, "Unable to get location. Try again later.", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            }
+            findAttraction();
         }
 
         // Median point
@@ -313,7 +303,7 @@ public class IdeaActivity extends AppCompatActivity {
 
                 ArrayList<LatLng> allPoints = new ArrayList<>();
 
-                for (int i = 0; i < activities.size(); i++) {
+                for(int i = 0; i < activities.size(); i++) {
                     ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
 
                     allPoints.addAll(points);
@@ -328,6 +318,12 @@ public class IdeaActivity extends AppCompatActivity {
             referencePoint = boundingBoxPoint;
             findAttraction();
         }
+    }
+
+    // Triggers when a location is picked on the Fragment
+    public void onNewLocationSelected(GeoPoint point) {
+        locationPoint = new LatLng(point.getLatitude(), point.getLongitude());
+        referenceIndex = R.id.idea_radio_medianbtn; // Reset for a new query
     }
 
     public void findAttraction() {
@@ -681,5 +677,17 @@ public class IdeaActivity extends AppCompatActivity {
                 Toast.makeText(this, "Precise location permission is required to use current location as a reference point!", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
     }
 }

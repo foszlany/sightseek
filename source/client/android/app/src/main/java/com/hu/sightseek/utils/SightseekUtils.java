@@ -1,16 +1,16 @@
 package com.hu.sightseek.utils;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
-import android.location.LocationManager;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.BoundingBox;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.util.List;
@@ -52,5 +52,10 @@ public final class SightseekUtils {
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setPathEffect(new CornerPathEffect(30f));
+    }
+
+    public static void defaultToBudapest(MapView mapView) {
+        GeoPoint point = new GeoPoint(47.499, 19.044);
+        mapView.getController().setCenter(point);
     }
 }

@@ -77,4 +77,7 @@
     <string name="idea_radiuskm">%1$.0f km</string>
     <string name="idea_nothingwasfound">Nothing was found</string>
     <string name="idea_increaseradius">Try increasing the radius</string>
+    <string name="locationselectpopup_select">Select</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
