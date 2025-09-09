@@ -461,6 +461,10 @@ public class IdeaActivity extends AppCompatActivity {
 
                         if(locationString == null) {
                             locationString = addresses.get(0).getCountryName();
+
+                            if(locationString == null || "null".equals(locationString)) {
+                                locationString = "Unknown location";
+                            }
                         }
                     }
                 }
