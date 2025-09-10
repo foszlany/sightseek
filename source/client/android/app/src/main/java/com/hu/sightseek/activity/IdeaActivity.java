@@ -57,6 +57,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -99,14 +101,6 @@ public class IdeaActivity extends AppCompatActivity {
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
-        // Auth
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() == null) {
-            Intent intent = new Intent(this, BannerActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
         // Variables
         referenceIndex = -1;
         referencePoint = null;
@@ -134,43 +128,6 @@ public class IdeaActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
-
-        // Check if there's at least one stored activity
-        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
-        activities = dao.getAllActivities();
-        if(activities.isEmpty()) {
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            ViewGroup root = findViewById(android.R.id.content);
-            View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
-
-            root.addView(overlayView);
-            toolbar.post(() -> {
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                params.topMargin = toolbar.getHeight();
-                overlayView.setLayoutParams(params);
-            });
-
-            return;
-        }
-
-        // Setup map
-        mapView = findViewById(R.id.idea_map);
-        mapView.setBackgroundColor(Color.TRANSPARENT);
-        mapView.setMultiTouchControls(true);
-        mapView.setUseDataConnection(true);
-
-        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
-        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
-
-        mapView.getController().setZoom(14.0);
-        mapView.setMinZoomLevel(3.0);
-        mapView.setMaxZoomLevel(20.0);
-
-        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        mapView.setVerticalMapRepetitionEnabled(false);
-
-        findReferencePoint();
 
         // Ignore
         Button ignoreButton = findViewById(R.id.idea_ignorebtn);
@@ -227,6 +184,58 @@ public class IdeaActivity extends AppCompatActivity {
             }
         });
 
+        // Background tasks
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            // Firebase
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            if(mAuth.getCurrentUser() == null) {
+                runOnUiThread(() -> {
+                    startActivity(new Intent(this, BannerActivity.class));
+                    finish();
+                });
+                return;
+            }
+
+            runOnUiThread(() -> {
+                // Check whether there are activities stored
+                LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                activities = dao.getAllActivities();
+
+                if(activities.isEmpty()) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    ViewGroup root = findViewById(android.R.id.content);
+                    View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
+
+                    root.addView(overlayView);
+                    toolbar.post(() -> {
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                        params.topMargin = toolbar.getHeight();
+                        overlayView.setLayoutParams(params);
+                    });
+                }
+                else {
+                    // Setup map
+                    mapView = findViewById(R.id.idea_map);
+                    mapView.setBackgroundColor(Color.TRANSPARENT);
+                    mapView.setMultiTouchControls(true);
+                    mapView.setUseDataConnection(true);
+
+                    TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+                    tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+                    tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+                    mapView.getController().setZoom(14.0);
+                    mapView.setMinZoomLevel(3.0);
+                    mapView.setMaxZoomLevel(20.0);
+
+                    mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+                    mapView.setVerticalMapRepetitionEnabled(false);
+
+                    findReferencePoint();
+                }
+            });
+        });
     }
 
     public void findReferencePoint() {
@@ -656,12 +665,16 @@ public class IdeaActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        if(mapView != null) {
+            mapView.onResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+        if(mapView != null) {
+            mapView.onResume();
+        }
     }
 }
