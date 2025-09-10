@@ -1,233 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:paddingBottom="12dp"
     android:background="@color/main_bg"
     tools:context=".activity.IdeaActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/idea_topmenu"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:background="@color/theme_main"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/idea_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:text="@string/idea_title"
-        android:textColor="@color/white"
-        android:textSize="28sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.114"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idea_topmenu"/>
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="14dp"
-        android:layout_marginVertical="24dp"
-        android:layout_marginTop="56dp"
-        android:background="@drawable/register_gradient"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idea_title">
-
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/idea_topmenu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/idea_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="5dp"
-                android:text="@string/idea_loading"
-                android:textColor="@color/white"
-                android:textSize="30sp"
-                android:textStyle="bold" />
-
-            <ImageButton
-                android:id="@+id/idea_google"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="@drawable/google_icon"
-                android:contentDescription="@string/idea_googleicondesc"
-                android:elevation="3dp"
-                android:padding="16dp"
-                app:layout_constraintEnd_toEndOf="parent"/>
-        </LinearLayout>
-
+            android:layout_height="42dp"
+            android:background="@color/theme_main"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <TextView
-            android:id="@+id/idea_type"
+            android:id="@+id/idea_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/idea_wait"
-            android:textColor="@color/light_gray"
-            android:textSize="18sp"/>
+            android:layout_marginTop="28dp"
+            android:text="@string/idea_title"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.115"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idea_topmenu" />
 
         <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="14dp"
+            android:layout_marginVertical="24dp"
+            android:layout_marginTop="56dp"
+            android:background="@drawable/register_gradient"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.473"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idea_title">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/idea_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/idea_loading"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/idea_google"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:background="@drawable/google_icon"
+                    android:contentDescription="@string/idea_googleicondesc"
+                    android:elevation="3dp"
+                    android:padding="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/idea_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/idea_wait"
+                android:textColor="@color/light_gray"
+                android:textSize="18sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="2dp"
+                android:weightSum="2">
+
+                <org.osmdroid.views.MapView
+                    android:id="@+id/idea_map"
+                    android:layout_width="0dp"
+                    android:layout_height="160dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/idea_img"
+                    android:layout_width="0dp"
+                    android:layout_height="160dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/loading"
+                    android:contentDescription="@string/idea_imgdesc"
+                    android:scaleType="centerCrop" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <Button
+                    android:id="@+id/idea_ignorebtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="25dp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/dark_button_bg"
+                    app:backgroundTint="@color/red"
+                    android:text="@string/idea_ignore"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/idea_nextbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/dark_button_bg"
+                    app:backgroundTint="@color/theme_main"
+                    android:text="@string/idea_next"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/idea_radiotitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:scrollHorizontally="false"
+            android:text="@string/idea_reference"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.118"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+        <RadioGroup
+            android:id="@+id/idea_radiogroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
             android:orientation="horizontal"
-            android:padding="2dp"
-            android:weightSum="2">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idea_radiotitle">
 
-            <org.osmdroid.views.MapView
-                android:id="@+id/idea_map"
-                android:layout_width="0dp"
-                android:layout_height="160dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:id="@+id/idea_img"
-                android:layout_width="0dp"
-                android:layout_height="160dp"
+            <RadioButton
+                android:id="@+id/idea_radio_locationbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/loading"
-                android:contentDescription="@string/idea_imgdesc"
-                android:scaleType="centerCrop" />
-        </LinearLayout>
+                android:text="@string/idea_location"
+                android:textColor="@color/white"
+                android:textSize="17sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:padding="4dp">
-
-            <Button
-                android:id="@+id/idea_ignorebtn"
+            <RadioButton
+                android:id="@+id/idea_radio_medianbtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="25dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="@string/idea_median"
                 android:textColor="@color/white"
-                android:background="@drawable/dark_button_bg"
-                app:backgroundTint="@color/red"
-                android:text="@string/idea_ignore"
-                android:textSize="18sp" />
+                android:textSize="17sp" />
 
-            <Button
-                android:id="@+id/idea_nextbtn"
+            <RadioButton
+                android:id="@+id/idea_radio_boundingboxbtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@string/idea_bounding"
                 android:textColor="@color/white"
-                android:background="@drawable/dark_button_bg"
-                app:backgroundTint="@color/theme_main"
-                android:text="@string/idea_next"
-                android:textSize="18sp" />
-        </LinearLayout>
-    </LinearLayout>
+                android:textSize="17sp" />
+        </RadioGroup>
 
-    <TextView
-        android:id="@+id/idea_radiotitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:scrollHorizontally="false"
-        android:text="@string/idea_reference"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.118"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
-
-    <RadioGroup
-        android:id="@+id/idea_radiogroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idea_radiotitle">
-
-        <RadioButton
-            android:id="@+id/idea_radio_locationbtn"
+        <TextView
+            android:id="@+id/idea_radiustitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/idea_location"
+            android:layout_marginTop="28dp"
+            android:scrollHorizontally="false"
+            android:text="@string/idea_radius"
             android:textColor="@color/white"
-            android:textSize="17sp" />
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.085"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idea_radiogroup" />
 
-        <RadioButton
-            android:id="@+id/idea_radio_medianbtn"
+        <SeekBar
+            android:id="@+id/idea_radiusbar"
+            android:layout_width="350dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="12dp"
+            android:max="99"
+            android:progress="12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.491"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idea_radiustitle" />
+
+        <TextView
+            android:id="@+id/idea_radiusvalue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="@string/idea_median"
+            android:text="@string/idea_radiuskm"
             android:textColor="@color/white"
-            android:textSize="17sp" />
-
-        <RadioButton
-            android:id="@+id/idea_radio_boundingboxbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/idea_bounding"
-            android:textColor="@color/white"
-            android:textSize="17sp" />
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/idea_radiustitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:scrollHorizontally="false"
-        android:text="@string/idea_radius"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.085"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idea_radiogroup" />
-
-    <SeekBar
-        android:id="@+id/idea_radiusbar"
-        android:layout_width="350dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="12dp"
-        android:max="99"
-        android:progress="12"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idea_radiustitle" />
-
-    <TextView
-        android:id="@+id/idea_radiusvalue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/idea_radiuskm"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.157"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idea_radiusbar" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.157"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idea_radiusbar" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
