@@ -2,16 +2,12 @@ package com.hu.sightseek.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,12 +26,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
@@ -71,7 +63,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class IdeaActivity extends AppCompatActivity {
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private static final String overpassUrl = "https://overpass-api.de/api/interpreter";
 
     private JSONArray data;
@@ -470,7 +461,9 @@ public class IdeaActivity extends AppCompatActivity {
                 }
             }
             catch(IOException e) {
-                Toast.makeText(IdeaActivity.this, "IOException", Toast.LENGTH_LONG).show();
+                runOnUiThread(() -> {
+                    Toast.makeText(IdeaActivity.this, "An unknown error has occurred.", Toast.LENGTH_LONG).show();
+                });
             }
 
             String fallbackUrl = "https://www.google.com/search?q=" + locationString + " " + name.replace(" ", "%20");
@@ -658,29 +651,6 @@ public class IdeaActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            // Allowed, proceed to finding attractions
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                findReferencePoint();
-            }
-            // Check if user clicked on "Don't ask again"
-            else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-                Toast.makeText(this, "You must allow precise tracking to use this feature!", Toast.LENGTH_LONG).show();
-            }
-            else {
-                Toast.makeText(this, "Precise location permission is required to use current location as a reference point!", Toast.LENGTH_LONG).show();
-            }
-        }
     }
 
     @Override
