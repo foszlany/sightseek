@@ -406,6 +406,7 @@ public class IdeaActivity extends AppCompatActivity {
                     runOnUiThread(() ->
                         Toast.makeText(IdeaActivity.this, "Unable to reach server. Please try again later.", Toast.LENGTH_LONG).show()
                     );
+                    isQuerying = false;
                 }
             });
         }
@@ -413,6 +414,7 @@ public class IdeaActivity extends AppCompatActivity {
             runOnUiThread(() ->
                 Toast.makeText(IdeaActivity.this, "Unsupported encode exception, terminating query.", Toast.LENGTH_LONG).show()
             );
+            isQuerying = false;
         }
     }
 
