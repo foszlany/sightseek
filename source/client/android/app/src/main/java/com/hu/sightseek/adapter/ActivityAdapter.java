@@ -4,8 +4,10 @@ import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.hu.sightseek.activity.ActivityActivity;
+import com.hu.sightseek.activity.MainActivity;
+import com.hu.sightseek.activity.SaveActivity;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
 
@@ -30,6 +35,7 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -127,6 +133,17 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             imageCache.put(activity.getId(), cache);
         }
         holder.map.setImageBitmap(cache);
+
+        // Intent to the activity's page
+        holder.card.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ActivityActivity.class);
+            Bundle bundle = new Bundle();
+
+            bundle.putInt("id", activity.getId());
+            intent.putExtras(bundle);
+
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -141,9 +158,12 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     public static class ActivityViewHolder extends RecyclerView.ViewHolder {
         TextView name, category, startTime, distance, elapsedTime;
         ImageView map;
+        View card;
 
         public ActivityViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            card = itemView.findViewById(R.id.main_activitycard);
             name = itemView.findViewById(R.id.card_activity_title);
             category = itemView.findViewById(R.id.card_activity_category);
             startTime = itemView.findViewById(R.id.card_activity_date);
