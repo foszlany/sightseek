@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:background="@color/black"
+    android:layout_height="match_parent"
+    tools:context=".activity.ActivityActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/menubar_activity"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@color/theme_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <ImageView
+        android:id="@+id/login_banner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:alpha="0.27"
+        android:contentDescription="@string/login_imgdesc"
+        android:scaleType="centerCrop"
+        android:src="@drawable/save_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menubar_save"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/transparent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menubar_save"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:id="@+id/save_maintext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@string/save_title"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="36sp" />
+
+        <EditText
+            android:id="@+id/save_edittext_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:background="@drawable/edittext_outline"
+            android:ems="10"
+            android:hint="@string/save_titlehint"
+            android:inputType="text"
+            android:maxLength="32"
+            android:padding="11dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_light" />
+
+        <Spinner
+            android:id="@+id/save_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edittext_outline" />
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/save_map"
+            android:layout_width="320dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            app:layout_constraintBottom_toTopOf="@id/record_bottommenu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/record_topmenu" />
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:padding="5dp"
+            android:rowCount="2">
+
+            <TextView
+                android:id="@+id/save_time"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="14dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/save_distance"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="26sp" />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="14dp"
+                android:gravity="center"
+                android:text="@string/main_time"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/save_distance"
+                android:textColor="@color/white" />
+        </GridLayout>
+
+        <Button
+            android:id="@+id/save_savebtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/save_button_bg"
+            android:text="@string/save_save"
+            android:textColor="@color/white"
+            android:textSize="27sp"
+            app:backgroundTint="@color/theme_main" />
+
+        <Button
+            android:id="@+id/save_discardbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:padding="0dp"
+            android:text="@string/save_discard"
+            android:textColor="@color/red"
+            android:textSize="16sp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
