@@ -18,6 +18,8 @@ import com.hu.sightseek.model.Activity;
 
 import org.osmdroid.config.Configuration;
 
+import java.util.Locale;
+
 public class ActivityActivity extends AppCompatActivity {
     private Activity activity;
 
@@ -72,8 +74,24 @@ public class ActivityActivity extends AppCompatActivity {
         TextView titleTextView = findViewById(R.id.activity_title);
         titleTextView.setText(activity.getName());
 
+        String startTime = activity.getStarttime().replace("T", ". ").replace("-", ".");
+        TextView dateTextView = findViewById(R.id.activity_date);
+        dateTextView.setText(startTime);
+
         TextView categoryTextView = findViewById(R.id.activity_category);
         categoryTextView.setText(activity.getCategory().toShortString());
+
+        double elapsedTime = activity.getElapsedtime();
+        int hours = (int) elapsedTime / 3600;
+        int minutes = ((int) elapsedTime % 3600) / 60;
+        int seconds = (int) elapsedTime % 60;
+        String formattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
+
+        TextView timeTextView = findViewById(R.id.activity_elapsedtime);
+        timeTextView.setText(formattedTime);
+
+        TextView distanceTextView = findViewById(R.id.activity_distance);
+        distanceTextView.setText(String.format(Locale.US, "%.2f km", activity.getDistance() / 1000.0));
     }
 
     // Create top menubar

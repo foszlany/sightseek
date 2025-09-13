@@ -51,20 +51,30 @@
             android:id="@+id/activity_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
+            android:layout_marginHorizontal="16dp"
             android:text="@string/example_sampletext"
             android:textColor="@color/white"
-            android:textSize="36sp" />
+            android:textSize="44sp" />
+
+        <TextView
+            android:id="@+id/activity_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="@string/example_example"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
 
         <TextView
             android:id="@+id/activity_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="24dp"
             android:text="@string/example_example"
             android:textColor="@color/white"
-            android:textSize="18sp"/>
+            android:textSize="16sp"/>
 
 
         <GridLayout
@@ -75,7 +85,7 @@
             android:rowCount="2">
 
             <TextView
-                android:id="@+id/activity_time"
+                android:id="@+id/activity_elapsedtime"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="14dp"
