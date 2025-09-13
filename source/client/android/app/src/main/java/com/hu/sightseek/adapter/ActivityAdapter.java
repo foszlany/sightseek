@@ -84,20 +84,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
         // Values
         holder.name.setText(activity.getName());
-
-        switch(activity.getCategory()) {
-            case LOCOMOTOR:
-                holder.category.setText(R.string.travelmethod_loco);
-                break;
-
-            case MICROMOBILITY:
-                holder.category.setText(R.string.travelmethod_micro);
-                break;
-
-            case OTHER:
-                holder.category.setText(R.string.travelmethod_other);
-                break;
-        }
+        holder.category.setText(activity.getCategory().toShortString());
 
         String startTime = activity.getStarttime().replace("T", ". ").replace("-", ".");
         holder.startTime.setText(startTime);

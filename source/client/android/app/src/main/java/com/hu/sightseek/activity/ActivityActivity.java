@@ -71,6 +71,9 @@ public class ActivityActivity extends AppCompatActivity {
         // Set views
         TextView titleTextView = findViewById(R.id.activity_title);
         titleTextView.setText(activity.getName());
+
+        TextView categoryTextView = findViewById(R.id.activity_category);
+        categoryTextView.setText(activity.getCategory().toShortString());
     }
 
     // Create top menubar

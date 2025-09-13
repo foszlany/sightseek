@@ -18,6 +18,18 @@ public enum TravelCategory {
         return index;
     }
 
+
+
+    @NonNull
+    public String toShortString() {
+        switch(this) {
+            case LOCOMOTOR: return "Locomotor";
+            case MICROMOBILITY: return "Micromobility";
+            case OTHER: return "Other";
+            default: return "Invalid travel method";
+        }
+    }
+
     @NonNull
     @Override
     public String toString() {
