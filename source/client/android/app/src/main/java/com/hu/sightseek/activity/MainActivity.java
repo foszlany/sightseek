@@ -147,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Statistics
         if(id == R.id.topmenu_statistics) {
-            // TODO
-            // Intent intent = new Intent(this, StatisticsActivity.class);
+            Intent intent = new Intent(this, StatisticsActivity.class);
+            startActivity(intent);
             return true;
         }
 
