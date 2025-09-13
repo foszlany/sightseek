@@ -120,7 +120,7 @@
         <org.osmdroid.views.MapView
             android:id="@+id/activity_map"
             android:layout_width="320dp"
-            android:layout_height="200dp"
+            android:layout_height="320dp"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
             app:layout_constraintBottom_toTopOf="@id/record_bottommenu"

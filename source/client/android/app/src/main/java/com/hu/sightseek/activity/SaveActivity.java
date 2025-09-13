@@ -204,12 +204,17 @@ public class SaveActivity extends AppCompatActivity {
 
             executor.execute(() -> {
                 LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
-                dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist);
-            });
+                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist);
 
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+                Intent intent = new Intent(this, ActivityActivity.class);
+                Bundle bundle = new Bundle();
+
+                bundle.putInt("id", (int) id);
+                intent.putExtras(bundle);
+
+                startActivity(intent);
+                finish();
+            });
         });
 
         // Discard button
