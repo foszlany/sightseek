@@ -36,16 +36,33 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder> implements Filterable {
+    private static final int w = 500, h = 500;
+
     private final ArrayList<Activity> activityListFull;
     private ArrayList<Activity> activityListFiltered;
     private final Context context;
     private final Map<Integer, Bitmap> imageCache;
+    private final MapView mapView;
 
     public ActivityAdapter(Context context, ArrayList<Activity> activityList) {
         this.context = context;
         this.activityListFull = new ArrayList<>(activityList);
         this.activityListFiltered = new ArrayList<>(activityList);
         this.imageCache = new HashMap<>();
+
+        // Map
+        mapView = new MapView(context);
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setUseDataConnection(true);
+        mapView.setLayoutParams(new ViewGroup.LayoutParams(w, h));
+
+        // Tiles
+        TilesOverlay tilesOverlay = new TilesOverlay(mapView.getTileProvider(), context);
+        mapView.getOverlayManager().add(0, tilesOverlay);
+
+        // Position layout
+        mapView.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));
+        mapView.layout(0, 0, w, h);
     }
 
     @NonNull
@@ -137,16 +154,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     }
 
     private Bitmap renderMapImage(List<LatLng> points, Context context) throws InterruptedException {
-        // Basic map settings
-        MapView mapView = new MapView(context);
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.setUseDataConnection(true);
-        mapView.setLayoutParams(new ViewGroup.LayoutParams(800, 800));
-
-        // Tiles
-        TilesOverlay tilesOverlay = new TilesOverlay(mapView.getTileProvider(), context);
-        mapView.getOverlayManager().add(0, tilesOverlay);
-
         // Polyline
         Polyline line = new Polyline();
         for(LatLng p : points) {
@@ -154,11 +161,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         }
         setupRouteLine(line);
         mapView.getOverlayManager().add(line);
-
-        // Position layout
-        int w = 800, h = 800;
-        mapView.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));
-        mapView.layout(0, 0, w, h);
 
         // Zoom
         BoundingBox box = getBoundingBox(points);
@@ -171,6 +173,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
         // Clean up
         mapView.onPause();
+        mapView.getOverlayManager().remove(line);
 
         return bmp;
     }

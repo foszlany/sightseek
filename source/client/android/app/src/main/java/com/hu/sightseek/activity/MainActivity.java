@@ -56,9 +56,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        // Preload tiles
-
-
         // Setup adapter
         LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
 
@@ -115,11 +112,11 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, IdeaActivity.class);
                 startActivity(intent);
             }
-            else if (id == R.id.bottommenu_main_record) {
+            else if(id == R.id.bottommenu_main_record) {
                 Intent intent = new Intent(this, RecordActivity.class);
                 startActivity(intent);
             }
-            else if (id == R.id.bottommenu_main_leaderboard) {
+            else if(id == R.id.bottommenu_main_leaderboard) {
                 // TODO
             }
 
