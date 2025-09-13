@@ -339,7 +339,7 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Query
         try {
-            String query = "[out:json][timeout:5];"
+            String query = "[out:json][timeout:15];"
                     + "node[\"tourism\"][\"name\"]"
 
                     /* Exclude accommodations */
@@ -381,7 +381,7 @@ public class IdeaActivity extends AppCompatActivity {
                     }
                     else if(response.body() == null) {
                         runOnUiThread(() ->
-                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show() // TODO CHANGE
+                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show()
                         );
                     }
                     else {
@@ -389,11 +389,28 @@ public class IdeaActivity extends AppCompatActivity {
                             String json = response.body().string();
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
-                            retrieveAndSetupElementFromJson();
+
+                            if(data.length() == 0) {
+                                if(root.has("remark")) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(IdeaActivity.this, "Request timed out. Please try again later.", Toast.LENGTH_LONG).show()
+                                    );
+                                }
+                                else {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show()
+                                    );
+                                }
+
+                            }
+                            else {
+                                retrieveAndSetupElementFromJson();
+                            }
+
                         }
                         catch(JSONException e) {
                             runOnUiThread(() ->
-                                Toast.makeText(IdeaActivity.this, "Nothing was found or list was exhausted. Try increasing the radius.", Toast.LENGTH_LONG).show()// TODO CHANGE
+                                Toast.makeText(IdeaActivity.this, "Nothing was found or list was exhausted. Try increasing the radius.", Toast.LENGTH_LONG).show()
                             );
                         }
                     }
@@ -404,7 +421,7 @@ public class IdeaActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
                     runOnUiThread(() ->
-                        Toast.makeText(IdeaActivity.this, "Unable to reach server. Please try again later.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(IdeaActivity.this, "Failed to reach server. Please try again later.", Toast.LENGTH_LONG).show()
                     );
                     isQuerying = false;
                 }
@@ -421,14 +438,13 @@ public class IdeaActivity extends AppCompatActivity {
     public void retrieveAndSetupElementFromJson() {
         if(data.length() == 0) {
             runOnUiThread(() -> {
-                    Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(IdeaActivity.this, "Nothing else was found. Try increasing the radius.", Toast.LENGTH_LONG).show();
                     Glide.with(this)
                             .load(R.drawable.placeholder)
                             .into(imageView);
 
                     nameTextView.setText(R.string.idea_nothingwasfound);
                     typeTextView.setText(R.string.idea_increaseradius);
-
             });
             return;
         }
