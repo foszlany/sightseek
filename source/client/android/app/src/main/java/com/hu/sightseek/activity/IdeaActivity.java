@@ -656,7 +656,7 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Profile
         if(id == R.id.topmenu_profile) {
-            Intent intent = new Intent(this, BannerActivity.class);
+            Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
             return true;
         }

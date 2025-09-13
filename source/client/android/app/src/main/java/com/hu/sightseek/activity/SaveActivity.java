@@ -251,8 +251,7 @@ public class SaveActivity extends AppCompatActivity {
 
         // Profile
         if(id == R.id.topmenu_profile) {
-            // TODO
-            // createDiscardConfirmationDialog(new Intent(this, ProfileActivity.class));
+            createDiscardConfirmationDialog(new Intent(this, ProfileActivity.class));
             return true;
         }
 

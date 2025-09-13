@@ -564,8 +564,8 @@ public class RecordActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.topmenu_profile) {
-            // Intent intent = new Intent(this, ProfileActivity.class);
-            // startActivity(intent);
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
             return true;
         }
 
