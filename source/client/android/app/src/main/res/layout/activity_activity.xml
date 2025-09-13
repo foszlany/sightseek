@@ -119,13 +119,11 @@
 
         <org.osmdroid.views.MapView
             android:id="@+id/activity_map"
-            android:layout_width="320dp"
-            android:layout_height="320dp"
+            android:layout_width="360dp"
+            android:layout_height="360dp"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
-            app:layout_constraintBottom_toTopOf="@id/record_bottommenu"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/record_topmenu" />
+            app:layout_constraintStart_toStartOf="parent"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

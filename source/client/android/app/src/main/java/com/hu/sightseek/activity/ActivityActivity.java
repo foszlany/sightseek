@@ -1,23 +1,37 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
+
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.BoundingBox;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.util.List;
 import java.util.Locale;
 
 public class ActivityActivity extends AppCompatActivity {
@@ -92,6 +106,43 @@ public class ActivityActivity extends AppCompatActivity {
 
         TextView distanceTextView = findViewById(R.id.activity_distance);
         distanceTextView.setText(String.format(Locale.US, "%.2f km", activity.getDistance() / 1000.0));
+
+        // Setup map
+        // Initialize mapview
+        MapView mapView = findViewById(R.id.activity_map);
+        mapView.setBackgroundColor(Color.TRANSPARENT);
+        mapView.setMultiTouchControls(true);
+        mapView.setUseDataConnection(true);
+
+        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+        // Setup polyline
+        String polylineString = activity.getPolyline();
+        List<LatLng> pointList = PolyUtil.decode(polylineString);
+        Polyline polyline = new Polyline();
+        for(LatLng point : pointList) {
+            polyline.addPoint(new GeoPoint(point.latitude, point.longitude));
+        }
+
+        setupRouteLine(polyline);
+        mapView.getOverlayManager().add(polyline);
+
+        // Calculate bounding box
+        BoundingBox box = getBoundingBox(pointList);
+
+        // Set zoom based on bounding box
+        mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
+            }
+        });
+
+        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        mapView.setVerticalMapRepetitionEnabled(false);
     }
 
     // Create top menubar

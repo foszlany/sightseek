@@ -85,10 +85,8 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
-            app:layout_constraintBottom_toTopOf="@id/record_bottommenu"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/record_topmenu" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <GridLayout
             android:layout_width="wrap_content"
