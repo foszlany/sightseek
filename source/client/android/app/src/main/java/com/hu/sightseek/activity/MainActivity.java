@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
+        Configuration.getInstance().setCacheMapTileCount((short) 12);
+        Configuration.getInstance().setCacheMapTileOvershoot((short) 2);
 
         // Show banner when launching for the first time
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -53,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putBoolean("isFirstLaunch", false).apply();
             finish();
         }
+
+        // Preload tiles
+
 
         // Setup adapter
         LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);

@@ -35,12 +35,16 @@ public class SelectLocationFragment extends DialogFragment {
         Context ctx = inflater.getContext();
         View view = inflater.inflate(R.layout.fragment_select_location, container, false);
 
+        // Map
         mapView = view.findViewById(R.id.locationselectpopup_map);
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setMultiTouchControls(true);
         mapView.getController().setZoom(15.0);
 
+        // Marker
         marker = new Marker(mapView);
+        marker.setInfoWindow(null);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
         // Try to get location
         LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
@@ -62,7 +66,6 @@ public class SelectLocationFragment extends DialogFragment {
                 }
             });
         }
-        mapView.invalidate();
 
         MapEventsOverlay eventsOverlay = getMapEventsOverlay();
         mapView.getOverlays().add(eventsOverlay);
@@ -77,15 +80,10 @@ public class SelectLocationFragment extends DialogFragment {
     }
 
     private void refreshMarker(GeoPoint point) {
-        mapView.getOverlays().remove(marker);
-
         marker.setPosition(point);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-
         mapView.getOverlays().add(marker);
         mapView.invalidate();
     }
-
 
     @NonNull
     private MapEventsOverlay getMapEventsOverlay() {
