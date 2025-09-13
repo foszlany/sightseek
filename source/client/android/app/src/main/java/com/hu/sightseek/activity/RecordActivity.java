@@ -564,7 +564,6 @@ public class RecordActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.topmenu_profile) {
-            // TODO
             // Intent intent = new Intent(this, ProfileActivity.class);
             // startActivity(intent);
             return true;
@@ -572,9 +571,8 @@ public class RecordActivity extends AppCompatActivity {
 
         // Statistics
         if(id == R.id.topmenu_statistics) {
-            // TODO
-            // Intent intent = new Intent(this, StatisticsActivity.class);
-            // startActivity(intent);
+            Intent intent = new Intent(this, StatisticsActivity.class);
+            startActivity(intent);
             return true;
         }
 

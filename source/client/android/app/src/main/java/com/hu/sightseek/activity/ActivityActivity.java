@@ -181,7 +181,6 @@ public class ActivityActivity extends AppCompatActivity {
 
         // Profile
         if(id == R.id.topmenu_profile) {
-            // TODO: Check whether user is logged in
             Intent intent = new Intent(this, BannerActivity.class);
             startActivity(intent);
             return true;
@@ -189,8 +188,8 @@ public class ActivityActivity extends AppCompatActivity {
 
         // Statistics
         if(id == R.id.topmenu_statistics) {
-            // TODO
-            // Intent intent = new Intent(this, StatisticsActivity.class);
+            Intent intent = new Intent(this, StatisticsActivity.class);
+            startActivity(intent);
             return true;
         }
 

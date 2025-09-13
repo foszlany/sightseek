@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
@@ -26,6 +27,15 @@ public class StatisticsActivity extends AppCompatActivity {
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
+        // Check if user is logged in
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() == null) {
+            runOnUiThread(() -> {
+                startActivity(new Intent(this, BannerActivity.class));
+                finish();
+            });
+            return;
+        }
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.menubar_statistics);
@@ -58,16 +68,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         // Profile
         if(id == R.id.topmenu_profile) {
-            // TODO: Check whether user is logged in
             Intent intent = new Intent(this, BannerActivity.class);
             startActivity(intent);
-            return true;
-        }
-
-        // Statistics
-        if(id == R.id.topmenu_statistics) {
-            // TODO
-            // Intent intent = new Intent(this, StatisticsActivity.class);
             return true;
         }
 

@@ -252,14 +252,13 @@ public class SaveActivity extends AppCompatActivity {
         // Profile
         if(id == R.id.topmenu_profile) {
             // TODO
-            // createDiscardConfirmationDialog(new Intent(this, ProfileActivity.class);
+            // createDiscardConfirmationDialog(new Intent(this, ProfileActivity.class));
             return true;
         }
 
         // Statistics
         if(id == R.id.topmenu_statistics) {
-            // TODO
-            // createDiscardConfirmationDialog(new Intent(this, StatisticsActivity.class);
+            createDiscardConfirmationDialog(new Intent(this, StatisticsActivity.class));
             return true;
         }
 

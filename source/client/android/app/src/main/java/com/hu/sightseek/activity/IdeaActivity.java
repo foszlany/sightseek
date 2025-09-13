@@ -57,8 +57,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -100,6 +98,16 @@ public class IdeaActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
+
+        // Check if user is logged in
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() == null) {
+            runOnUiThread(() -> {
+                startActivity(new Intent(this, BannerActivity.class));
+                finish();
+            });
+            return;
+        }
 
         // Variables
         referenceIndex = -1;
@@ -184,58 +192,42 @@ public class IdeaActivity extends AppCompatActivity {
             }
         });
 
-        // Background tasks
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            // Firebase
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            if(mAuth.getCurrentUser() == null) {
-                runOnUiThread(() -> {
-                    startActivity(new Intent(this, BannerActivity.class));
-                    finish();
-                });
-                return;
-            }
+        // Check whether there are activities stored
+        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+        activities = dao.getAllActivities();
 
-            runOnUiThread(() -> {
-                // Check whether there are activities stored
-                LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
-                activities = dao.getAllActivities();
+        if(activities.isEmpty()) {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ViewGroup root = findViewById(android.R.id.content);
+            View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
 
-                if(activities.isEmpty()) {
-                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    ViewGroup root = findViewById(android.R.id.content);
-                    View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
-
-                    root.addView(overlayView);
-                    toolbar.post(() -> {
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        params.topMargin = toolbar.getHeight();
-                        overlayView.setLayoutParams(params);
-                    });
-                }
-                else {
-                    // Setup map
-                    mapView = findViewById(R.id.idea_map);
-                    mapView.setBackgroundColor(Color.TRANSPARENT);
-                    mapView.setMultiTouchControls(true);
-                    mapView.setUseDataConnection(true);
-
-                    TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
-                    tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-                    tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
-
-                    mapView.getController().setZoom(14.0);
-                    mapView.setMinZoomLevel(3.0);
-                    mapView.setMaxZoomLevel(20.0);
-
-                    mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-                    mapView.setVerticalMapRepetitionEnabled(false);
-
-                    findReferencePoint();
-                }
+            root.addView(overlayView);
+            toolbar.post(() -> {
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params.topMargin = toolbar.getHeight();
+                overlayView.setLayoutParams(params);
             });
-        });
+        }
+        else {
+            // Setup map
+            mapView = findViewById(R.id.idea_map);
+            mapView.setBackgroundColor(Color.TRANSPARENT);
+            mapView.setMultiTouchControls(true);
+            mapView.setUseDataConnection(true);
+
+            TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+            tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+            tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+            mapView.getController().setZoom(14.0);
+            mapView.setMinZoomLevel(3.0);
+            mapView.setMaxZoomLevel(20.0);
+
+            mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+            mapView.setVerticalMapRepetitionEnabled(false);
+
+            findReferencePoint();
+        }
     }
 
     public void findReferencePoint() {
@@ -664,7 +656,6 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Profile
         if(id == R.id.topmenu_profile) {
-            // TODO: Check whether user is logged in
             Intent intent = new Intent(this, BannerActivity.class);
             startActivity(intent);
             return true;
@@ -672,8 +663,8 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Statistics
         if(id == R.id.topmenu_statistics) {
-            // TODO
-            // Intent intent = new Intent(this, StatisticsActivity.class);
+            Intent intent = new Intent(this, StatisticsActivity.class);
+            startActivity(intent);
             return true;
         }
 
