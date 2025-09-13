@@ -21,6 +21,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activity.ProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sightseek" />
+        <activity
             android:name=".activity.StatisticsActivity"
             android:exported="false" />
         <activity
