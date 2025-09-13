@@ -65,6 +65,12 @@ public class LocalActivityDatabaseDAO {
         }
     }
 
+    public void deleteActivity(int id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(LocalActivityDatabaseImpl.ACTIVITIES_TABLE, "id = ?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
     public ArrayList<Activity> getAllActivities() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Activity> activities = new ArrayList<>();

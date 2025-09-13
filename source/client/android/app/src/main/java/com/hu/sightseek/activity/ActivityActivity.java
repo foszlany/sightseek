@@ -11,9 +11,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -141,6 +143,26 @@ public class ActivityActivity extends AppCompatActivity {
                 mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
             }
+        });
+
+        // Delete button
+        ImageButton deleteButton = findViewById(R.id.activity_deletebtn);
+        deleteButton.setOnClickListener(v -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Confirmation")
+                    .setMessage("Are you sure you want to delete this activity? This cannot be undone!")
+                    .setPositiveButton("Yes", (d, which) -> {
+                        dao.deleteActivity(activityId);
+
+                        Intent intent = new Intent(this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", (d, which) -> d.dismiss())
+                    .setCancelable(true)
+                    .create();
+
+            dialog.show();
         });
     }
 
