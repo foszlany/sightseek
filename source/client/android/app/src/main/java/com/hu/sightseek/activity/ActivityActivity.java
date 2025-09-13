@@ -74,7 +74,7 @@ public class ActivityActivity extends AppCompatActivity {
         int activityId = extras.getInt("id");
 
         // Get activity
-        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this); // TODO: CHANGE THIS LATER TO MAIN DATABASE AND ADD EXTRA FIELD FOR LOCAL QUERY TEST
         activity = dao.getActivity(activityId);
 
         if(activity == null) {
@@ -110,6 +110,8 @@ public class ActivityActivity extends AppCompatActivity {
         // Setup map
         // Initialize mapview
         MapView mapView = findViewById(R.id.activity_map);
+        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        mapView.setVerticalMapRepetitionEnabled(false);
         mapView.setBackgroundColor(Color.TRANSPARENT);
         mapView.setMultiTouchControls(true);
         mapView.setUseDataConnection(true);
@@ -140,9 +142,6 @@ public class ActivityActivity extends AppCompatActivity {
                 mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
             }
         });
-
-        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        mapView.setVerticalMapRepetitionEnabled(false);
     }
 
     // Create top menubar

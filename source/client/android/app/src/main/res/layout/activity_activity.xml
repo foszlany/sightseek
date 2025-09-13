@@ -47,14 +47,41 @@
         app:layout_constraintTop_toBottomOf="@+id/menubar_activity"
         app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            android:id="@+id/activity_title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:text="@string/example_sampletext"
-            android:textColor="@color/white"
-            android:textSize="44sp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/activity_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/example_sampletext"
+                android:textColor="@color/white"
+                android:textSize="44sp" />
+
+            <!--
+            <ImageButton
+                android:id="@+id/activity_editbtn"
+                android:background="@drawable/edit_button"
+                android:layout_gravity="top"
+                android:layout_marginEnd="12dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"/>
+            -->
+
+            <ImageButton
+                android:id="@+id/activity_deletebtn"
+                android:background="@drawable/delete_button"
+                android:layout_gravity="top"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:contentDescription="@string/activity_deletebtndesc" />
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/activity_date"
@@ -71,7 +98,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="32dp"
             android:text="@string/example_example"
             android:textColor="@color/white"
             android:textSize="16sp"/>

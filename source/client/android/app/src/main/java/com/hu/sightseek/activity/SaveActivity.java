@@ -147,6 +147,8 @@ public class SaveActivity extends AppCompatActivity {
 
         // Initialize mapview
         MapView mapView = findViewById(R.id.save_map);
+        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        mapView.setVerticalMapRepetitionEnabled(false);
         mapView.setBackgroundColor(Color.TRANSPARENT);
         mapView.setMultiTouchControls(true);
         mapView.setUseDataConnection(true);
@@ -177,9 +179,6 @@ public class SaveActivity extends AppCompatActivity {
                 mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
             }
         });
-
-        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        mapView.setVerticalMapRepetitionEnabled(false);
 
         // Set time and distance
         int hours = (int) elapsedTime / 3600;
