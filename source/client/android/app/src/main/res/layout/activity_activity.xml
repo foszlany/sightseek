@@ -28,10 +28,8 @@
         android:src="@drawable/save_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_activity"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/menubar_activity"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -77,6 +75,7 @@
                 android:id="@+id/activity_deletebtn"
                 android:background="@drawable/delete_button"
                 android:layout_gravity="top"
+                android:layout_marginTop="7dp"
                 android:layout_width="46dp"
                 android:layout_height="46dp"
                 android:contentDescription="@string/activity_deletebtndesc" />
