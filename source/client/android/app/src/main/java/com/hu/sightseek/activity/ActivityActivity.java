@@ -6,16 +6,21 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.hu.sightseek.R;
+import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.model.Activity;
 
 import org.osmdroid.config.Configuration;
 
 public class ActivityActivity extends AppCompatActivity {
+    private Activity activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,33 @@ public class ActivityActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+
+        // Retrieve data
+        Bundle extras = getIntent().getExtras();
+
+        if(extras == null || !extras.containsKey("id")) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        int activityId = extras.getInt("id");
+
+        // Get activity
+        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+        activity = dao.getActivity(activityId);
+
+        if(activity == null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        // Set views
+        TextView titleTextView = findViewById(R.id.activity_title);
+        titleTextView.setText(activity.getName());
     }
 
     // Create top menubar

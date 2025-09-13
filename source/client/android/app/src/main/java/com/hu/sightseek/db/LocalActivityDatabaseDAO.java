@@ -34,6 +34,37 @@ public class LocalActivityDatabaseDAO {
         return id;
     }
 
+    public Activity getActivity(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                LocalActivityDatabaseImpl.ACTIVITIES_TABLE,
+                null,
+                "id=" + id,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor.moveToFirst()) {
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+            int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow("category"));
+            String polyline = cursor.getString(cursor.getColumnIndexOrThrow("polyline"));
+            String starttime = cursor.getString(cursor.getColumnIndexOrThrow("starttime"));
+            String endtime = cursor.getString(cursor.getColumnIndexOrThrow("endtime"));
+            double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow("elapsedtime"));
+            double distance = cursor.getDouble(cursor.getColumnIndexOrThrow("distance"));
+
+            cursor.close();
+
+            return new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance);
+        }
+        else {
+            return null;
+        }
+    }
+
     public ArrayList<Activity> getAllActivities() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Activity> activities = new ArrayList<>();
