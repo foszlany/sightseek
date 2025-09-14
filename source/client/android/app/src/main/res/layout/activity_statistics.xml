@@ -29,7 +29,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout0"
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/linearLayout1"
@@ -60,17 +60,15 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linearLayout3"
+                android:id="@+id/statistics_distancecard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/search_bar"
                 android:orientation="vertical"
                 android:padding="20dp"
-                app:layout_constraintEnd_toEndOf="@+id/linearLayout1"
-                app:layout_constraintHorizontal_bias="0.608"
-                app:layout_constraintStart_toStartOf="@+id/linearLayout1"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
 
                 <TextView
@@ -97,17 +95,16 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linearLayout4"
+                android:id="@+id/statistics_timecard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/search_bar"
                 android:orientation="vertical"
                 android:padding="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.884"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+                app:layout_constraintTop_toBottomOf="@+id/statistics_distancecard">
 
                 <TextView
                     android:id="@+id/statistics_timecard_startingtext"

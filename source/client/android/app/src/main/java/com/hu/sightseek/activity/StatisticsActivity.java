@@ -6,6 +6,9 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,6 +53,21 @@ public class StatisticsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+
+        // Init cardview
+        initCardView();
+    }
+
+    public void initCardView() {
+        Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
+        Animation slideToLeftAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toleft);
+
+        View distanceCardView = findViewById(R.id.statistics_distancecard);
+        distanceCardView.startAnimation(slideToRightAnim);
+
+        View timeCardView = findViewById(R.id.statistics_timecard);
+        timeCardView.startAnimation(slideToLeftAnim);
+
     }
 
     // Create top menubar
