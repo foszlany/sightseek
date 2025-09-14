@@ -129,4 +129,6 @@
     <string name="statistics_timecard_timevalue">%1$.3f days</string>
     <string name="statistics_timecard_startingtext">You\'ve done this over a period of</string>
     <string name="statistics_timecard_randomcontext1">It ain\'t much but it\'s honest work.</string>
+    <string name="statistics_cardbtndesc">Card view</string>
+    <string name="statistics_detailedbtndesc">Detailed view</string>
 </resources>
