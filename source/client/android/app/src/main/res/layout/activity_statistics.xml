@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/main_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.StatisticsActivity">
@@ -17,4 +18,110 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/menubar_statistics"
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintStart_toStartOf="@+id/menubar_statistics"
+        app:layout_constraintTop_toBottomOf="@+id/menubar_statistics">
+
+
+        <ImageButton
+            android:id="@+id/statistics_nav_cardbtn"
+            android:background="@drawable/card_button"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="14dp"
+            android:contentDescription="@string/activity_deletebtndesc" />
+
+        <ImageButton
+            android:id="@+id/statistics_nav_detailedbtn"
+            android:background="@drawable/detailed_button"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:contentDescription="@string/activity_deletebtndesc" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/search_bar"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout1"
+        app:layout_constraintHorizontal_bias="0.586"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout1"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
+
+        <TextView
+            android:id="@+id/statistics_distancecard_startingtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/statistics_distancecard_startingtext"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/statistics_distancecard_distancevalue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:text="@string/statistics_distancecard_distancevalue"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/statistics_distancecard_incontext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/statistics_distancecard_randomcontext1"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/search_bar"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/menubar_statistics"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/menubar_statistics"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        <TextView
+            android:id="@+id/statistics_timecard_startingtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/statistics_timecard_startingtext"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/statistics_timecard_distancevalue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="30dp"
+            android:text="@string/statistics_timecard_timevalue"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/statistics_timecard_incontext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/statistics_timecard_randomcontext1"
+            android:textSize="16sp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
