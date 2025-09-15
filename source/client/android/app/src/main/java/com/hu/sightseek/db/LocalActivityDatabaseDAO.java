@@ -33,6 +33,7 @@ public class LocalActivityDatabaseDAO {
 
         long id = db.insert(LocalActivityDatabaseImpl.ACTIVITIES_TABLE, null, values);
         db.close();
+
         return id;
     }
 
@@ -81,10 +82,14 @@ public class LocalActivityDatabaseDAO {
             TravelCategory res = TravelCategory.values()[categoryIndex];
 
             cursor.close();
+            db.close();
 
             return res;
         }
         else {
+            cursor.close();
+            db.close();
+
             return null;
         }
     }
@@ -112,10 +117,14 @@ public class LocalActivityDatabaseDAO {
             double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_DISTANCE));
 
             cursor.close();
+            db.close();
 
             return new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance);
         }
         else {
+            cursor.close();
+            db.close();
+
             return null;
         }
     }
@@ -153,11 +162,10 @@ public class LocalActivityDatabaseDAO {
 
                 activities.add(new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance));
             } while(cursor.moveToNext());
-
-            cursor.close();
         }
 
         cursor.close();
+        db.close();
 
         return activities;
     }
@@ -178,7 +186,6 @@ public class LocalActivityDatabaseDAO {
 
         db.close();
     }
-
 
     public void close() {
         dbHelper.close();

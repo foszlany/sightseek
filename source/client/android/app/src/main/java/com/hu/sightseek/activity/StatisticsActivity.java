@@ -60,8 +60,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
         // Variables
         LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+
         HashMap<String, Double> cardMap = dao.getStatistics();
         mainCategory = dao.getMainTravelCategory();
+
+        dao.close();
+
         if(cardMap == null || mainCategory == null) {
             // TODO
             Intent intent = new Intent(this, MainActivity.class);

@@ -153,6 +153,7 @@ public class ActivityActivity extends AppCompatActivity {
                     .setMessage("Are you sure you want to delete this activity? This cannot be undone!")
                     .setPositiveButton("Yes", (d, which) -> {
                         dao.deleteActivity(activityId);
+                        dao.close();
 
                         Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);
@@ -194,5 +195,10 @@ public class ActivityActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

@@ -195,6 +195,7 @@ public class IdeaActivity extends AppCompatActivity {
         // Check whether there are activities stored
         LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
         activities = dao.getAllActivities();
+        dao.close();
 
         if(activities.isEmpty()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
