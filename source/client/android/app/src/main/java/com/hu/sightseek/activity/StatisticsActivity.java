@@ -68,6 +68,8 @@ public class StatisticsActivity extends AppCompatActivity {
         View timeCardView = findViewById(R.id.statistics_timecard);
         timeCardView.startAnimation(slideToLeftAnim);
 
+        View categoryCardView = findViewById(R.id.statistics_categorycard);
+        categoryCardView.startAnimation(slideToLeftAnim);
     }
 
     // Create top menubar

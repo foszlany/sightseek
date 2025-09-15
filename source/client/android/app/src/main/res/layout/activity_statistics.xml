@@ -68,7 +68,7 @@
                 android:background="@drawable/search_bar"
                 android:backgroundTint="@color/light_yellow"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="15dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
 
@@ -84,7 +84,7 @@
                     android:id="@+id/statistics_distancecard_distancevalue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="22dp"
                     android:text="@string/statistics_distancecard_distancevalue"
                     android:textColor="@color/black"
                     android:textSize="24sp" />
@@ -107,7 +107,7 @@
                 android:background="@drawable/search_bar"
                 android:backgroundTint="@color/light_blue"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/statistics_distancecard">
 
@@ -125,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="22dp"
                     android:text="@string/statistics_timecard_timevalue"
                     android:textColor="@color/black"
                     android:textSize="24sp" />
@@ -137,6 +137,110 @@
                     android:text="@string/statistics_timecard_randomcontext1"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/statistics_categorycard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/search_bar"
+                android:backgroundTint="@color/light_pink"
+                android:orientation="vertical"
+                android:padding="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statistics_timecard">
+
+                <TextView
+                    android:id="@+id/statistics_categorycard_startingtext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statistics_categorycard_startingtext"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/statistics_categorycard_distancevalue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="22dp"
+                    android:text="@string/example_example"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/statistics_categorycard_incontext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statistics_categorycard_walk"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/statistics_topcard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="72dp"
+                android:background="@drawable/search_bar"
+                android:backgroundTint="@color/light_green"
+                android:orientation="vertical"
+                android:padding="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statistics_categorycard">
+
+                <TextView
+                    android:id="@+id/statistics_topcard_startingtext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="14dp"
+                    android:text="@string/statistics_topcard_startingtext"
+                    android:textColor="@color/black"
+                    android:textSize="21sp" />
+
+                <GridLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:columnCount="2"
+                    android:padding="2dp"
+                    android:rowCount="2">
+
+                    <TextView
+                        android:id="@+id/statistics_topcard_distancevalue"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="14dp"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="26sp" />
+
+                    <TextView
+                        android:id="@+id/statistics_topcard_timevalue"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="26sp" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/statistics_topcard_longestdistance"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="14dp"
+                        android:gravity="center"
+                        android:text="@string/statistics_topcard_longesttime"
+                        android:textColor="@color/black" />
+                </GridLayout>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

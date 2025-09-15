@@ -19,4 +19,6 @@
     <color name="light_yellow">#FFF39F</color>
     <color name="light_blue">#ACFFF6</color>
     <color name="delete_red">#D93030</color>
+    <color name="light_pink">#F1B3FF</color>
+    <color name="light_green">#96FFB1</color>
 </resources>
