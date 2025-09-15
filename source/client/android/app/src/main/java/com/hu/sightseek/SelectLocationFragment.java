@@ -27,6 +27,7 @@ import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 
 public class SelectLocationFragment extends DialogFragment {
+    private GeoPoint referencePoint;
     private MapView mapView;
     private Marker marker;
 
@@ -34,6 +35,12 @@ public class SelectLocationFragment extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Context ctx = inflater.getContext();
         View view = inflater.inflate(R.layout.fragment_select_location, container, false);
+
+        // Retrieve previous location if possible
+        referencePoint = null;
+        if(getArguments() != null) {
+            referencePoint = getArguments().getParcelable("referencePoint");
+        }
 
         // Map
         mapView = view.findViewById(R.id.locationselectpopup_map);
@@ -46,23 +53,29 @@ public class SelectLocationFragment extends DialogFragment {
         marker.setInfoWindow(null);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
-        // Try to get location
         LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
-        if(!(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        // Reference point exists
+        if(referencePoint != null) {
+            mapView.getController().setCenter(referencePoint);
+            refreshMarker(referencePoint);
+        }
+        // Try to get location
+        else if(!(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 || ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
 
-            GeoPoint point = new GeoPoint(47.499, 19.044);
-            mapView.getController().setCenter(point);
-            refreshMarker(point);
+            referencePoint = new GeoPoint(47.499, 19.044);
+            mapView.getController().setCenter(referencePoint);
+            refreshMarker(referencePoint);
         }
+        // Default to Budapest
         else {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx);
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
                 if(location != null) {
-                    GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    mapView.getController().setCenter(point);
-                    refreshMarker(point);
+                    referencePoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    mapView.getController().setCenter(referencePoint);
+                    refreshMarker(referencePoint);
                 }
             });
         }

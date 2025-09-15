@@ -158,7 +158,14 @@ public class IdeaActivity extends AppCompatActivity {
         radioGroup = findViewById(R.id.idea_radiogroup);
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if(checkedId == R.id.idea_radio_locationbtn) {
+                Bundle bundle = new Bundle();
+                if(locationPoint != null) {
+                    bundle.putParcelable("referencePoint", new GeoPoint(locationPoint.latitude, locationPoint.longitude));
+                }
+
                 SelectLocationFragment dialog = new SelectLocationFragment();
+                dialog.setArguments(bundle);
+
                 dialog.show(getSupportFragmentManager(), "selectLocationPopup");
             }
         });
