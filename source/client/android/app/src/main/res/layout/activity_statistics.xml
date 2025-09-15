@@ -162,7 +162,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/statistics_categorycard_distancevalue"
+                    android:id="@+id/statistics_categorycard_categoryvalue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="22dp"
@@ -174,7 +174,7 @@
                     android:id="@+id/statistics_categorycard_incontext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/statistics_categorycard_walk"
+                    android:text="@string/statistics_categorycard_locomotor"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
             </LinearLayout>

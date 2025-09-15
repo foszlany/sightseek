@@ -61,7 +61,8 @@ public class StatisticsActivity extends AppCompatActivity {
         // Variables
         LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
         HashMap<String, Double> cardMap = dao.getStatistics();
-        if(cardMap == null) {
+        mainCategory = dao.getMainTravelCategory();
+        if(cardMap == null || mainCategory == null) {
             // TODO
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -153,7 +154,6 @@ public class StatisticsActivity extends AppCompatActivity {
         TextView totalTimeTextView = findViewById(R.id.statistics_timecard_timevalue);
         TextView totalTimeContextTextView = findViewById(R.id.statistics_timecard_incontext);
         totalTimeTextView.setText(getString(R.string.statistics_timecard_timevalue, totalDays));
-
         if(totalDays < 1) {
             totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context1));
         }
@@ -173,7 +173,25 @@ public class StatisticsActivity extends AppCompatActivity {
             totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context6));
         }
 
+        TextView mainCategoryTextView = findViewById(R.id.statistics_categorycard_categoryvalue);
+        TextView mainCategoryContextTextView = findViewById(R.id.statistics_categorycard_incontext);
+        mainCategoryTextView.setText(mainCategory.toShortString());
+        switch(mainCategory) {
+            case LOCOMOTOR:
+                mainCategoryContextTextView.setText(getString(R.string.statistics_categorycard_locomotor));
+                break;
 
+            case MICROMOBILITY:
+                mainCategoryContextTextView.setText(getString(R.string.statistics_categorycard_micromobility));
+                break;
+
+            case OTHER:
+                mainCategoryContextTextView.setText(getString(R.string.statistics_categorycard_other));
+                break;
+
+            case INVALID:
+                mainCategoryContextTextView.setText(getString(R.string.statistics_categorycard_default));
+        }
 
         TextView longestDistanceTextView = findViewById(R.id.statistics_topcard_distancevalue);
         longestDistanceTextView.setText(getString(R.string.main_distancevalue, longestDistance));

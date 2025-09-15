@@ -71,8 +71,8 @@
     <string name="idea_radius">Radius</string>
     <string name="idea_loading">Loading…</string>
     <string name="idea_wait">Please wait.</string>
-    <string name="ideas_sad">:(</string>
-    <string name="ideas_noactivities">No activities found.</string>
+    <string name="idea_sad">:(</string>
+    <string name="idea_noactivities">No activities found.</string>
     <string name="idea_typelocation">%1$s in %2$s</string>
     <string name="idea_radiuskm">%1$.0f km</string>
     <string name="idea_nothingwasfound">Nothing was found</string>
@@ -94,11 +94,13 @@
     <string name="statistics_timecard_context4">The sun doesn\'t scare you anymore.</string>
     <string name="statistics_timecard_context5">You\'re active and you know that pretty well.</string>
     <string name="statistics_timecard_context6">It\'s time to go inside.</string>
-
     <string name="statistics_cardbtndesc">Card view</string>
     <string name="statistics_detailedbtndesc">Detailed view</string>
-    <string name="statistics_categorycard_startingtext">Your main category of exercise is</string>
-    <string name="statistics_categorycard_walk">Power to you.</string>
+    <string name="statistics_categorycard_startingtext">Your favorite type of activity is</string>
+    <string name="statistics_categorycard_locomotor">Power to you.</string>
+    <string name="statistics_categorycard_micromobility">Distance over details.</string>
+    <string name="statistics_categorycard_default">What?</string>
+    <string name="statistics_categorycard_other">Filfthy cheater.</string>
     <string name="statistics_topcard_startingtext">This is you, at your best.</string>
     <string name="statistics_topcard_longestdistance">Longest distance</string>
     <string name="statistics_topcard_longesttime">Longest time</string>

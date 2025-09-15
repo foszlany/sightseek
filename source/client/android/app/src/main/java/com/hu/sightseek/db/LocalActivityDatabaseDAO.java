@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.hu.sightseek.TravelCategory;
 import com.hu.sightseek.model.Activity;
 
 import java.util.ArrayList;
@@ -38,7 +39,8 @@ public class LocalActivityDatabaseDAO {
     public HashMap<String, Double> getStatistics() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String sql = "SELECT " +
+        String sql =
+                "SELECT " +
                 "IFNULL(SUM(" + LocalActivityDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS total_distance, " +
                 "IFNULL(SUM(" + LocalActivityDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS total_time, " +
                 "IFNULL(MAX(" + LocalActivityDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS longest_distance, " +
@@ -61,6 +63,32 @@ public class LocalActivityDatabaseDAO {
         return res;
     }
 
+    public TravelCategory getMainTravelCategory() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String sql =
+                "SELECT " + LocalActivityDatabaseImpl.ACTIVITIES_CATEGORY + " AS category, " +
+                "COUNT(*) AS occurrences " +
+                "FROM " + LocalActivityDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "GROUP BY " + LocalActivityDatabaseImpl.ACTIVITIES_CATEGORY + " " +
+                "ORDER BY occurrences DESC " +
+                "LIMIT 1";
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        if(cursor.moveToFirst()) {
+            int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow("category"));
+            TravelCategory res = TravelCategory.values()[categoryIndex];
+
+            cursor.close();
+
+            return res;
+        }
+        else {
+            return null;
+        }
+    }
+
     public Activity getActivity(int id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -75,13 +103,13 @@ public class LocalActivityDatabaseDAO {
         );
 
         if(cursor.moveToFirst()) {
-            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-            int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow("category"));
-            String polyline = cursor.getString(cursor.getColumnIndexOrThrow("polyline"));
-            String starttime = cursor.getString(cursor.getColumnIndexOrThrow("starttime"));
-            String endtime = cursor.getString(cursor.getColumnIndexOrThrow("endtime"));
-            double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow("elapsedtime"));
-            double distance = cursor.getDouble(cursor.getColumnIndexOrThrow("distance"));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_NAME));
+            int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_CATEGORY));
+            String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_POLYLINE));
+            String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_STARTTIME));
+            String endtime = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_ENDTIME));
+            double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
+            double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_DISTANCE));
 
             cursor.close();
 
@@ -115,13 +143,13 @@ public class LocalActivityDatabaseDAO {
         if(cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-                int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow("category"));
-                String polyline = cursor.getString(cursor.getColumnIndexOrThrow("polyline"));
-                String starttime = cursor.getString(cursor.getColumnIndexOrThrow("starttime"));
-                String endtime = cursor.getString(cursor.getColumnIndexOrThrow("endtime"));
-                double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow("elapsedtime"));
-                double distance = cursor.getDouble(cursor.getColumnIndexOrThrow("distance"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_NAME));
+                int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_CATEGORY));
+                String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_POLYLINE));
+                String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_STARTTIME));
+                String endtime = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_ENDTIME));
+                double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
+                double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_DISTANCE));
 
                 activities.add(new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance));
             } while(cursor.moveToNext());
