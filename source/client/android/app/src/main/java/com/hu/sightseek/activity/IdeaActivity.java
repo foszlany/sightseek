@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,12 +13,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -88,7 +91,7 @@ public class IdeaActivity extends AppCompatActivity {
     private LatLng boundingBoxPoint;
     private int referenceIndex;
 
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,21 +161,21 @@ public class IdeaActivity extends AppCompatActivity {
         radioGroup = findViewById(R.id.idea_radiogroup);
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if(checkedId == R.id.idea_radio_locationbtn) {
-                Bundle bundle = new Bundle();
-                if(locationPoint != null) {
-                    bundle.putParcelable("referencePoint", new GeoPoint(locationPoint.latitude, locationPoint.longitude));
-                }
-
-                SelectLocationFragment dialog = new SelectLocationFragment();
-                dialog.setArguments(bundle);
-
-                dialog.show(getSupportFragmentManager(), "selectLocationPopup");
+                initLocationFragment();
             }
+        });
+
+        // TODO: Change?
+        RadioButton locationButton = findViewById(R.id.idea_radio_locationbtn);
+        locationButton.setOnTouchListener((v, event) -> {
+            if(event.getAction() == MotionEvent.ACTION_UP && locationButton.isChecked()) {
+                initLocationFragment();
+            }
+            return false;
         });
 
         // Radius bar
         radiusTextView.setText(getString(R.string.idea_radiuskm, 13.0));
-
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
         radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -236,6 +239,17 @@ public class IdeaActivity extends AppCompatActivity {
 
             findReferencePoint();
         }
+    }
+
+    private void initLocationFragment() {
+        Bundle bundle = new Bundle();
+        if(locationPoint != null) {
+            bundle.putParcelable("referencePoint", new GeoPoint(locationPoint.latitude, locationPoint.longitude));
+        }
+
+        SelectLocationFragment dialog = new SelectLocationFragment();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "selectLocationPopup");
     }
 
     public void findReferencePoint() {
