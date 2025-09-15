@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -9,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +19,25 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
+import com.hu.sightseek.TravelCategory;
+import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
 
+import java.util.HashMap;
+import java.util.Locale;
+
 public class StatisticsActivity extends AppCompatActivity {
+    private ImageButton cardViewButton;
+    private ImageButton detailViewButton;
+
+    // Card view data
+    private double totalDistance;
+    private double totalDays;
+    private TravelCategory mainCategory;
+    private double longestDistance;
+    private double longestTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +58,34 @@ public class StatisticsActivity extends AppCompatActivity {
             return;
         }
 
+        // Variables
+        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+        HashMap<String, Double> cardMap = dao.getStatistics();
+        if(cardMap == null) {
+            // TODO
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        Double valueHolder;
+
+        valueHolder = cardMap.get("total_distance");
+        totalDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
+
+        valueHolder = cardMap.get("total_time");
+        totalDays = (valueHolder != null) ? (valueHolder / 86400.0) : 0.0;
+
+        valueHolder = cardMap.get("longest_distance");
+        longestDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
+
+        valueHolder = cardMap.get("longest_time");
+        longestTime = (valueHolder != null) ? valueHolder : 0.0;
+
+        cardViewButton = findViewById(R.id.statistics_nav_cardbtn);
+        detailViewButton = findViewById(R.id.statistics_nav_detailedbtn);
+
         // Add Menu
         Toolbar toolbar = findViewById(R.id.menubar_statistics);
         setSupportActionBar(toolbar);
@@ -59,6 +105,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     public void initCardView() {
+        // Animations
         Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
         Animation slideToLeftAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toleft);
         Animation slideToUpAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toup);
@@ -74,6 +121,10 @@ public class StatisticsActivity extends AppCompatActivity {
 
         View topCardView = findViewById(R.id.statistics_topcard);
         topCardView.startAnimation(slideToUpAnim);
+
+        // Set values
+        TextView distanceTextView = findViewById(R.id.statistics_distancecard_distancevalue);
+        distanceTextView.setText(getString(R.string.statistics_distancecard_distancevalue, totalDistance));
     }
 
     // Create top menubar

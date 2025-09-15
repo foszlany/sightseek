@@ -80,9 +80,9 @@
     <string name="locationselectpopup_select">Select</string>
     <string name="activity_deletebtndesc">Delete button</string>
     <string name="statistics_distancecard_startingtext">During your Sightseek career you have travelled</string>
-    <string name="statistics_distancecard_distancevalue">%1$.0f kilometers.</string>
+    <string name="statistics_distancecard_distancevalue">%1$.2f kilometers.</string>
     <string name="statistics_distancecard_randomcontext1">That\'s about %1$d Big Mac burgers.</string>
-    <string name="statistics_timecard_timevalue">%1$.3f days</string>
+    <string name="statistics_timecard_timevalue">%1$.2f days</string>
     <string name="statistics_timecard_startingtext">You\'ve done this over a period of</string>
     <string name="statistics_timecard_randomcontext1">It ain\'t much, but it\'s honest work.</string>
     <string name="statistics_cardbtndesc">Card view</string>

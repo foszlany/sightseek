@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.hu.sightseek.model.Activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class LocalActivityDatabaseDAO {
@@ -32,6 +33,31 @@ public class LocalActivityDatabaseDAO {
         long id = db.insert(LocalActivityDatabaseImpl.ACTIVITIES_TABLE, null, values);
         db.close();
         return id;
+    }
+
+    public HashMap<String, Double> getStatistics() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String sql = "SELECT " +
+                "IFNULL(SUM(" + LocalActivityDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS total_distance, " +
+                "IFNULL(SUM(" + LocalActivityDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS total_time, " +
+                "IFNULL(MAX(" + LocalActivityDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS longest_distance, " +
+                "IFNULL(MAX(" + LocalActivityDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS longest_time " +
+                "FROM " + LocalActivityDatabaseImpl.ACTIVITIES_TABLE;
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        HashMap<String, Double> res = new HashMap<>();
+        if(cursor.moveToFirst()) {
+            res.put("total_distance", cursor.getDouble(cursor.getColumnIndexOrThrow("total_distance")));
+            res.put("total_time", cursor.getDouble(cursor.getColumnIndexOrThrow("total_time")));
+            res.put("longest_distance", cursor.getDouble(cursor.getColumnIndexOrThrow("longest_distance")));
+            res.put("longest_time", cursor.getDouble(cursor.getColumnIndexOrThrow("longest_time")));
+        }
+
+        cursor.close();
+        db.close();
+        return res;
     }
 
     public Activity getActivity(int id) {

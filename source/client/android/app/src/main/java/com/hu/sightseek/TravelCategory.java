@@ -6,7 +6,8 @@ import androidx.annotation.NonNull;
 public enum TravelCategory {
     LOCOMOTOR(0),
     MICROMOBILITY(1),
-    OTHER(2);
+    OTHER(2),
+    INVALID(3);
 
     private final int index;
 

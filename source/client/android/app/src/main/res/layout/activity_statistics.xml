@@ -233,7 +233,7 @@
                         android:gravity="center"
                         android:text="@string/statistics_topcard_longestdistance"
                         android:textColor="@color/black"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="100dp"
@@ -242,7 +242,7 @@
                         android:gravity="center"
                         android:text="@string/statistics_topcard_longesttime"
                         android:textColor="@color/black"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
                 </GridLayout>
             </LinearLayout>
 
