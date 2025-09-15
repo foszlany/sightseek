@@ -57,6 +57,7 @@ public class LocalActivityDatabaseDAO {
 
         cursor.close();
         db.close();
+
         return res;
     }
 

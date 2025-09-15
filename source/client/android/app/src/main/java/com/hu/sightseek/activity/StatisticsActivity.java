@@ -26,6 +26,7 @@ import org.osmdroid.config.Configuration;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Random;
 
 public class StatisticsActivity extends AppCompatActivity {
     private ImageButton cardViewButton;
@@ -123,8 +124,34 @@ public class StatisticsActivity extends AppCompatActivity {
         topCardView.startAnimation(slideToUpAnim);
 
         // Set values
+        Random rnd = new Random();
+
         TextView distanceTextView = findViewById(R.id.statistics_distancecard_distancevalue);
+        TextView distanceContextTextView = findViewById(R.id.statistics_distancecard_incontext);
         distanceTextView.setText(getString(R.string.statistics_distancecard_distancevalue, totalDistance));
+        switch(rnd.nextInt(5)) {
+            case 0: // Big Mac
+                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext1, (float) Math.round(totalDistance / 0.0001016)));
+                break;
+
+            case 1: // Polar bear
+                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext2, totalDistance / 0.0026));
+                break;
+
+            case 2: // Football fields
+                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext3, totalDistance / 0.11));
+                break;
+
+            case 3: // Liechtenstein
+                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext4, totalDistance / 26.0));
+                break;
+
+            case 4: // Moon
+                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext5, totalDistance / 3475.0));
+                break;
+        }
+
+
     }
 
     // Create top menubar

@@ -49,7 +49,7 @@
     <string name="example_example">EXAMPLE</string>
     <string name="example_value">432567</string>
     <string name="main_filterdesc">Filter button</string>
-    <string name="main_searchhint">Search for title...</string>
+    <string name="main_searchhint">Search for title…</string>
     <string name="menu_filter_recent">New</string>
     <string name="menu_filter_old">Old</string>
     <string name="menu_filter_az">A-Z</string>
@@ -58,8 +58,8 @@
     <string name="menu_filter_bigdist">Distance (High to Low)</string>
     <string name="menu_filter_short">Elapsed time (Short to Long)</string>
     <string name="menu_filter_long">Elapsed time (Long to Short)</string>
-    <string name="register_error_unknown">An unknown error has occured. Please try again later.</string>
-    <string name="idea_title">How about...</string>
+    <string name="register_error_unknown">An unknown error has occurred. Please try again later.</string>
+    <string name="idea_title">How about…</string>
     <string name="idea_ignore">Ignore</string>
     <string name="idea_next">Next</string>
     <string name="idea_imgdesc">An image showcasing the attraction to visit.</string>
@@ -69,7 +69,7 @@
     <string name="idea_bounding">Bounding box</string>
     <string name="idea_reference">Reference point</string>
     <string name="idea_radius">Radius</string>
-    <string name="idea_loading">Loading...</string>
+    <string name="idea_loading">Loading…</string>
     <string name="idea_wait">Please wait.</string>
     <string name="ideas_sad">:(</string>
     <string name="ideas_noactivities">No activities found.</string>
@@ -81,7 +81,11 @@
     <string name="activity_deletebtndesc">Delete button</string>
     <string name="statistics_distancecard_startingtext">During your Sightseek career you have travelled</string>
     <string name="statistics_distancecard_distancevalue">%1$.2f kilometers.</string>
-    <string name="statistics_distancecard_randomcontext1">That\'s about %1$d Big Mac burgers.</string>
+    <string name="statistics_distancecard_randomcontext1">That\'s about %1$.0f Big Mac burgers.</string>
+    <string name="statistics_distancecard_randomcontext2">That\'s about %1$.1f Polar bears.</string>
+    <string name="statistics_distancecard_randomcontext3">That\'s about %1$.2f Football fields.</string>
+    <string name="statistics_distancecard_randomcontext4">That\'s about %1$.3f Liechtensteins.</string>
+    <string name="statistics_distancecard_randomcontext5">That\'s about %1$.4f Moons.</string>
     <string name="statistics_timecard_timevalue">%1$.2f days</string>
     <string name="statistics_timecard_startingtext">You\'ve done this over a period of</string>
     <string name="statistics_timecard_randomcontext1">It ain\'t much, but it\'s honest work.</string>
