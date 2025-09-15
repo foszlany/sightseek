@@ -18,6 +18,7 @@ import android.widget.Button;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.hu.sightseek.activity.IdeaActivity;
+import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
@@ -46,7 +47,7 @@ public class SelectLocationFragment extends DialogFragment {
         mapView = view.findViewById(R.id.locationselectpopup_map);
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setMultiTouchControls(true);
-        mapView.getController().setZoom(15.0);
+        mapView.getController().setZoom(11.0);
 
         // Marker
         marker = new Marker(mapView);
@@ -54,21 +55,22 @@ public class SelectLocationFragment extends DialogFragment {
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
         LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+
         // Reference point exists
         if(referencePoint != null) {
             mapView.getController().setCenter(referencePoint);
             refreshMarker(referencePoint);
         }
-        // Try to get location
+        // Default to Budapest
         else if(!(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 || ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
 
-            referencePoint = new GeoPoint(47.499, 19.044);
+            referencePoint = new GeoPoint(SightseekUtils.BUDAPEST_LATITUDE, SightseekUtils.BUDAPEST_LONGITUDE);
             mapView.getController().setCenter(referencePoint);
             refreshMarker(referencePoint);
         }
-        // Default to Budapest
+        // Try to get location
         else {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx);
             fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {

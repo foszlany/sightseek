@@ -16,6 +16,9 @@ import org.osmdroid.views.overlay.Polyline;
 import java.util.List;
 
 public final class SightseekUtils {
+    public static final double BUDAPEST_LATITUDE = 47.499;
+    public static final double BUDAPEST_LONGITUDE = 19.044;
+
     private SightseekUtils() {}
 
     @NonNull
@@ -55,7 +58,7 @@ public final class SightseekUtils {
     }
 
     public static void defaultToBudapest(MapView mapView) {
-        GeoPoint point = new GeoPoint(47.499, 19.044);
+        GeoPoint point = new GeoPoint(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE);
         mapView.getController().setCenter(point);
     }
 }
