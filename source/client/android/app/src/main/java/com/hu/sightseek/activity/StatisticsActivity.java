@@ -1,7 +1,6 @@
 package com.hu.sightseek.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -126,32 +125,62 @@ public class StatisticsActivity extends AppCompatActivity {
         // Set values
         Random rnd = new Random();
 
-        TextView distanceTextView = findViewById(R.id.statistics_distancecard_distancevalue);
-        TextView distanceContextTextView = findViewById(R.id.statistics_distancecard_incontext);
-        distanceTextView.setText(getString(R.string.statistics_distancecard_distancevalue, totalDistance));
+        TextView totalDistanceTextView = findViewById(R.id.statistics_distancecard_distancevalue);
+        TextView totalDistanceContextTextView = findViewById(R.id.statistics_distancecard_incontext);
+        totalDistanceTextView.setText(getString(R.string.statistics_distancecard_distancevalue, totalDistance));
         switch(rnd.nextInt(5)) {
             case 0: // Big Mac
-                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext1, (float) Math.round(totalDistance / 0.0001016)));
+                totalDistanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext1, (float) Math.round(totalDistance / 0.0001016)));
                 break;
 
             case 1: // Polar bear
-                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext2, totalDistance / 0.0026));
+                totalDistanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext2, totalDistance / 0.0026));
                 break;
 
             case 2: // Football fields
-                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext3, totalDistance / 0.11));
+                totalDistanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext3, totalDistance / 0.11));
                 break;
 
             case 3: // Liechtenstein
-                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext4, totalDistance / 26.0));
+                totalDistanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext4, totalDistance / 26.0));
                 break;
 
             case 4: // Moon
-                distanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext5, totalDistance / 3475.0));
+                totalDistanceContextTextView.setText(getString(R.string.statistics_distancecard_randomcontext5, totalDistance / 3475.0));
                 break;
         }
 
+        TextView totalTimeTextView = findViewById(R.id.statistics_timecard_timevalue);
+        TextView totalTimeContextTextView = findViewById(R.id.statistics_timecard_incontext);
+        totalTimeTextView.setText(getString(R.string.statistics_timecard_timevalue, totalDays));
 
+        if(totalDays < 1) {
+            totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context1));
+        }
+        else if(totalDays < 7) {
+            totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context2));
+        }
+        else if(totalDays < 30) {
+            totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context3));
+        }
+        else if(totalDays < 180) {
+            totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context4));
+        }
+        else if(totalDays < 365){
+            totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context5));
+        }
+        else {
+            totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context6));
+        }
+
+
+
+        TextView longestDistanceTextView = findViewById(R.id.statistics_topcard_distancevalue);
+        longestDistanceTextView.setText(getString(R.string.main_distancevalue, longestDistance));
+
+        TextView longestTimeTextView = findViewById(R.id.statistics_topcard_timevalue);
+        String formattedTime = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTime / 3600, ((int) longestTime % 3600) / 60, (int) longestTime % 60);
+        longestTimeTextView.setText(formattedTime);
     }
 
     // Create top menubar

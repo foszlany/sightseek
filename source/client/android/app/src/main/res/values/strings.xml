@@ -88,7 +88,13 @@
     <string name="statistics_distancecard_randomcontext5">That\'s about %1$.4f Moons.</string>
     <string name="statistics_timecard_timevalue">%1$.2f days</string>
     <string name="statistics_timecard_startingtext">You\'ve done this over a period of</string>
-    <string name="statistics_timecard_randomcontext1">It ain\'t much, but it\'s honest work.</string>
+    <string name="statistics_timecard_context1">It ain\'t much, but it\'s honest work.</string>
+    <string name="statistics_timecard_context2">A good start can be the key to success.</string>
+    <string name="statistics_timecard_context3">Keep it up, champ.</string>
+    <string name="statistics_timecard_context4">The sun doesn\'t scare you anymore.</string>
+    <string name="statistics_timecard_context5">You\'re active and you know that pretty well.</string>
+    <string name="statistics_timecard_context6">It\'s time to go inside.</string>
+
     <string name="statistics_cardbtndesc">Card view</string>
     <string name="statistics_detailedbtndesc">Detailed view</string>
     <string name="statistics_categorycard_startingtext">Your main category of exercise is</string>
