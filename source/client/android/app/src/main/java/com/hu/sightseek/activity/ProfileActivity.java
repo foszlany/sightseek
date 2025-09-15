@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -52,6 +53,13 @@ public class ProfileActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        });
+
+        // Logout
+        Button logoutButton = findViewById(R.id.profile_logout);
+        logoutButton.setOnClickListener(v -> {
+            mAuth.signOut();
+            finish();
         });
     }
 
