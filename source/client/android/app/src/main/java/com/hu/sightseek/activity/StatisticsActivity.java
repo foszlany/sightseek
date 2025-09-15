@@ -61,6 +61,7 @@ public class StatisticsActivity extends AppCompatActivity {
     public void initCardView() {
         Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
         Animation slideToLeftAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toleft);
+        Animation slideToUpAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toup);
 
         View distanceCardView = findViewById(R.id.statistics_distancecard);
         distanceCardView.startAnimation(slideToRightAnim);
@@ -69,7 +70,10 @@ public class StatisticsActivity extends AppCompatActivity {
         timeCardView.startAnimation(slideToLeftAnim);
 
         View categoryCardView = findViewById(R.id.statistics_categorycard);
-        categoryCardView.startAnimation(slideToLeftAnim);
+        categoryCardView.startAnimation(slideToRightAnim);
+
+        View topCardView = findViewById(R.id.statistics_topcard);
+        topCardView.startAnimation(slideToUpAnim);
     }
 
     // Create top menubar

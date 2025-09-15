@@ -78,6 +78,7 @@
     <string name="idea_nothingwasfound">Nothing was found</string>
     <string name="idea_increaseradius">Try increasing the radius</string>
     <string name="locationselectpopup_select">Select</string>
+    <string name="activity_deletebtndesc">Delete button</string>
     <string name="statistics_distancecard_startingtext">During your Sightseek career you have travelled</string>
     <string name="statistics_distancecard_distancevalue">%1$.0f kilometers.</string>
     <string name="statistics_distancecard_randomcontext1">That\'s about %1$d Big Mac burgers.</string>
@@ -90,5 +91,5 @@
     <string name="statistics_categorycard_walk">Power to you.</string>
     <string name="statistics_topcard_startingtext">This is you, at your best.</string>
     <string name="statistics_topcard_longestdistance">Longest distance</string>
-    <string name="statistics_topcard_longesttime">Longest activity</string>
+    <string name="statistics_topcard_longesttime">Longest time</string>
 </resources>

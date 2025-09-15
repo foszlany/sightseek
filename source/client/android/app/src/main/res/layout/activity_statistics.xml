@@ -182,13 +182,14 @@
                 android:id="@+id/statistics_topcard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="72dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/search_bar"
                 android:backgroundTint="@color/light_green"
                 android:orientation="vertical"
                 android:padding="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/statistics_categorycard">
 
                 <TextView
@@ -231,7 +232,8 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/statistics_topcard_longestdistance"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:textSize="14sp"/>
 
                     <TextView
                         android:layout_width="100dp"
@@ -239,7 +241,8 @@
                         android:layout_marginEnd="14dp"
                         android:gravity="center"
                         android:text="@string/statistics_topcard_longesttime"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:textSize="14sp"/>
                 </GridLayout>
             </LinearLayout>
 
