@@ -5,6 +5,7 @@ import static android.view.View.VISIBLE;
 
 import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekUtils.defaultToBudapest;
+import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
 
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
@@ -309,17 +310,7 @@ public class RecordActivity extends AppCompatActivity {
         tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
         tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
-        mapView.getController().setZoom(14.0);
-        mapView.setMinZoomLevel(3.0);
-        mapView.setMaxZoomLevel(20.0);
-        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        mapView.setVerticalMapRepetitionEnabled(false);
-        mapView.setScrollableAreaLimitDouble(new BoundingBox(
-                85.0,
-                180.0,
-                -85.0,
-                -180.0
-        ));
+        setupZoomSettings(mapView, 14.0);
 
         // Initialize route overlay
         setupRouteLine(route);

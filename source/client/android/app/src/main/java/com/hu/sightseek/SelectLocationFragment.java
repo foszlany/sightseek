@@ -1,5 +1,7 @@
 package com.hu.sightseek;
 
+import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -21,6 +23,7 @@ import com.hu.sightseek.activity.IdeaActivity;
 import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
@@ -45,9 +48,9 @@ public class SelectLocationFragment extends DialogFragment {
 
         // Map
         mapView = view.findViewById(R.id.locationselectpopup_map);
-        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setMultiTouchControls(true);
-        mapView.getController().setZoom(11.0);
+        
+        setupZoomSettings(mapView, 11.0);
 
         // Marker
         marker = new Marker(mapView);

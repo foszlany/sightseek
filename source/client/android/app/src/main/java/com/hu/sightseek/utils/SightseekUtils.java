@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 
@@ -55,6 +56,20 @@ public final class SightseekUtils {
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setPathEffect(new CornerPathEffect(30f));
+    }
+
+    public static void setupZoomSettings(MapView mapView, double zoom) {
+        mapView.getController().setZoom(zoom);
+        mapView.setMinZoomLevel(3.0);
+        mapView.setMaxZoomLevel(20.0);
+        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        mapView.setVerticalMapRepetitionEnabled(false);
+        mapView.setScrollableAreaLimitDouble(new BoundingBox(
+                85.0,
+                180.0,
+                -85.0,
+                -180.0
+        ));
     }
 
     public static void defaultToBudapest(MapView mapView) {
