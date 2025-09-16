@@ -1,14 +1,18 @@
 package com.hu.sightseek.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -58,6 +62,21 @@ public class StatisticsActivity extends AppCompatActivity {
             return;
         }
 
+        // Add Menu
+        Toolbar toolbar = findViewById(R.id.menubar_statistics);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        // Home button
+        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+
+
         // Variables
         LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
 
@@ -67,10 +86,16 @@ public class StatisticsActivity extends AppCompatActivity {
         dao.close();
 
         if(cardMap == null || mainCategory == null) {
-            // TODO
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ViewGroup root = findViewById(android.R.id.content);
+            View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
+
+            root.addView(overlayView);
+            toolbar.post(() -> {
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params.topMargin = toolbar.getHeight();
+                overlayView.setLayoutParams(params);
+            });
             return;
         }
 
@@ -90,20 +115,6 @@ public class StatisticsActivity extends AppCompatActivity {
 
         cardViewButton = findViewById(R.id.statistics_nav_cardbtn);
         detailViewButton = findViewById(R.id.statistics_nav_detailedbtn);
-
-        // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_statistics);
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        // Home button
-        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
-        toolbar.setNavigationOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        });
 
         // Init cardview
         initCardView();
