@@ -62,6 +62,7 @@ public final class SightseekUtils {
         mapView.getController().setZoom(zoom);
         mapView.setMinZoomLevel(3.0);
         mapView.setMaxZoomLevel(20.0);
+        mapView.setMultiTouchControls(true);
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setVerticalMapRepetitionEnabled(false);
         mapView.setScrollableAreaLimitDouble(new BoundingBox(

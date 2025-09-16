@@ -1,5 +1,7 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -223,19 +225,13 @@ public class IdeaActivity extends AppCompatActivity {
             // Setup map
             mapView = findViewById(R.id.idea_map);
             mapView.setBackgroundColor(Color.TRANSPARENT);
-            mapView.setMultiTouchControls(true);
             mapView.setUseDataConnection(true);
 
             TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
             tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
             tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
-            mapView.getController().setZoom(14.0);
-            mapView.setMinZoomLevel(3.0);
-            mapView.setMaxZoomLevel(20.0);
-
-            mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-            mapView.setVerticalMapRepetitionEnabled(false);
+            setupZoomSettings(mapView, 14.0);
 
             findReferencePoint();
         }

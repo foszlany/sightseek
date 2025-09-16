@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
+import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -147,11 +148,10 @@ public class SaveActivity extends AppCompatActivity {
 
         // Initialize mapview
         MapView mapView = findViewById(R.id.save_map);
-        mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-        mapView.setVerticalMapRepetitionEnabled(false);
         mapView.setBackgroundColor(Color.TRANSPARENT);
-        mapView.setMultiTouchControls(true);
         mapView.setUseDataConnection(true);
+
+        setupZoomSettings(mapView, 14.0);
 
         TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
         tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);

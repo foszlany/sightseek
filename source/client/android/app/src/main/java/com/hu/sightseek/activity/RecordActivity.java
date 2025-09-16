@@ -303,7 +303,6 @@ public class RecordActivity extends AppCompatActivity {
 
         mapView = findViewById(R.id.record_map);
         mapView.setBackgroundColor(Color.TRANSPARENT);
-        mapView.setMultiTouchControls(true);
         mapView.setUseDataConnection(true);
 
         TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
