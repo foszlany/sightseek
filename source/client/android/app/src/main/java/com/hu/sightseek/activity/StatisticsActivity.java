@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,15 +33,13 @@ import java.util.Locale;
 import java.util.Random;
 
 public class StatisticsActivity extends AppCompatActivity {
-    private ImageButton cardViewButton;
-    private ImageButton detailViewButton;
-
     // Card view data
     private double totalDistance;
     private double totalDays;
     private TravelCategory mainCategory;
     private double longestDistance;
     private double longestTime;
+    private boolean isCardView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +74,6 @@ public class StatisticsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
-
 
         // Variables
         LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
@@ -113,14 +111,31 @@ public class StatisticsActivity extends AppCompatActivity {
         valueHolder = cardMap.get("longest_time");
         longestTime = (valueHolder != null) ? valueHolder : 0.0;
 
-        cardViewButton = findViewById(R.id.statistics_nav_cardbtn);
-        detailViewButton = findViewById(R.id.statistics_nav_detailedbtn);
+        ImageButton cardViewButton = findViewById(R.id.statistics_nav_cardbtn);
+        cardViewButton.setOnClickListener(v -> initCardView());
+
+        ImageButton detailViewButton = findViewById(R.id.statistics_nav_detailedbtn);
+        detailViewButton.setOnClickListener(v -> initDetailedView());
 
         // Init cardview
         initCardView();
     }
 
     public void initCardView() {
+        if(isCardView) {
+            return;
+        }
+        isCardView = true;
+
+        // Inflate view
+        ViewGroup container = findViewById(R.id.statistics_container);
+        View detailedView = container.findViewById(R.id.statistics_detailedcontainer);
+        if(detailedView != null) {
+            container.removeView(detailedView);
+        }
+        View cardView = LayoutInflater.from(this).inflate(R.layout.activity_statistics_cardview, container, false);
+        container.addView(cardView);
+
         // Animations
         Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
         Animation slideToLeftAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toleft);
@@ -214,6 +229,22 @@ public class StatisticsActivity extends AppCompatActivity {
         TextView longestTimeTextView = findViewById(R.id.statistics_topcard_timevalue);
         String formattedTime = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTime / 3600, ((int) longestTime % 3600) / 60, (int) longestTime % 60);
         longestTimeTextView.setText(formattedTime);
+    }
+
+    public void initDetailedView() {
+        if(!isCardView) {
+            return;
+        }
+        isCardView = false;
+
+        // Inflate view
+        ViewGroup container = findViewById(R.id.statistics_container);
+        View cardView = container.findViewById(R.id.statistics_cardcontainer);
+        if(cardView != null) {
+            container.removeView(cardView);
+        }
+        View detailedView = LayoutInflater.from(this).inflate(R.layout.activity_statistics_detailedview, container, false);
+        container.addView(detailedView);
     }
 
     // Create top menubar

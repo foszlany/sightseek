@@ -26,22 +26,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/menubar_statistics">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/linearLayout0"
+        <LinearLayout
+            android:id="@+id/statistics_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/linearLayout1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="@+id/linearLayout0"
-                app:layout_constraintHorizontal_bias="0.481"
-                app:layout_constraintStart_toStartOf="@+id/linearLayout0"
-                app:layout_constraintTop_toTopOf="parent">
+                tools:ignore="UselessParent">
 
                 <ImageButton
                     android:id="@+id/statistics_nav_cardbtn"
@@ -49,208 +47,15 @@
                     android:layout_height="46dp"
                     android:layout_marginEnd="14dp"
                     android:background="@drawable/card_button"
-                    android:contentDescription="@string/statistics_cardbtndesc" />
+                    android:contentDescription="@string/statistics_cardbtndesc"/>
 
                 <ImageButton
                     android:id="@+id/statistics_nav_detailedbtn"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
                     android:background="@drawable/detailed_button"
-                    android:contentDescription="@string/statistics_detailedbtndesc" />
+                    android:contentDescription="@string/statistics_detailedbtndesc"/>
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/statistics_distancecard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/search_bar"
-                android:backgroundTint="@color/light_yellow"
-                android:orientation="vertical"
-                android:padding="15dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
-
-                <TextView
-                    android:id="@+id/statistics_distancecard_startingtext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/statistics_distancecard_startingtext"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/statistics_distancecard_distancevalue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="22dp"
-                    android:text="@string/statistics_distancecard_distancevalue"
-                    android:textColor="@color/black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/statistics_distancecard_incontext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/statistics_distancecard_randomcontext1"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/statistics_timecard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/search_bar"
-                android:backgroundTint="@color/light_blue"
-                android:orientation="vertical"
-                android:padding="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statistics_distancecard">
-
-                <TextView
-                    android:id="@+id/statistics_timecard_startingtext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/statistics_timecard_startingtext"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/statistics_timecard_timevalue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginBottom="22dp"
-                    android:text="@string/statistics_timecard_timevalue"
-                    android:textColor="@color/black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/statistics_timecard_incontext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/statistics_timecard_context1"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/statistics_categorycard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/search_bar"
-                android:backgroundTint="@color/light_pink"
-                android:orientation="vertical"
-                android:padding="15dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statistics_timecard">
-
-                <TextView
-                    android:id="@+id/statistics_categorycard_startingtext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/statistics_categorycard_startingtext"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/statistics_categorycard_categoryvalue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="22dp"
-                    android:text="@string/example_example"
-                    android:textColor="@color/black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/statistics_categorycard_incontext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/statistics_categorycard_locomotor"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/statistics_topcard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/search_bar"
-                android:backgroundTint="@color/light_green"
-                android:orientation="vertical"
-                android:padding="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statistics_categorycard">
-
-                <TextView
-                    android:id="@+id/statistics_topcard_startingtext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="18dp"
-                    android:text="@string/statistics_topcard_startingtext"
-                    android:textColor="@color/black"
-                    android:textSize="21sp" />
-
-                <GridLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:columnCount="2"
-                    android:padding="2dp"
-                    android:rowCount="2">
-
-                    <TextView
-                        android:id="@+id/statistics_topcard_distancevalue"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="14dp"
-                        android:text="@string/main_distancevalue"
-                        android:gravity="center"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="26sp"/>
-
-                    <TextView
-                        android:id="@+id/statistics_topcard_timevalue"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="26sp" />
-
-                    <TextView
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textAlignment="center"
-                        android:text="@string/statistics_topcard_longestdistance"
-                        android:textColor="@color/black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:layout_gravity="center"
-                        android:text="@string/statistics_topcard_longesttime"
-                        android:textColor="@color/black"
-                        android:textSize="14sp" />
-                </GridLayout>
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
