@@ -165,7 +165,7 @@ public class IdeaActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: Change?
+        // Allow multiple clicks
         RadioButton locationButton = findViewById(R.id.idea_radio_locationbtn);
         locationButton.setOnTouchListener((v, event) -> {
             if(event.getAction() == MotionEvent.ACTION_UP && locationButton.isChecked()) {
@@ -389,14 +389,10 @@ public class IdeaActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
                     if(!response.isSuccessful()) {
-                        runOnUiThread(() ->
-                            Toast.makeText(IdeaActivity.this, "Could not fetch data.", Toast.LENGTH_LONG).show()
-                        );
+                        initErrorViews("Could not fetch data.");
                     }
                     else if(response.body() == null) {
-                        runOnUiThread(() ->
-                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show()
-                        );
+                        initErrorViews("Nothing was found. Try increasing the radius.");
                     }
                     else {
                         try {
@@ -406,16 +402,11 @@ public class IdeaActivity extends AppCompatActivity {
 
                             if(data.length() == 0) {
                                 if(root.has("remark")) {
-                                    runOnUiThread(() ->
-                                            Toast.makeText(IdeaActivity.this, "Request timed out. Please try again later.", Toast.LENGTH_LONG).show()
-                                    );
+                                    initErrorViews("Request timed out. Please try again later.");
                                 }
                                 else {
-                                    runOnUiThread(() ->
-                                            Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show()
-                                    );
+                                    initErrorViews("Nothing was found. Try increasing the radius.");
                                 }
-
                             }
                             else {
                                 retrieveAndSetupElementFromJson();
@@ -423,9 +414,7 @@ public class IdeaActivity extends AppCompatActivity {
 
                         }
                         catch(JSONException e) {
-                            runOnUiThread(() ->
-                                Toast.makeText(IdeaActivity.this, "Nothing was found or list was exhausted. Try increasing the radius.", Toast.LENGTH_LONG).show()
-                            );
+                            initErrorViews("Nothing was found or list was exhausted. Try increasing the radius.");
                         }
                     }
 
@@ -451,15 +440,7 @@ public class IdeaActivity extends AppCompatActivity {
 
     public void retrieveAndSetupElementFromJson() {
         if(data.length() == 0) {
-            runOnUiThread(() -> {
-                    Toast.makeText(IdeaActivity.this, "Nothing else was found. Try increasing the radius.", Toast.LENGTH_LONG).show();
-                    Glide.with(this)
-                            .load(R.drawable.placeholder)
-                            .into(imageView);
-
-                    nameTextView.setText(R.string.idea_nothingwasfound);
-                    typeTextView.setText(R.string.idea_increaseradius);
-            });
+            initErrorViews("Nothing else was found. Try increasing the radius.");
             return;
         }
 
@@ -539,15 +520,7 @@ public class IdeaActivity extends AppCompatActivity {
             data.remove(randomIndex);
         }
         catch(JSONException e) {
-            runOnUiThread(() -> {
-                Toast.makeText(IdeaActivity.this, "Nothing was found. Try increasing the radius.", Toast.LENGTH_LONG).show();
-                Glide.with(this)
-                        .load(R.drawable.placeholder)
-                        .into(imageView);
-
-                nameTextView.setText(R.string.idea_nothingwasfound);
-                typeTextView.setText(R.string.idea_increaseradius);
-            });
+            initErrorViews("Nothing was found. Try increasing the radius.");
         }
     }
 
@@ -661,6 +634,18 @@ public class IdeaActivity extends AppCompatActivity {
             });
         }
         catch(UnsupportedEncodingException ignored) {}
+    }
+
+    public void initErrorViews(String msg) {
+        runOnUiThread(() -> {
+            Toast.makeText(IdeaActivity.this, msg, Toast.LENGTH_LONG).show();
+            Glide.with(this)
+                    .load(R.drawable.placeholder)
+                    .into(imageView);
+
+            nameTextView.setText(R.string.idea_nothingwasfound);
+            typeTextView.setText(R.string.idea_increaseradius);
+        });
     }
 
     // Create top menubar
