@@ -48,7 +48,6 @@ import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.TilesOverlay;
@@ -152,7 +151,7 @@ public class IdeaActivity extends AppCompatActivity {
         // Next
         Button nextButton = findViewById(R.id.idea_nextbtn);
         nextButton.setOnClickListener(v -> {
-            Glide.with(this)
+            Glide.with(imageView)
                     .load(R.drawable.loading)
                     .into(imageView);
 
@@ -492,6 +491,8 @@ public class IdeaActivity extends AppCompatActivity {
 
             // Set views
             runOnUiThread(() -> {
+                if(isActivityDead()) return;
+
                 nameTextView.setText(name);
                 typeTextView.setText(getString(R.string.idea_typelocation, type, locationString));
 
@@ -528,7 +529,8 @@ public class IdeaActivity extends AppCompatActivity {
         imageURL = tags != null ? tags.optString("image", "") : "";
         if(!imageURL.isBlank()) {
             runOnUiThread(() -> {
-                Glide.with(this)
+                if(isActivityDead()) return;
+                Glide.with(imageView)
                         .load(imageURL)
                         .placeholder(R.drawable.loading)
                         .error(R.drawable.loading)
@@ -592,7 +594,8 @@ public class IdeaActivity extends AppCompatActivity {
 
                                     if(mime.startsWith("image/")) {
                                         runOnUiThread(() -> {
-                                            Glide.with(IdeaActivity.this)
+                                            if(isActivityDead()) return;
+                                            Glide.with(imageView)
                                                     .load(imageUrl)
                                                     .placeholder(R.drawable.loading)
                                                     .error(R.drawable.placeholder)
@@ -604,14 +607,16 @@ public class IdeaActivity extends AppCompatActivity {
                             }
 
                             runOnUiThread(() -> {
-                                Glide.with(IdeaActivity.this)
+                                if(isActivityDead()) return;
+                                Glide.with(imageView)
                                         .load(R.drawable.placeholder)
                                         .into(imageView);
                             });
                         }
-                        catch(JSONException ignored) {
+                        catch(JSONException ex) {
                             runOnUiThread(() -> {
-                                Glide.with(IdeaActivity.this)
+                                if(isActivityDead()) return;
+                                Glide.with(imageView)
                                         .load(R.drawable.placeholder)
                                         .into(imageView);
                             });
@@ -622,7 +627,8 @@ public class IdeaActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
                     runOnUiThread(() -> {
-                        Glide.with(IdeaActivity.this)
+                        if(isActivityDead()) return;
+                        Glide.with(imageView)
                                 .load(R.drawable.placeholder)
                                 .into(imageView);
                     });
@@ -634,8 +640,10 @@ public class IdeaActivity extends AppCompatActivity {
 
     public void initErrorViews(String msg) {
         runOnUiThread(() -> {
+            if(isActivityDead()) return;
+
             Toast.makeText(IdeaActivity.this, msg, Toast.LENGTH_LONG).show();
-            Glide.with(this)
+            Glide.with(imageView)
                     .load(R.drawable.placeholder)
                     .into(imageView);
 
@@ -675,6 +683,11 @@ public class IdeaActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if(mapView != null) {
@@ -688,5 +701,9 @@ public class IdeaActivity extends AppCompatActivity {
         if(mapView != null) {
             mapView.onResume();
         }
+    }
+
+    public boolean isActivityDead() {
+        return (isDestroyed() || isFinishing());
     }
 }
