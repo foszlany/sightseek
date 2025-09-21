@@ -178,6 +178,7 @@ public class IdeaActivity extends AppCompatActivity {
         // Radius bar
         radiusTextView.setText(getString(R.string.idea_radiuskm, 13.0));
         SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
+        radius = radiusBar.getProgress();
         radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -262,10 +263,10 @@ public class IdeaActivity extends AppCompatActivity {
         if(checkedId == R.id.idea_radio_locationbtn) {
             if(referenceIndex != R.id.idea_radio_locationbtn) {
                 data = null;
-
-                referencePoint = locationPoint;
                 referenceIndex = R.id.idea_radio_locationbtn;
             }
+
+            referencePoint = locationPoint;
 
             findAttraction();
         }
@@ -385,7 +386,6 @@ public class IdeaActivity extends AppCompatActivity {
                     else {
                         try {
                             String json = response.body().string();
-                            System.out.println(json);
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
 
