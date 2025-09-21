@@ -2,6 +2,7 @@
     <string name="app_name">Sightseek</string>
     <string name="main_stop">Stop</string>
     <string name="main_record">Record</string>
+    <string name="main_map">Map</string>
     <string name="main_time">Time</string>
     <string name="main_speed">Speed: %1$.2f km/h</string>
     <string name="main_distance">Distance: %1$.2f km</string>
@@ -16,7 +17,7 @@
     <string name="banner_extrafeatures">Creating an account will grant access to leaderboards and much more.</string>
     <string name="banner_register">Register</string>
     <string name="banner_login">Already have an account?</string>
-    <string name="banner_useoffline">Use app offline</string>
+    <string name="banner_useoffline">Use app without an account</string>
     <string name="login_login">Log in</string>
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
@@ -80,7 +81,7 @@
     <string name="locationselectpopup_select">Select</string>
     <string name="activity_deletebtndesc">Delete button</string>
     <string name="statistics_distancecard_startingtext">During your Sightseek career you have travelled</string>
-    <string name="statistics_distancecard_distancevalue">%1$.2f kilometers.</string>
+    <string name="statistics_distancecard_distancevalue">%1$.2f kilometers</string>
     <string name="statistics_distancecard_randomcontext1">That\'s about %1$.0f Big Mac burgers.</string>
     <string name="statistics_distancecard_randomcontext2">That\'s about %1$.1f Polar bears.</string>
     <string name="statistics_distancecard_randomcontext3">That\'s about %1$.2f Football fields.</string>
