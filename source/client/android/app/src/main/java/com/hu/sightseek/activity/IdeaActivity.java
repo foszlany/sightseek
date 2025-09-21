@@ -254,9 +254,6 @@ public class IdeaActivity extends AppCompatActivity {
 
         referencePoint = new LatLng(0, 0);
 
-        SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
-        radius = radiusBar.getProgress();
-
         // Get values
         radioGroup = findViewById(R.id.idea_radiogroup);
         int checkedId = radioGroup.getCheckedRadioButtonId();
@@ -364,10 +361,9 @@ public class IdeaActivity extends AppCompatActivity {
                     + "[\"tourism\"!=\"resort\"]"
                     + "[\"tourism\"!=\"wilderness_hut\"]"
                     + "[\"tourism\"!=\"lodging\"]"
-
                     + "[\"tourism\"!=\"information\"]"
 
-                    + "(around:" + (1 + (radius * 1000)) + ","
+                    + "(around:" + (1000 + (radius * 1000)) + ","
                     + referencePoint.latitude + ","
                     + referencePoint.longitude + ");"
                     + "out body;";
@@ -383,15 +379,13 @@ public class IdeaActivity extends AppCompatActivity {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
-                    if(!response.isSuccessful()) {
-                        initErrorViews("Could not fetch data.");
-                    }
-                    else if(response.body() == null) {
-                        initErrorViews("Nothing was found. Try increasing the radius.");
+                    if(!response.isSuccessful() || response.body() == null) {
+                        initErrorViews("Could not fetch data. Try again later");
                     }
                     else {
                         try {
                             String json = response.body().string();
+                            System.out.println(json);
                             JSONObject root = new JSONObject(json);
                             data = root.getJSONArray("elements");
 
@@ -401,6 +395,7 @@ public class IdeaActivity extends AppCompatActivity {
                                 }
                                 else {
                                     initErrorViews("Nothing was found. Try increasing the radius.");
+                                    data = null;
                                 }
                             }
                             else {
