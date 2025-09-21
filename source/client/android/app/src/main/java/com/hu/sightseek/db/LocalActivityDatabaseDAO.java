@@ -5,8 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.TravelCategory;
 import com.hu.sightseek.model.Activity;
+
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,6 +173,33 @@ public class LocalActivityDatabaseDAO {
         db.close();
 
         return activities;
+    }
+
+    public ArrayList<LatLng> getAllPoints() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ArrayList<LatLng> polylines = new ArrayList<>();
+
+        Cursor cursor = db.query(
+                LocalActivityDatabaseImpl.ACTIVITIES_TABLE,
+                new String[]{ LocalActivityDatabaseImpl.ACTIVITIES_POLYLINE },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor.moveToFirst()) {
+            do {
+                String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_POLYLINE));
+                polylines.addAll(PolyUtil.decode(polyline));
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return polylines;
     }
 
     public void printAllActivities() {

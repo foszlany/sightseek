@@ -52,11 +52,11 @@ import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
+import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.config.Configuration;
-import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
 import org.osmdroid.views.overlay.Overlay;
@@ -86,7 +86,9 @@ public class RecordActivity extends AppCompatActivity {
     private MyLocationNewOverlay locationOverlay;
     private BroadcastReceiver locationModeReceiver;
 
+    private ArrayList<LatLng> importedPoints;
     private ArrayList<LatLng> recordedPoints;
+    private org.osmdroid.views.overlay.GroundOverlay heatmapOverlay;
     private boolean isRecording;
     private boolean didPressStopWhileLowPointCount;
     private String startTime;
@@ -95,7 +97,9 @@ public class RecordActivity extends AppCompatActivity {
     private long elapsedTime;
     private double totalDist;
     private double currentSpeed;
+
     private boolean isLocked;
+    private boolean isHeatmapOn;
 
 
     @Override
@@ -112,6 +116,7 @@ public class RecordActivity extends AppCompatActivity {
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
         dateFormat.setTimeZone(TimeZone.getDefault());
 
+        importedPoints = null;
         recordedPoints = new ArrayList<>();
         isRecording = false;
         didPressStopWhileLowPointCount = false;
@@ -120,6 +125,7 @@ public class RecordActivity extends AppCompatActivity {
         totalDist = 0;
         currentSpeed = 0;
         isLocked = true;
+        isHeatmapOn = false;
 
         chronometer = findViewById(R.id.record_chronometer);
         chronometer.setVisibility(INVISIBLE);
@@ -142,7 +148,7 @@ public class RecordActivity extends AppCompatActivity {
         });
 
         // Lock listener
-        ImageButton lockButton = findViewById(R.id.record_lock);
+        ImageButton lockButton = findViewById(R.id.record_lockbtn);
         lockButton.setOnClickListener(item -> {
             ValueAnimator animator = ValueAnimator.ofArgb(
                     ContextCompat.getColor(this, R.color.lock_overlay),
@@ -169,6 +175,48 @@ public class RecordActivity extends AppCompatActivity {
             else {
                 Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_open_24, null);
                 lockButton.setImageDrawable(lock);
+            }
+        });
+
+        // Heatmap listener
+        ImageButton heatmapButton = findViewById(R.id.record_heatmapbtn);
+        heatmapButton.setOnClickListener(item -> {
+            ValueAnimator animator = ValueAnimator.ofArgb(
+                    ContextCompat.getColor(this, R.color.lock_overlay),
+                    ContextCompat.getColor(this, R.color.lock_overlay_blink)
+            );
+
+            GradientDrawable heatmapBackground = (GradientDrawable) heatmapButton.getBackground();
+            animator.addUpdateListener(valueAnimator -> heatmapBackground.setColor((Integer) valueAnimator.getAnimatedValue()));
+
+            animator.setDuration(144);
+            animator.setRepeatMode(ValueAnimator.REVERSE);
+            animator.setRepeatCount(1);
+            animator.start();
+
+            isHeatmapOn = !isHeatmapOn;
+
+            if(isHeatmapOn) {
+                if(importedPoints == null) {
+                    LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                    importedPoints = dao.getAllPoints();
+                    dao.close();
+                }
+
+                //TODO
+                // For now this is a static overlay that can be created once
+                // Should be able to regenerate the heatmap when zooming in/out or moving
+                if(heatmapOverlay == null) {
+                    heatmapOverlay = SightseekUtils.createHeatmapOverlay(mapView, importedPoints);
+                }
+                else {
+                    mapView.getOverlays().add(0, heatmapOverlay);
+                    mapView.invalidate();
+                }
+            }
+            else {
+                mapView.getOverlays().remove(heatmapOverlay);
+                mapView.invalidate();
             }
         });
 

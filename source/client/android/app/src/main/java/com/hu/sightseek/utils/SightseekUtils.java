@@ -1,8 +1,10 @@
 package com.hu.sightseek.utils;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.NonNull;
 
@@ -12,8 +14,10 @@ import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.GroundOverlay;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SightseekUtils {
@@ -76,5 +80,61 @@ public final class SightseekUtils {
     public static void defaultToBudapest(MapView mapView) {
         GeoPoint point = new GeoPoint(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE);
         mapView.getController().setCenter(point);
+    }
+
+    //TODO: just rewrite it with vectors, this is rather dumb
+    // Should also move it to RecordActivty
+    public static GroundOverlay createHeatmapOverlay(MapView mapView, ArrayList<LatLng> points) {
+        int gridSize = 256;
+        int[][] density = new int[gridSize][gridSize];
+        BoundingBox box = mapView.getBoundingBox();
+
+        // Calculate densities
+        for(LatLng p : points) {
+            int x = (int) (((p.longitude - box.getLonWest()) / box.getLongitudeSpanWithDateLine()) * gridSize);
+            int y = (int) (((box.getLatNorth() - p.latitude) / box.getLatitudeSpan()) * gridSize);
+            if(x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                density[y][x]++;
+            }
+        }
+
+        // Get highest density
+        int maxDensity = 0;
+        for(int[] row : density) {
+            for(int val : row) {
+                if(val > maxDensity) {
+                    maxDensity = val;
+                }
+            }
+        }
+
+        // Generate overlay image
+        Bitmap bmp = Bitmap.createBitmap(gridSize, gridSize, Bitmap.Config.ARGB_8888);
+        for(int y = 0; y < gridSize; y++) {
+            for(int x = 0; x < gridSize; x++) {
+                int val = density[y][x];
+                int color = (val == 0) ? Color.TRANSPARENT : getHeatmapColor((float) val / maxDensity);
+                bmp.setPixel(x, y, color);
+            }
+        }
+
+        // Create and Add overlay
+        BitmapDrawable drawable = new BitmapDrawable(mapView.getContext().getResources(), bmp);
+        GroundOverlay overlay = new org.osmdroid.views.overlay.GroundOverlay();
+
+        overlay.setImage(drawable.getBitmap());
+
+        GeoPoint topLeft = new GeoPoint(box.getLatNorth(), box.getLonWest());
+        GeoPoint bottomRight = new GeoPoint(box.getLatSouth(), box.getLonEast());
+        overlay.setPosition(topLeft, bottomRight);
+
+        mapView.getOverlays().add(0, overlay);
+        mapView.invalidate();
+
+        return overlay;
+    }
+    private static int getHeatmapColor(float intensity) {
+        float hue = (1f - intensity) * 240f;
+        return Color.HSVToColor(new float[]{hue, 1f, 1f});
     }
 }
