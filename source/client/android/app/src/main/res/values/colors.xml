@@ -8,6 +8,7 @@
     <color name="theme_main">#FF3ABA91</color>
     <color name="stat_overlay">#55000000</color>
     <color name="lock_overlay">#AA000000</color>
+    <color name="heatmap_overlay">#AA000000</color>
     <color name="lock_overlay_blink">#AA202020</color>
     <color name="hint">#FF646464</color>
     <color name="hint_light">#FF999999</color>
