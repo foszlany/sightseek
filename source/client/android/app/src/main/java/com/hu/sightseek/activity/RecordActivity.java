@@ -209,11 +209,7 @@ public class RecordActivity extends AppCompatActivity {
 
                 // Animation
                 ValueAnimator animator = ValueAnimator.ofArgb(
-<<<<<<< HEAD
                         ContextCompat.getColor(this, R.color.lock_overlay),
-=======
-                        ContextCompat.getColor(this, R.color.heatmap_overlay),
->>>>>>> 925ff8a0ef38bf45ee8b3ffbce7575f254305295
                         ContextCompat.getColor(this, R.color.orange)
                 );
 
@@ -238,11 +234,7 @@ public class RecordActivity extends AppCompatActivity {
                 // Animation
                 ValueAnimator animator = ValueAnimator.ofArgb(
                         ContextCompat.getColor(this, R.color.orange),
-<<<<<<< HEAD
                         ContextCompat.getColor(this, R.color.lock_overlay)
-=======
-                        ContextCompat.getColor(this, R.color.heatmap_overlay)
->>>>>>> 925ff8a0ef38bf45ee8b3ffbce7575f254305295
                 );
 
                 GradientDrawable heatmapBackground = (GradientDrawable) heatmapButton.getBackground().mutate();
