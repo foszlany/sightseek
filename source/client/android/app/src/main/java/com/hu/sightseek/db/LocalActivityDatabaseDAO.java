@@ -10,9 +10,6 @@ import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.TravelCategory;
 import com.hu.sightseek.model.Activity;
 
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.Polyline;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

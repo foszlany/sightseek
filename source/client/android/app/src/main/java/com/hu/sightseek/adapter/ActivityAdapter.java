@@ -22,8 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.activity.ActivityActivity;
-import com.hu.sightseek.activity.MainActivity;
-import com.hu.sightseek.activity.SaveActivity;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
 
@@ -35,7 +33,6 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -138,10 +135,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         return activityListFiltered.size();
     }
 
-    public void setActivityListFiltered(ArrayList<Activity> newActivities) {
-        activityListFiltered = newActivities;
-    }
-
     public static class ActivityViewHolder extends RecyclerView.ViewHolder {
         TextView name, category, startTime, distance, elapsedTime;
         ImageView map;
@@ -219,6 +212,10 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             notifyDataSetChanged();
         }
     };
+
+    public void setActivityListFiltered(ArrayList<Activity> newActivities) {
+        activityListFiltered = newActivities;
+    }
 
     @Override
     public Filter getFilter() {
