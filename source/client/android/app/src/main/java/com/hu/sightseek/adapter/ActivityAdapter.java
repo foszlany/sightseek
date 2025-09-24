@@ -138,10 +138,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         return activityListFiltered.size();
     }
 
-    public void setActivityListFiltered(ArrayList<Activity> newActivities) {
-        activityListFiltered = newActivities;
-    }
-
     public static class ActivityViewHolder extends RecyclerView.ViewHolder {
         TextView name, category, startTime, distance, elapsedTime;
         ImageView map;
@@ -219,6 +215,10 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             notifyDataSetChanged();
         }
     };
+
+    public void setActivityListFiltered(ArrayList<Activity> newActivities) {
+        activityListFiltered = newActivities;
+    }
 
     @Override
     public Filter getFilter() {

@@ -70,6 +70,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class RecordActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 4000;
@@ -181,42 +183,69 @@ public class RecordActivity extends AppCompatActivity {
         // Heatmap listener
         ImageButton heatmapButton = findViewById(R.id.record_heatmapbtn);
         heatmapButton.setOnClickListener(item -> {
-            ValueAnimator animator = ValueAnimator.ofArgb(
-                    ContextCompat.getColor(this, R.color.lock_overlay),
-                    ContextCompat.getColor(this, R.color.lock_overlay_blink)
-            );
-
-            GradientDrawable heatmapBackground = (GradientDrawable) heatmapButton.getBackground();
-            animator.addUpdateListener(valueAnimator -> heatmapBackground.setColor((Integer) valueAnimator.getAnimatedValue()));
-
-            animator.setDuration(144);
-            animator.setRepeatMode(ValueAnimator.REVERSE);
-            animator.setRepeatCount(1);
-            animator.start();
-
             isHeatmapOn = !isHeatmapOn;
 
             if(isHeatmapOn) {
-                if(importedPoints == null) {
-                    LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
-                    importedPoints = dao.getAllPoints();
-                    dao.close();
-                }
+                Executor executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    // Import points if necessary
+                    if(importedPoints == null) {
+                        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                        importedPoints = dao.getAllPoints();
+                        dao.close();
+                    }
 
-                //TODO
-                // For now this is a static overlay that can be created once
-                // Should be able to regenerate the heatmap when zooming in/out or moving
-                if(heatmapOverlay == null) {
-                    heatmapOverlay = SightseekUtils.createHeatmapOverlay(mapView, importedPoints);
-                }
-                else {
-                    mapView.getOverlays().add(0, heatmapOverlay);
-                    mapView.invalidate();
-                }
+                    //TODO
+                    // For now this is a static overlay that can be created once
+                    // Should be able to regenerate the heatmap when zooming in/out or moving
+                    if(heatmapOverlay == null) {
+                        heatmapOverlay = SightseekUtils.createHeatmapOverlay(mapView, importedPoints);
+                    }
+                    else {
+                        mapView.getOverlays().add(0, heatmapOverlay);
+                        mapView.invalidate();
+                    }
+                });
+
+                // Animation
+                ValueAnimator animator = ValueAnimator.ofArgb(
+                        ContextCompat.getColor(this, R.color.heatmap_overlay),
+                        ContextCompat.getColor(this, R.color.orange)
+                );
+
+                GradientDrawable heatmapBackground = (GradientDrawable) heatmapButton.getBackground().mutate();
+
+                animator.addUpdateListener(valueAnimator -> {
+                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
+                    heatmapBackground.setColor(animatedColor);
+                });
+
+                animator.setDuration(144);
+                animator.start();
             }
             else {
-                mapView.getOverlays().remove(heatmapOverlay);
-                mapView.invalidate();
+                Executor executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    // Remove overlay
+                    mapView.getOverlays().remove(heatmapOverlay);
+                    mapView.invalidate();
+                });
+
+                // Animation
+                ValueAnimator animator = ValueAnimator.ofArgb(
+                        ContextCompat.getColor(this, R.color.orange),
+                        ContextCompat.getColor(this, R.color.heatmap_overlay)
+                );
+
+                GradientDrawable heatmapBackground = (GradientDrawable) heatmapButton.getBackground().mutate();
+
+                animator.addUpdateListener(valueAnimator -> {
+                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
+                    heatmapBackground.setColor(animatedColor);
+                });
+
+                animator.setDuration(144);
+                animator.start();
             }
         });
 
