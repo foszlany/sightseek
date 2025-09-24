@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/bottommenu_leaderboard_grid"
+        android:title="@string/leaderboard_grid"
+        android:icon="@drawable/baseline_grid_4x4_24"
+        app:showAsAction="ifRoom"
+        app:titleTextColor="@color/white"/>
+
+    <item
+        android:id="@+id/bottommenu_leaderboard_distance"
+        android:title="@string/leaderboard_regionaldistance"
+        android:icon="@drawable/baseline_polyline_24"
+        app:showAsAction="ifRoom"
+        app:titleTextColor="@color/white"/>
+</menu>

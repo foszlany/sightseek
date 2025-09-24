@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 
@@ -50,6 +51,21 @@ public class LeaderboardActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        });
+
+        // Bottombar listener
+        BottomNavigationView bottomNav = findViewById(R.id.leaderboard_bottommenu);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if(id == R.id.bottommenu_leaderboard_grid) {
+                // TODO
+            }
+            else if(id == R.id.bottommenu_leaderboard_distance) {
+                // TODO
+            }
+
+            return true;
         });
     }
 

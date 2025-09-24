@@ -106,4 +106,6 @@
     <string name="statistics_topcard_longestdistance">Longest distance</string>
     <string name="statistics_topcard_longesttime">Longest time</string>
     <string name="profile_logout">Log out</string>
+    <string name="leaderboard_grid">Grid</string>
+    <string name="leaderboard_regionaldistance">Regional Distance</string>
 </resources>
