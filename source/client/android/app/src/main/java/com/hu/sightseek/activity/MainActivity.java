@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
             else if(id == R.id.bottommenu_main_leaderboard) {
-                // TODO
+                Intent intent = new Intent(this, LeaderboardActivity.class);
+                startActivity(intent);
             }
 
             return true;
