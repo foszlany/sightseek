@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Filter button
         ImageButton filterButton = findViewById(R.id.main_filterbtn);
-        filterButton.setOnClickListener(v -> { // TODO: Add some animation
+        filterButton.setOnClickListener(v -> {
             PopupMenu popup = initFilterPopup(v);
             popup.show();
         });

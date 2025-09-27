@@ -1,10 +1,20 @@
 package com.hu.sightseek.utils;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -17,8 +27,13 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.GroundOverlay;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public final class SightseekUtils {
     public static final double BUDAPEST_LATITUDE = 47.499;
@@ -75,6 +90,53 @@ public final class SightseekUtils {
                 -85.0,
                 -180.0
         ));
+    }
+
+    public static void createScreenshot(Context ctx, View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
+        String fileName = "MyStatistics_" + timeStamp + ".jpg";
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // ANDROID 10.0+
+            ContentValues values = new ContentValues();
+            ContentResolver resolver = ctx.getContentResolver();
+
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Sightseek");
+            values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+            Uri collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            Uri imageUri = resolver.insert(collection, values);
+
+            if(imageUri != null) {
+                try(OutputStream out = resolver.openOutputStream(imageUri)) {
+                    if(out == null) {
+                        Toast.makeText(ctx, "An error has occurred while trying to save the screenshot: Bad URI", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                }
+                catch(IOException e) {
+                    Toast.makeText(ctx, "An error has occurred while trying to save the screenshot: Failed creation", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                values.clear();
+                values.put(MediaStore.Images.Media.IS_PENDING, 0);
+                resolver.update(imageUri, values, null, null);
+
+                Toast.makeText(ctx, "Saved: " + fileName, Toast.LENGTH_LONG).show();
+            }
+
+        }
+        else { // < ANDROID 10.0 TODO
+            Toast.makeText(ctx, "how will i even test this", Toast.LENGTH_LONG).show();
+        }
     }
 
     public static void defaultToBudapest(MapView mapView) {

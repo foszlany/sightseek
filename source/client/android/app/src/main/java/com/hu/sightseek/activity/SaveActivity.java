@@ -36,7 +36,6 @@ import com.hu.sightseek.db.LocalActivityDatabaseDAO;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;

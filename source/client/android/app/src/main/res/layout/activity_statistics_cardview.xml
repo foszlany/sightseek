@@ -130,7 +130,7 @@
         android:id="@+id/statistics_topcard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginVertical="20dp"
         android:background="@drawable/search_bar"
         android:backgroundTint="@color/light_green"
         android:orientation="vertical"

@@ -19,6 +19,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <ScrollView
+        android:id="@+id/statistics_scrollview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -42,17 +43,25 @@
                 tools:ignore="UselessParent">
 
                 <ImageButton
+                    android:id="@+id/statistics_screenshotbtn"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="48dp"
+                    android:background="@drawable/screenshot_button"
+                    android:contentDescription="@string/statistics_detailedbtndesc"/>
+
+                <ImageButton
                     android:id="@+id/statistics_nav_cardbtn"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_marginEnd="14dp"
                     android:background="@drawable/card_button"
                     android:contentDescription="@string/statistics_cardbtndesc"/>
 
                 <ImageButton
                     android:id="@+id/statistics_nav_detailedbtn"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="@drawable/detailed_button"
                     android:contentDescription="@string/statistics_detailedbtndesc"/>
             </LinearLayout>

@@ -1,5 +1,7 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekUtils.createScreenshot;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -110,14 +112,17 @@ public class StatisticsActivity extends AppCompatActivity {
         valueHolder = cardMap.get("longest_time");
         longestTime = (valueHolder != null) ? valueHolder : 0.0;
 
+        initCardView();
+
+        // Listeners
         ImageButton cardViewButton = findViewById(R.id.statistics_nav_cardbtn);
         cardViewButton.setOnClickListener(v -> initCardView());
 
         ImageButton detailViewButton = findViewById(R.id.statistics_nav_detailedbtn);
         detailViewButton.setOnClickListener(v -> initDetailedView());
 
-        // Init cardview
-        initCardView();
+        ImageButton screenshotButton = findViewById(R.id.statistics_screenshotbtn);
+        screenshotButton.setOnClickListener(v -> createScreenshot(this, isCardView ? findViewById(R.id.statistics_cardcontainer) : findViewById(R.id.statistics_detailedcontainer)));
     }
 
     public void initCardView() {
@@ -195,7 +200,7 @@ public class StatisticsActivity extends AppCompatActivity {
         else if(totalDays < 180) {
             totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context4));
         }
-        else if(totalDays < 365){
+        else if(totalDays < 365) {
             totalTimeContextTextView.setText(getString(R.string.statistics_timecard_context5));
         }
         else {
