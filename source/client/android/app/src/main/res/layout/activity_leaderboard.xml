@@ -8,7 +8,7 @@
     tools:context=".activity.LeaderboardActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/menubar_leaderboard"
+        android:id="@+id/leaderboard_topmenu"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"

@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,7 +39,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_leaderboard);
+        Toolbar toolbar = findViewById(R.id.leaderboard_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);

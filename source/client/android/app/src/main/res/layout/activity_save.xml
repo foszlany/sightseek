@@ -9,7 +9,7 @@
     tools:context=".activity.SaveActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/menubar_save"
+        android:id="@+id/save_topmenu"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"
@@ -30,7 +30,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_save"
+        app:layout_constraintTop_toBottomOf="@+id/save_topmenu"
         app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
@@ -44,7 +44,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_save"
+        app:layout_constraintTop_toBottomOf="@+id/save_topmenu"
         app:layout_constraintVertical_bias="0.0">
 
         <TextView

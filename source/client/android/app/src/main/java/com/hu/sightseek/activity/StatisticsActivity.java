@@ -63,7 +63,7 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_statistics);
+        Toolbar toolbar = findViewById(R.id.statistics_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);

@@ -62,7 +62,7 @@ public class SaveActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_save);
+        Toolbar toolbar = findViewById(R.id.save_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);

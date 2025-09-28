@@ -8,7 +8,7 @@
     tools:context=".activity.ProfileActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/menubar_profile"
+        android:id="@+id/profile_topmenu"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"
@@ -25,6 +25,6 @@
         android:text="@string/profile_logout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_profile" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

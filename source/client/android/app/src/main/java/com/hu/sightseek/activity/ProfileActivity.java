@@ -42,7 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_profile);
+        Toolbar toolbar = findViewById(R.id.profile_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);

@@ -10,7 +10,7 @@
     tools:context=".activity.ActivityActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/menubar_activity"
+        android:id="@+id/activity_topmenu"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"
@@ -30,7 +30,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_activity"/>
+        app:layout_constraintTop_toBottomOf="@+id/activity_topmenu"/>
 
     <LinearLayout
         android:id="@+id/activity_layoutcontainer"
@@ -44,7 +44,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menubar_activity"
+        app:layout_constraintTop_toBottomOf="@+id/activity_topmenu"
         app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout

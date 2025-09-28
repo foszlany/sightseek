@@ -51,7 +51,7 @@ public class ActivityActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.menubar_activity);
+        Toolbar toolbar = findViewById(R.id.activity_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
