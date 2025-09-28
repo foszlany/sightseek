@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_filtermenu_maincontainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="?android:attr/windowBackground">
+
+    <LinearLayout
+        android:id="@+id/main_filtermenu_sortcontainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_filtermenu_sortby"
+            android:textStyle="bold"
+            android:paddingBottom="8dp"/>
+
+        <RadioGroup
+            android:id="@+id/main_filtermenu_radiogroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_date_recent"
+                android:text="@string/menu_filter_recent"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_date_old"
+                android:text="@string/menu_filter_old"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_alpha_az"
+                android:text="@string/menu_filter_az"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_alpha_za"
+                android:text="@string/menu_filter_za"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_dist_lth"
+                android:text="@string/menu_filter_smalldist"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_dist_htl"
+                android:text="@string/menu_filter_bigdist"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_time_lth"
+                android:text="@string/menu_filter_short"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
+            <RadioButton
+                android:id="@+id/main_filtermenu_time_htl"
+                android:text="@string/menu_filter_long"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/main_filtermenu_categorycontainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_filtermenu_categories"
+            android:textStyle="bold"
+            android:paddingBottom="8dp" />
+
+        <CheckBox
+            android:id="@+id/main_filtermenu_loco"
+            android:text="@string/travelmethod_loco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <CheckBox
+            android:id="@+id/main_filtermenu_micro"
+            android:text="@string/travelmethod_micro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <CheckBox
+            android:id="@+id/main_filtermenu_other"
+            android:text="@string/travelmethod_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</LinearLayout>

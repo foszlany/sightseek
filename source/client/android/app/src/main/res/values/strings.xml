@@ -115,4 +115,6 @@
     <string name="login_signin">Sign in</string>
     <string name="activity_imgdesc">This image serves as a simple background for the activity page.</string>
     <string name="record_polylinedesc">Polyline</string>
+    <string name="main_filtermenu_sortby">Sort by</string>
+    <string name="main_filtermenu_categories">Categories</string>
 </resources>

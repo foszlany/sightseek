@@ -78,11 +78,13 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Activity> newActivities = dao2.getAllActivities();
             dao2.close();
 
-            activities.clear();
-            activities.addAll(newActivities);
+            if(newActivities.size() != activities.size()) {
+                activities.clear();
+                activities.addAll(newActivities);
 
-            adapter.updateActivities(newActivities);
-            adapter.notifyDataSetChanged();
+                adapter.updateActivities(newActivities);
+                adapter.notifyDataSetChanged();
+            }
 
             swipeRefresh.setRefreshing(false);
         });
