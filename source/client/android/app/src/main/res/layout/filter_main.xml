@@ -95,18 +95,21 @@
             android:id="@+id/main_filtermenu_loco"
             android:text="@string/travelmethod_loco"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:checked="true"/>
 
         <CheckBox
             android:id="@+id/main_filtermenu_micro"
             android:text="@string/travelmethod_micro"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:checked="true"/>
 
         <CheckBox
             android:id="@+id/main_filtermenu_other"
             android:text="@string/travelmethod_other"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:checked="true"/>
     </LinearLayout>
 </LinearLayout>
