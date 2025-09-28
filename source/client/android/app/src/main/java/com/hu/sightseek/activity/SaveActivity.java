@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -218,6 +219,15 @@ public class SaveActivity extends AppCompatActivity {
         // Discard button
         Button discardButton = findViewById(R.id.save_discardbtn);
         discardButton.setOnClickListener(view -> createDiscardConfirmationDialog(new Intent(this, MainActivity.class)));
+
+        // Handle back button
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                createDiscardConfirmationDialog(new Intent(SaveActivity.this, MainActivity.class));
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
     public void createDiscardConfirmationDialog(Intent intent) {
