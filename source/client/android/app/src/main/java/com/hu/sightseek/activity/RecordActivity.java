@@ -162,29 +162,19 @@ public class RecordActivity extends AppCompatActivity {
         // Lock listener
         ImageButton lockButton = findViewById(R.id.record_lockbtn);
         lockButton.setOnClickListener(v -> {
-            ValueAnimator animator = ValueAnimator.ofArgb(
-                    ContextCompat.getColor(this, R.color.lock_overlay),
-                    ContextCompat.getColor(this, R.color.lock_overlay_blink)
-            );
-
-            GradientDrawable lockBackground = (GradientDrawable) lockButton.getBackground();
-            animator.addUpdateListener(valueAnimator -> lockBackground.setColor((Integer) valueAnimator.getAnimatedValue()));
-
-            animator.setDuration(144);
-            animator.setRepeatMode(ValueAnimator.REVERSE);
-            animator.setRepeatCount(1);
-            animator.start();
-
             isLocked = !isLocked;
 
             if(isLocked) {
+                animateButton(lockButton, false, R.color.hint);
+
                 Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_outline_24, null);
                 lockButton.setImageDrawable(lock);
 
-                // Attempt to recenter
                 centerToCurrentLocation();
             }
             else {
+                animateButton(lockButton, true, R.color.hint);
+
                 Drawable lock = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_lock_open_24, null);
                 lockButton.setImageDrawable(lock);
             }
@@ -217,7 +207,7 @@ public class RecordActivity extends AppCompatActivity {
                     }
                 });
 
-                animateButton(heatmapButton, true);
+                animateButton(heatmapButton, true, R.color.orange);
             }
             else {
                 // Remove overlay
@@ -226,7 +216,7 @@ public class RecordActivity extends AppCompatActivity {
                     mapView.invalidate();
                 });
 
-                animateButton(heatmapButton, false);
+                animateButton(heatmapButton, false, R.color.orange);
             }
         });
 
@@ -256,7 +246,7 @@ public class RecordActivity extends AppCompatActivity {
                     mapView.invalidate();
                 });
 
-                animateButton(polylineButton, true);
+                animateButton(polylineButton, true, R.color.darker_light_blue);
             }
             else {
                 // Remove overlay
@@ -265,7 +255,7 @@ public class RecordActivity extends AppCompatActivity {
                     mapView.invalidate();
                 });
 
-                animateButton(polylineButton, false);
+                animateButton(polylineButton, false, R.color.darker_light_blue);
             }
         });
 
@@ -455,18 +445,18 @@ public class RecordActivity extends AppCompatActivity {
         registerReceiver(locationModeReceiver, filter);
     }
 
-    private void animateButton(ImageButton polylineButton, boolean animateOn) {
+    private void animateButton(ImageButton polylineButton, boolean on, int color) {
         ValueAnimator animator;
 
-        if(animateOn) {
+        if(on) {
              animator = ValueAnimator.ofArgb(
                     ContextCompat.getColor(this, R.color.lock_overlay),
-                    ContextCompat.getColor(this, R.color.orange)
+                    ContextCompat.getColor(this, color)
              );
         }
         else {
             animator = ValueAnimator.ofArgb(
-                    ContextCompat.getColor(this, R.color.orange),
+                    ContextCompat.getColor(this, color),
                     ContextCompat.getColor(this, R.color.lock_overlay)
             );
         }
