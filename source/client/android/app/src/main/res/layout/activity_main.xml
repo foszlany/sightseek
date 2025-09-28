@@ -43,8 +43,8 @@
 
         <ImageButton
             android:id="@+id/main_filterbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:backgroundTint="@color/transparent"
             android:contentDescription="@string/main_filterdesc"
             app:srcCompat="@drawable/baseline_filter_alt_24"
