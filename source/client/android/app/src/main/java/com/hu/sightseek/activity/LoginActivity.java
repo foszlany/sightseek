@@ -98,5 +98,12 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
         });
+
+        // Offline button
+        Button offlineButton = findViewById(R.id.login_backbtn);
+        offlineButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
     }
 }

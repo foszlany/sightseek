@@ -32,13 +32,28 @@
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_registerbtn" />
+        app:layout_constraintTop_toBottomOf="@+id/register_registerbtn"/>
+
+    <Button
+        android:id="@+id/register_backbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:background="@color/transparent"
+        android:text="@string/banner_useoffline"
+        android:textColor="@color/light_gray"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/register_loginbtn"
+        app:layout_constraintVertical_bias="0.837"/>
 
     <TextView
         android:id="@+id/register_registerntv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="76dp"
         android:shadowColor="@color/black"
         android:shadowDx="1.0"
         android:shadowDy="2.0"
@@ -48,6 +63,7 @@
         android:textColor="@color/white"
         android:textSize="42sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -139,19 +155,20 @@
         android:id="@+id/register_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="24dp"
         android:textAlignment="center"
         android:textColor="@color/red"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_edittext_pw2"/>
+        app:layout_constraintTop_toBottomOf="@+id/register_edittext_pw2" />
 
     <Button
         android:id="@+id/register_registerbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/register_gradient"
         android:paddingHorizontal="33dp"
         android:paddingVertical="1dp"

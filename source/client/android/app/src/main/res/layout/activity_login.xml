@@ -32,7 +32,22 @@
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_loginbtn" />
+        app:layout_constraintTop_toBottomOf="@+id/login_loginbtn"/>
+
+    <Button
+        android:id="@+id/login_backbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:background="@color/transparent"
+        android:text="@string/banner_useoffline"
+        android:textColor="@color/light_gray"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_registerbtn"
+        app:layout_constraintVertical_bias="0.722" />
 
     <TextView
         android:id="@+id/login_logintv"
@@ -44,7 +59,7 @@
         android:shadowDx="1.0"
         android:shadowDy="2.0"
         android:shadowRadius="11"
-        android:text="@string/login_login"
+        android:text="@string/login_signin"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="42sp"
