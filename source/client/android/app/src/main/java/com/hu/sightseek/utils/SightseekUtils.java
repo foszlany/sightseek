@@ -1,5 +1,8 @@
 package com.hu.sightseek.utils;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -92,13 +95,21 @@ public final class SightseekUtils {
         ));
     }
 
-    public static void createScreenshot(Context ctx, View view) {
+    public static void createScreenshot(Context ctx, View view, String name, View excludedView) {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
+
+        if(excludedView != null) {
+            excludedView.setVisibility(INVISIBLE);
+            view.draw(canvas);
+            excludedView.setVisibility(VISIBLE);
+        }
+        else {
+            view.draw(canvas);
+        }
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
-        String fileName = "MyStatistics_" + timeStamp + ".jpg";
+        String fileName = name + "_" + timeStamp + ".jpg";
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // ANDROID 10.0+
             ContentValues values = new ContentValues();

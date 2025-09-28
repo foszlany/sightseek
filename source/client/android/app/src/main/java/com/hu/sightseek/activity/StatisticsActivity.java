@@ -122,7 +122,7 @@ public class StatisticsActivity extends AppCompatActivity {
         detailViewButton.setOnClickListener(v -> initDetailedView());
 
         ImageButton screenshotButton = findViewById(R.id.statistics_screenshotbtn);
-        screenshotButton.setOnClickListener(v -> createScreenshot(this, isCardView ? findViewById(R.id.statistics_cardcontainer) : findViewById(R.id.statistics_detailedcontainer)));
+        screenshotButton.setOnClickListener(v -> createScreenshot(this, isCardView ? findViewById(R.id.statistics_cardcontainer) : findViewById(R.id.statistics_detailedcontainer), "MyStatistics", null));
     }
 
     public void initCardView() {

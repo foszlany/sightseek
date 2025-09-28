@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekUtils.createScreenshot;
 import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
@@ -164,6 +165,9 @@ public class ActivityActivity extends AppCompatActivity {
 
             dialog.show();
         });
+
+        ImageButton screenshotButton = findViewById(R.id.activity_screenshotbtn);
+        screenshotButton.setOnClickListener(v -> createScreenshot(this, findViewById(R.id.activity_layoutcontainer), activity.getName().replace(" ", "_"), findViewById(R.id.activity_btns)));
     }
 
     // Create top menubar
