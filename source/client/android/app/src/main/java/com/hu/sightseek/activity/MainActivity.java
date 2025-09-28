@@ -17,6 +17,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hu.sightseek.model.Activity;
@@ -69,6 +70,22 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new ActivityAdapter(this, activities);
         recyclerView.setAdapter(adapter);
+
+        // Refresh
+        SwipeRefreshLayout swipeRefresh = findViewById(R.id.main_swipecontainer);
+        swipeRefresh.setOnRefreshListener(() -> {
+            LocalActivityDatabaseDAO dao2 = new LocalActivityDatabaseDAO(this);
+            ArrayList<Activity> newActivities = dao2.getAllActivities();
+            dao2.close();
+
+            activities.clear();
+            activities.addAll(newActivities);
+
+            adapter.updateActivities(newActivities);
+            adapter.notifyDataSetChanged();
+
+            swipeRefresh.setRefreshing(false);
+        });
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.main_topmenu);

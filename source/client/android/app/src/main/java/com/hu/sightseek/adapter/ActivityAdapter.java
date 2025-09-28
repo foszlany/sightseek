@@ -178,6 +178,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         return bmp;
     }
 
+    public void updateActivities(List<Activity> newActivities) {
+        this.activityListFull.clear();
+        this.activityListFull.addAll(newActivities);
+        this.activityListFiltered.clear();
+        this.activityListFiltered.addAll(newActivities);
+
+        notifyDataSetChanged();
+    }
 
     // Filters
     private final Filter activityFilter = new Filter() {

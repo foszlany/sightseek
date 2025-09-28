@@ -159,6 +159,8 @@ public class RecordActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // TODO: Saved attractions button, I feel lucky button(?)
+
         // Lock listener
         ImageButton lockButton = findViewById(R.id.record_lockbtn);
         lockButton.setOnClickListener(v -> {
