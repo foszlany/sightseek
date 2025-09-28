@@ -217,21 +217,7 @@ public class RecordActivity extends AppCompatActivity {
                     }
                 });
 
-                // Animation
-                ValueAnimator animator = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(this, R.color.lock_overlay),
-                        ContextCompat.getColor(this, R.color.orange)
-                );
-
-                GradientDrawable heatmapBackground = (GradientDrawable) heatmapButton.getBackground().mutate();
-
-                animator.addUpdateListener(valueAnimator -> {
-                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
-                    heatmapBackground.setColor(animatedColor);
-                });
-
-                animator.setDuration(144);
-                animator.start();
+                animateButton(heatmapButton, true);
             }
             else {
                 // Remove overlay
@@ -240,21 +226,7 @@ public class RecordActivity extends AppCompatActivity {
                     mapView.invalidate();
                 });
 
-                // Animation
-                ValueAnimator animator = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(this, R.color.orange),
-                        ContextCompat.getColor(this, R.color.lock_overlay)
-                );
-
-                GradientDrawable heatmapBackground = (GradientDrawable) heatmapButton.getBackground().mutate();
-
-                animator.addUpdateListener(valueAnimator -> {
-                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
-                    heatmapBackground.setColor(animatedColor);
-                });
-
-                animator.setDuration(144);
-                animator.start();
+                animateButton(heatmapButton, false);
             }
         });
 
@@ -284,21 +256,7 @@ public class RecordActivity extends AppCompatActivity {
                     mapView.invalidate();
                 });
 
-                // Animation
-                ValueAnimator animator = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(this, R.color.lock_overlay),
-                        ContextCompat.getColor(this, R.color.orange)
-                );
-
-                GradientDrawable polylineBackground = (GradientDrawable) polylineButton.getBackground().mutate();
-
-                animator.addUpdateListener(valueAnimator -> {
-                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
-                    polylineBackground.setColor(animatedColor);
-                });
-
-                animator.setDuration(144);
-                animator.start();
+                animateButton(polylineButton, true);
             }
             else {
                 // Remove overlay
@@ -307,21 +265,7 @@ public class RecordActivity extends AppCompatActivity {
                     mapView.invalidate();
                 });
 
-                // Animation
-                ValueAnimator animator = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(this, R.color.orange),
-                        ContextCompat.getColor(this, R.color.lock_overlay)
-                );
-
-                GradientDrawable polylineBackground = (GradientDrawable) polylineButton.getBackground().mutate();
-
-                animator.addUpdateListener(valueAnimator -> {
-                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
-                    polylineBackground.setColor(animatedColor);
-                });
-
-                animator.setDuration(144);
-                animator.start();
+                animateButton(polylineButton, false);
             }
         });
 
@@ -509,6 +453,33 @@ public class RecordActivity extends AppCompatActivity {
             }
         };
         registerReceiver(locationModeReceiver, filter);
+    }
+
+    private void animateButton(ImageButton polylineButton, boolean animateOn) {
+        ValueAnimator animator;
+
+        if(animateOn) {
+             animator = ValueAnimator.ofArgb(
+                    ContextCompat.getColor(this, R.color.lock_overlay),
+                    ContextCompat.getColor(this, R.color.orange)
+             );
+        }
+        else {
+            animator = ValueAnimator.ofArgb(
+                    ContextCompat.getColor(this, R.color.orange),
+                    ContextCompat.getColor(this, R.color.lock_overlay)
+            );
+        }
+
+        GradientDrawable polylineBackground = (GradientDrawable) polylineButton.getBackground().mutate();
+
+        animator.addUpdateListener(valueAnimator -> {
+            int animatedColor = (Integer) valueAnimator.getAnimatedValue();
+            polylineBackground.setColor(animatedColor);
+        });
+
+        animator.setDuration(144);
+        animator.start();
     }
 
     private void pauseRecord() {
