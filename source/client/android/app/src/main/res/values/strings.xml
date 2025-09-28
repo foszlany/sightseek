@@ -111,4 +111,5 @@
     <string name="statistics_screenshotbtndesc">Take screenshot</string>
     <string name="record_heatmapdesc">Heatmap</string>
     <string name="record_lockdesc">Lock</string>
+    <string name="card_activity_routedesc">Route</string>
 </resources>

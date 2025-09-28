@@ -79,13 +79,13 @@
                     android:layout_marginEnd="5dp"
                     android:text="@string/idea_loading"
                     android:textColor="@color/white"
-                    android:textSize="30sp"
-                    android:textStyle="bold" />
+                    android:textSize="36sp"
+                    android:textStyle="bold"/>
 
                 <ImageButton
                     android:id="@+id/idea_google"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_gravity="end"
                     android:background="@drawable/google_icon"
                     android:contentDescription="@string/idea_googleicondesc"
@@ -93,7 +93,6 @@
                     android:padding="16dp"
                     app:layout_constraintEnd_toEndOf="parent"/>
             </LinearLayout>
-
 
             <TextView
                 android:id="@+id/idea_type"
@@ -129,6 +128,7 @@
             </LinearLayout>
 
             <LinearLayout
+                style="?android:attr/buttonBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -138,7 +138,8 @@
 
                 <Button
                     android:id="@+id/idea_ignorebtn"
-                    android:layout_width="wrap_content"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="90dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="25dp"
                     android:textColor="@color/white"
@@ -149,7 +150,8 @@
 
                 <Button
                     android:id="@+id/idea_nextbtn"
-                    android:layout_width="wrap_content"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="90dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textColor="@color/white"
