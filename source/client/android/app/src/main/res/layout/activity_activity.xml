@@ -61,23 +61,23 @@
                 android:textColor="@color/white"
                 android:textSize="44sp" />
 
-            <!--
             <ImageButton
-                android:id="@+id/activity_editbtn"
-                android:background="@drawable/edit_button"
+                android:id="@+id/activity_screenshotbtn"
+                android:background="@drawable/screenshot_button"
                 android:layout_gravity="top"
                 android:layout_marginEnd="12dp"
-                android:layout_width="36dp"
-                android:layout_height="36dp"/>
-            -->
+                android:layout_marginTop="7dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/statistics_screenshotbtndesc"/>
 
             <ImageButton
                 android:id="@+id/activity_deletebtn"
                 android:background="@drawable/delete_button"
                 android:layout_gravity="top"
                 android:layout_marginTop="7dp"
-                android:layout_width="46dp"
-                android:layout_height="46dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:contentDescription="@string/activity_deletebtndesc" />
         </LinearLayout>
 
