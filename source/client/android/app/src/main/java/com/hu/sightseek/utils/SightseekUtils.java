@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -108,7 +110,7 @@ public final class SightseekUtils {
             view.draw(canvas);
         }
 
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.US).format(new Date());
         String fileName = name + "_" + timeStamp + ".jpg";
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // ANDROID 10.0+
@@ -153,6 +155,22 @@ public final class SightseekUtils {
     public static void defaultToBudapest(MapView mapView) {
         GeoPoint point = new GeoPoint(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE);
         mapView.getController().setCenter(point);
+    }
+
+    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        if(drawable == null) {
+            throw new NullPointerException("Drawable does not exist!");
+        }
+
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
     //TODO: just rewrite it with vectors, this is rather dumb

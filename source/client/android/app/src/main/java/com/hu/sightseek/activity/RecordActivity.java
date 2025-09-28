@@ -3,6 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import static com.hu.sightseek.utils.SightseekUtils.getBitmapFromVectorDrawable;
 import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekUtils.defaultToBudapest;
 import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -62,7 +64,7 @@ import org.osmdroid.views.overlay.IconOverlay;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.text.SimpleDateFormat;
@@ -85,7 +87,7 @@ public class RecordActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private SimpleDateFormat dateFormat;
     private LocationCallback locationCallback;
-    private MyLocationNewOverlay locationOverlay;
+    private DirectedLocationOverlay locationOverlay;
     private BroadcastReceiver locationModeReceiver;
 
     private ArrayList<LatLng> importedPoints;
@@ -185,8 +187,8 @@ public class RecordActivity extends AppCompatActivity {
         heatmapButton.setOnClickListener(item -> {
             isHeatmapOn = !isHeatmapOn;
 
+            Executor executor = Executors.newSingleThreadExecutor();
             if(isHeatmapOn) {
-                Executor executor = Executors.newSingleThreadExecutor();
                 executor.execute(() -> {
                     // Import points if necessary
                     if(importedPoints == null) {
@@ -224,9 +226,8 @@ public class RecordActivity extends AppCompatActivity {
                 animator.start();
             }
             else {
-                Executor executor = Executors.newSingleThreadExecutor();
+                // Remove overlay
                 executor.execute(() -> {
-                    // Remove overlay
                     mapView.getOverlays().remove(heatmapOverlay);
                     mapView.invalidate();
                 });
@@ -390,14 +391,17 @@ public class RecordActivity extends AppCompatActivity {
 
         // Initialize route overlay
         setupRouteLine(route);
-        mapView.getOverlayManager().add(route);
+        mapView.getOverlays().add(0, route);
 
         // Marker for current location
-        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
-        locationOverlay.setDrawAccuracyEnabled(false);
+        Bitmap markerIcon = getBitmapFromVectorDrawable(this, R.drawable.baseline_navigation_48);
 
-        locationOverlay.enableMyLocation();
-        mapView.getOverlays().add(locationOverlay);
+        locationOverlay = new DirectedLocationOverlay(mapView.getContext());
+        locationOverlay.setShowAccuracy(false);
+        locationOverlay.setEnabled(true);
+        locationOverlay.setDirectionArrow(markerIcon);
+
+        mapView.getOverlays().add(1, locationOverlay);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -416,10 +420,10 @@ public class RecordActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if(LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) {
                     if(!isLocationEnabled(RecordActivity.this)) {
-                        locationOverlay.enableMyLocation();
+                        locationOverlay.setEnabled(true);
                     }
                     else {
-                        locationOverlay.disableMyLocation();
+                        locationOverlay.setEnabled(false);
                         if(isRecording) {
                             pauseRecord();
                             Toast.makeText(RecordActivity.this, "Location disabled, recording paused", Toast.LENGTH_LONG).show();
@@ -483,6 +487,11 @@ public class RecordActivity extends AppCompatActivity {
                     // Animate marker
                     if(mapView != null && isLocked) {
                         mapView.getController().animateTo(point, mapView.getZoomLevelDouble(), 666L);
+
+                        locationOverlay.setLocation(new GeoPoint(location.getLatitude(), location.getLongitude()));
+                        if(location.hasBearing()) {
+                            locationOverlay.setBearing(location.getBearing());
+                        }
                     }
 
                     // Record point if needed
@@ -505,7 +514,6 @@ public class RecordActivity extends AppCompatActivity {
 
                         // Add point to the route
                         route.addPoint(point);
-                        mapView.invalidate();
 
                         // Mark first point, record start time
                         if(recordedPoints.size() == 1) {
@@ -516,10 +524,9 @@ public class RecordActivity extends AppCompatActivity {
                                 icon.setTint(Color.BLUE);
                             }
 
-                            IconOverlay firstP = new IconOverlay(point, icon);
+                            IconOverlay firstPoint = new IconOverlay(point, icon);
 
-                            mapView.getOverlayManager().add(firstP);
-                            mapView.invalidate();
+                            mapView.getOverlays().add(0, firstPoint);
                         }
                         // Update variables
                         else {
@@ -541,6 +548,10 @@ public class RecordActivity extends AppCompatActivity {
                 }
                 else {
                     System.out.println("NULL LOCATION"); // TODO: Bad connection?
+                }
+
+                if(mapView != null) {
+                    mapView.invalidate();
                 }
             }
         };
@@ -575,7 +586,7 @@ public class RecordActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        locationOverlay.enableMyLocation();
+        locationOverlay.setEnabled(true);
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
         }
@@ -597,10 +608,6 @@ public class RecordActivity extends AppCompatActivity {
             // Start location updates
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Marker for current location
-                locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
-                locationOverlay.enableMyLocation();
-                mapView.getOverlays().add(locationOverlay);
-
                 startLocationUpdates();
             }
             // Check if user clicked on "Don't ask again"
