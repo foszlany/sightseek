@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:text="@string/main_speed"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/record_distance"
@@ -52,8 +52,21 @@
             android:layout_height="wrap_content"
             android:text="@string/main_distance"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/record_polylinebtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/circle_button_bg"
+        android:contentDescription="@string/record_polylinedesc"
+        android:elevation="5dp"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/record_heatmapbtn"
+        app:layout_constraintEnd_toEndOf="@+id/record_map"
+        app:srcCompat="@drawable/baseline_polyline_24"/>
 
     <ImageButton
         android:id="@+id/record_heatmapbtn"
@@ -66,7 +79,7 @@
         android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@+id/record_lockbtn"
         app:layout_constraintEnd_toEndOf="@+id/record_map"
-        app:srcCompat="@drawable/baseline_local_fire_department_24" />
+        app:srcCompat="@drawable/baseline_local_fire_department_24"/>
 
     <ImageButton
         android:id="@+id/record_lockbtn"

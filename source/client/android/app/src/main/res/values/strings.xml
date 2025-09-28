@@ -114,4 +114,5 @@
     <string name="card_activity_routedesc">Route</string>
     <string name="login_signin">Sign in</string>
     <string name="activity_imgdesc">This image serves as a simple background for the activity page.</string>
+    <string name="record_polylinedesc">Polyline</string>
 </resources>

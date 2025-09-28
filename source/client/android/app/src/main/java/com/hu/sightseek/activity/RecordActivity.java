@@ -60,6 +60,7 @@ import com.hu.sightseek.utils.SightseekUtils;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.IconOverlay;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.Polyline;
@@ -92,7 +93,6 @@ public class RecordActivity extends AppCompatActivity {
 
     private ArrayList<LatLng> importedPoints;
     private ArrayList<LatLng> recordedPoints;
-    private org.osmdroid.views.overlay.GroundOverlay heatmapOverlay;
     private boolean isRecording;
     private boolean didPressStopWhileLowPointCount;
     private String startTime;
@@ -103,8 +103,12 @@ public class RecordActivity extends AppCompatActivity {
     private double currentSpeed;
 
     private boolean isLocked;
+
+    private org.osmdroid.views.overlay.GroundOverlay heatmapOverlay;
     private boolean isHeatmapOn;
 
+    FolderOverlay polylineGroup;
+    private boolean isPolylinesOverlayOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,8 +132,12 @@ public class RecordActivity extends AppCompatActivity {
         elapsedTime = 0;
         totalDist = 0;
         currentSpeed = 0;
+
         isLocked = true;
         isHeatmapOn = false;
+        polylineGroup = new FolderOverlay();
+
+        isPolylinesOverlayOn = false;
 
         chronometer = findViewById(R.id.record_chronometer);
         chronometer.setVisibility(INVISIBLE);
@@ -153,7 +161,7 @@ public class RecordActivity extends AppCompatActivity {
 
         // Lock listener
         ImageButton lockButton = findViewById(R.id.record_lockbtn);
-        lockButton.setOnClickListener(item -> {
+        lockButton.setOnClickListener(v -> {
             ValueAnimator animator = ValueAnimator.ofArgb(
                     ContextCompat.getColor(this, R.color.lock_overlay),
                     ContextCompat.getColor(this, R.color.lock_overlay_blink)
@@ -184,7 +192,7 @@ public class RecordActivity extends AppCompatActivity {
 
         // Heatmap listener
         ImageButton heatmapButton = findViewById(R.id.record_heatmapbtn);
-        heatmapButton.setOnClickListener(item -> {
+        heatmapButton.setOnClickListener(v -> {
             isHeatmapOn = !isHeatmapOn;
 
             Executor executor = Executors.newSingleThreadExecutor();
@@ -243,6 +251,73 @@ public class RecordActivity extends AppCompatActivity {
                 animator.addUpdateListener(valueAnimator -> {
                     int animatedColor = (Integer) valueAnimator.getAnimatedValue();
                     heatmapBackground.setColor(animatedColor);
+                });
+
+                animator.setDuration(144);
+                animator.start();
+            }
+        });
+
+        // Polyline listener
+        ImageButton polylineButton = findViewById(R.id.record_polylinebtn);
+        polylineButton.setOnClickListener(v -> {
+            isPolylinesOverlayOn = !isPolylinesOverlayOn;
+
+            Executor executor = Executors.newSingleThreadExecutor();
+            if(isPolylinesOverlayOn) {
+                executor.execute(() -> {
+                    // Import polylines if necessary
+                    if(polylineGroup.getItems().isEmpty()) {
+                        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                        ArrayList<Polyline> polylines = dao.getAllPolylines(6);
+                        dao.close();
+
+                        for(Polyline p : polylines) {
+                            setupRouteLine(p);
+                            polylineGroup.add(p);
+                        }
+
+                        mapView.getOverlays().add(0, polylineGroup);
+                    }
+
+                    polylineGroup.setEnabled(true);
+                    mapView.invalidate();
+                });
+
+                // Animation
+                ValueAnimator animator = ValueAnimator.ofArgb(
+                        ContextCompat.getColor(this, R.color.lock_overlay),
+                        ContextCompat.getColor(this, R.color.orange)
+                );
+
+                GradientDrawable polylineBackground = (GradientDrawable) polylineButton.getBackground().mutate();
+
+                animator.addUpdateListener(valueAnimator -> {
+                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
+                    polylineBackground.setColor(animatedColor);
+                });
+
+                animator.setDuration(144);
+                animator.start();
+            }
+            else {
+                // Remove overlay
+                executor.execute(() -> {
+                    polylineGroup.setEnabled(false);
+                    mapView.invalidate();
+                });
+
+                // Animation
+                ValueAnimator animator = ValueAnimator.ofArgb(
+                        ContextCompat.getColor(this, R.color.orange),
+                        ContextCompat.getColor(this, R.color.lock_overlay)
+                );
+
+                GradientDrawable polylineBackground = (GradientDrawable) polylineButton.getBackground().mutate();
+
+                animator.addUpdateListener(valueAnimator -> {
+                    int animatedColor = (Integer) valueAnimator.getAnimatedValue();
+                    polylineBackground.setColor(animatedColor);
                 });
 
                 animator.setDuration(144);

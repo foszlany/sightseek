@@ -10,6 +10,9 @@ import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.TravelCategory;
 import com.hu.sightseek.model.Activity;
 
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Polyline;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -190,6 +193,51 @@ public class LocalActivityDatabaseDAO {
             do {
                 String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_POLYLINE));
                 polylines.addAll(PolyUtil.decode(polyline));
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return polylines;
+    }
+
+    public ArrayList<Polyline> getAllPolylines(int tolerance) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ArrayList<Polyline> polylines = new ArrayList<>();
+
+        Cursor cursor = db.query(
+                LocalActivityDatabaseImpl.ACTIVITIES_TABLE,
+                new String[]{ LocalActivityDatabaseImpl.ACTIVITIES_POLYLINE },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor.moveToFirst()) {
+            do {
+                String polylineString = cursor.getString(cursor.getColumnIndexOrThrow(LocalActivityDatabaseImpl.ACTIVITIES_POLYLINE));
+                List<LatLng> latLngPoints;
+
+                if(tolerance <= 0) {
+                    latLngPoints = PolyUtil.decode(polylineString);
+                }
+                else {
+                    latLngPoints = PolyUtil.simplify(PolyUtil.decode(polylineString), tolerance);
+                }
+
+
+                List<GeoPoint> geoPoints = new ArrayList<>(latLngPoints.size());
+                for(LatLng p : latLngPoints) {
+                    geoPoints.add(new GeoPoint(p.latitude, p.longitude));
+                }
+
+                Polyline polyline = new Polyline();
+                polyline.setPoints(geoPoints);
+
+                polylines.add(polyline);
             } while(cursor.moveToNext());
         }
 
