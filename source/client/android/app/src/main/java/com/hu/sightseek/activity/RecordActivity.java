@@ -273,7 +273,7 @@ public class RecordActivity extends AppCompatActivity {
                         dao.close();
 
                         for(Polyline p : polylines) {
-                            setupRouteLine(p);
+                            setupRouteLine(p, true);
                             polylineGroup.add(p);
                         }
 
@@ -465,7 +465,7 @@ public class RecordActivity extends AppCompatActivity {
         setupZoomSettings(mapView, 14.0);
 
         // Initialize route overlay
-        setupRouteLine(route);
+        setupRouteLine(route, false);
         mapView.getOverlays().add(0, route);
 
         // Marker for current location

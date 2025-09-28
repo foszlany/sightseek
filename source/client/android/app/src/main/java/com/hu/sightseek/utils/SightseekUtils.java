@@ -71,9 +71,15 @@ public final class SightseekUtils {
         return new BoundingBox(maxLat, maxLon, minLat, minLon);
     }
 
-    public static void setupRouteLine(Polyline route) {
-        route.getOutlinePaint().setColor(Color.BLUE);
-        route.getOutlinePaint().setStrokeWidth(9.0f);
+    public static void setupRouteLine(Polyline route, boolean isFaint) {
+        if(isFaint) {
+            route.getOutlinePaint().setColor(Color.parseColor("#40A7FF"));
+            route.getOutlinePaint().setStrokeWidth(7.0f);
+        }
+        else {
+            route.getOutlinePaint().setColor(Color.BLUE);
+            route.getOutlinePaint().setStrokeWidth(9.0f);
+        }
 
         // Smoothen
         Paint paint = route.getOutlinePaint();

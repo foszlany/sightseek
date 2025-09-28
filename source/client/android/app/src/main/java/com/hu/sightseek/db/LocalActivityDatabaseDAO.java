@@ -228,7 +228,6 @@ public class LocalActivityDatabaseDAO {
                     latLngPoints = PolyUtil.simplify(PolyUtil.decode(polylineString), tolerance);
                 }
 
-
                 List<GeoPoint> geoPoints = new ArrayList<>(latLngPoints.size());
                 for(LatLng p : latLngPoints) {
                     geoPoints.add(new GeoPoint(p.latitude, p.longitude));

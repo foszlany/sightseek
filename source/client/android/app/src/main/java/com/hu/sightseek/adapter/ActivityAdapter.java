@@ -159,7 +159,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         for(LatLng p : points) {
             line.addPoint(new GeoPoint(p.latitude, p.longitude));
         }
-        setupRouteLine(line);
+        setupRouteLine(line, false);
         mapView.getOverlayManager().add(line);
 
         // Zoom

@@ -165,7 +165,7 @@ public class SaveActivity extends AppCompatActivity {
             polyline.addPoint(new GeoPoint(point.latitude, point.longitude));
         }
 
-        setupRouteLine(polyline);
+        setupRouteLine(polyline, false);
         mapView.getOverlayManager().add(polyline);
 
         // Calculate bounding box
