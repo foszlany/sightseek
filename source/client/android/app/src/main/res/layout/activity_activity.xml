@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
+    android:backgroundTint="@color/main_bg"
     android:background="@color/black"
     android:layout_height="match_parent"
     tools:context=".activity.ActivityActivity">
@@ -17,6 +18,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <ImageView
+        android:id="@+id/login_banner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:alpha="0.21"
+        android:contentDescription="@string/login_imgdesc"
+        android:scaleType="centerCrop"
+        android:src="@drawable/save_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menubar_activity"/>
 
     <LinearLayout
         android:id="@+id/activity_layoutcontainer"
