@@ -4,12 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -119,10 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Filter button
         ImageButton filterButton = findViewById(R.id.main_filterbtn);
-        filterButton.setOnClickListener(v -> {
-            PopupMenu popup = initFilterPopup(v);
-            popup.show();
-        });
+        filterButton.setOnClickListener(this::initFilterPopup);
 
         // Bottombar listener
         BottomNavigationView bottomNav = findViewById(R.id.main_bottommenu);
@@ -178,44 +179,48 @@ public class MainActivity extends AppCompatActivity {
 
     // Filter popup
     @NonNull
-    private PopupMenu initFilterPopup(View menuItemView) {
-        PopupMenu popup = new PopupMenu(this, menuItemView);
+    private void initFilterPopup(View menuItemView) {
+        View popupView = LayoutInflater.from(this).inflate(R.layout.filter_main, null);
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+        );
+        popupWindow.showAsDropDown(menuItemView);
 
-        popup.inflate(R.menu.menu_main_filter);
-        popup.setOnMenuItemClickListener(menuItem -> {
-            int menuId = menuItem.getItemId();
+        RadioGroup radioGroup = popupView.findViewById(R.id.main_filtermenu_radiogroup);
 
-            if(menuId == R.id.menu_filter_date_recent) {
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId == R.id.main_filtermenu_date_recent) {
                 Collections.sort(activities, (a1, a2) -> a2.getStarttime().compareTo(a1.getStarttime()));
             }
-            else if(menuId == R.id.menu_filter_date_old) {
+            else if(checkedId == R.id.main_filtermenu_date_old) {
                 Collections.sort(activities, (a1, a2) -> a1.getStarttime().compareTo(a2.getStarttime()));
             }
-            else if(menuId == R.id.menu_filter_alpha_az) {
+            else if(checkedId == R.id.main_filtermenu_alpha_az) {
                 Collections.sort(activities, (a1, a2) -> a1.getName().compareToIgnoreCase(a2.getName()));
             }
-            else if(menuId == R.id.menu_filter_alpha_za) {
+            else if(checkedId == R.id.main_filtermenu_alpha_za) {
                 Collections.sort(activities, (a1, a2) -> a2.getName().compareToIgnoreCase(a1.getName()));
             }
-            else if(menuId == R.id.menu_filter_dist_lth) {
+            else if(checkedId == R.id.main_filtermenu_dist_lth) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a1.getDistance(), a2.getDistance()));
             }
-            else if(menuId == R.id.menu_filter_dist_htl) {
+            else if(checkedId == R.id.main_filtermenu_dist_htl) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a2.getDistance(), a1.getDistance()));
             }
-            else if(menuId == R.id.menu_filter_time_lth) {
+            else if(checkedId == R.id.main_filtermenu_time_lth) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a1.getElapsedtime(), a2.getElapsedtime()));
             }
-            else if(menuId == R.id.menu_filter_time_htl) {
+            else if(checkedId == R.id.main_filtermenu_time_htl) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a2.getElapsedtime(), a1.getElapsedtime()));
             }
 
             adapter.setActivityListFiltered(activities);
             adapter.notifyItemRangeChanged(0, adapter.getItemCount());
 
-            return true;
+            popupWindow.dismiss();
         });
-
-        return popup;
     }
 }
