@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="16dp"
-    android:background="?android:attr/windowBackground">
+    android:background="?android:attr/windowBackground"
+    android:backgroundTint="@color/main_bg">
 
     <LinearLayout
         android:id="@+id/main_filtermenu_sortcontainer"
@@ -19,8 +20,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_filtermenu_sortby"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:paddingBottom="8dp"/>
+            android:textColor="@color/white"
+            android:paddingBottom="6dp"/>
 
         <RadioGroup
             android:id="@+id/main_filtermenu_radiogroup"
@@ -31,48 +34,56 @@
             <RadioButton
                 android:id="@+id/main_filtermenu_date_recent"
                 android:text="@string/menu_filter_recent"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
             <RadioButton
                 android:id="@+id/main_filtermenu_date_old"
                 android:text="@string/menu_filter_old"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
             <RadioButton
                 android:id="@+id/main_filtermenu_alpha_az"
                 android:text="@string/menu_filter_az"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
             <RadioButton
                 android:id="@+id/main_filtermenu_alpha_za"
                 android:text="@string/menu_filter_za"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
             <RadioButton
                 android:id="@+id/main_filtermenu_dist_lth"
                 android:text="@string/menu_filter_smalldist"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
             <RadioButton
                 android:id="@+id/main_filtermenu_dist_htl"
                 android:text="@string/menu_filter_bigdist"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
             <RadioButton
                 android:id="@+id/main_filtermenu_time_lth"
                 android:text="@string/menu_filter_short"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
             <RadioButton
                 android:id="@+id/main_filtermenu_time_htl"
                 android:text="@string/menu_filter_long"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
         </RadioGroup>
@@ -89,24 +100,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_filtermenu_categories"
+            android:textColor="@color/white"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="6dp"/>
 
         <CheckBox
             android:id="@+id/main_filtermenu_loco"
             android:text="@string/travelmethod_loco"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <CheckBox
             android:id="@+id/main_filtermenu_micro"
             android:text="@string/travelmethod_micro"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <CheckBox
             android:id="@+id/main_filtermenu_other"
             android:text="@string/travelmethod_other"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -120,6 +136,7 @@
             android:id="@+id/main_filtermenu_applybtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:layout_gravity="end"
             android:text="@string/main_filtermenu_apply" />
     </LinearLayout>
