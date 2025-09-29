@@ -117,4 +117,5 @@
     <string name="record_polylinedesc">Polyline</string>
     <string name="main_filtermenu_sortby">Sort by</string>
     <string name="main_filtermenu_categories">Categories</string>
+    <string name="main_filtermenu_apply">Apply</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_filtermenu_maincontainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -30,7 +31,6 @@
             <RadioButton
                 android:id="@+id/main_filtermenu_date_recent"
                 android:text="@string/menu_filter_recent"
-                android:checked="true"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"/>
 
@@ -81,7 +81,7 @@
     <LinearLayout
         android:id="@+id/main_filtermenu_categorycontainer"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1.2"
         android:orientation="vertical">
 
@@ -112,5 +112,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:ignore="NestedWeights"/>
+
+        <Button
+            android:id="@+id/main_filtermenu_applybtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/main_filtermenu_apply" />
     </LinearLayout>
 </LinearLayout>

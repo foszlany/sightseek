@@ -10,9 +10,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ActivityAdapter adapter;
     private ArrayList<Activity> activities;
+    private int checkedSortByMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
         Configuration.getInstance().setCacheMapTileCount((short) 12);
         Configuration.getInstance().setCacheMapTileOvershoot((short) 2);
+
+        checkedSortByMethod = R.id.main_filtermenu_date_recent;
 
         // Show banner when launching for the first time
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -176,44 +180,45 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
+    
     // Filter popup
-    @NonNull
     private void initFilterPopup(View menuItemView) {
         View popupView = LayoutInflater.from(this).inflate(R.layout.filter_main, null);
-        PopupWindow popupWindow = new PopupWindow(
-                popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true
-        );
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popupWindow.showAsDropDown(menuItemView);
 
         RadioGroup radioGroup = popupView.findViewById(R.id.main_filtermenu_radiogroup);
+        RadioButton previousSortByMethod = popupView.findViewById(checkedSortByMethod);
+        previousSortByMethod.toggle();
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if(checkedId == R.id.main_filtermenu_date_recent) {
+            checkedSortByMethod = checkedId;
+        });
+
+        Button applyButton = popupView.findViewById(R.id.main_filtermenu_applybtn);
+        applyButton.setOnClickListener(v -> {
+            if(checkedSortByMethod == R.id.main_filtermenu_date_recent) {
                 Collections.sort(activities, (a1, a2) -> a2.getStarttime().compareTo(a1.getStarttime()));
             }
-            else if(checkedId == R.id.main_filtermenu_date_old) {
+            else if(checkedSortByMethod == R.id.main_filtermenu_date_old) {
                 Collections.sort(activities, (a1, a2) -> a1.getStarttime().compareTo(a2.getStarttime()));
             }
-            else if(checkedId == R.id.main_filtermenu_alpha_az) {
+            else if(checkedSortByMethod == R.id.main_filtermenu_alpha_az) {
                 Collections.sort(activities, (a1, a2) -> a1.getName().compareToIgnoreCase(a2.getName()));
             }
-            else if(checkedId == R.id.main_filtermenu_alpha_za) {
+            else if(checkedSortByMethod == R.id.main_filtermenu_alpha_za) {
                 Collections.sort(activities, (a1, a2) -> a2.getName().compareToIgnoreCase(a1.getName()));
             }
-            else if(checkedId == R.id.main_filtermenu_dist_lth) {
+            else if(checkedSortByMethod == R.id.main_filtermenu_dist_lth) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a1.getDistance(), a2.getDistance()));
             }
-            else if(checkedId == R.id.main_filtermenu_dist_htl) {
+            else if(checkedSortByMethod == R.id.main_filtermenu_dist_htl) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a2.getDistance(), a1.getDistance()));
             }
-            else if(checkedId == R.id.main_filtermenu_time_lth) {
+            else if(checkedSortByMethod == R.id.main_filtermenu_time_lth) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a1.getElapsedtime(), a2.getElapsedtime()));
             }
-            else if(checkedId == R.id.main_filtermenu_time_htl) {
+            else if(checkedSortByMethod == R.id.main_filtermenu_time_htl) {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a2.getElapsedtime(), a1.getElapsedtime()));
             }
 
