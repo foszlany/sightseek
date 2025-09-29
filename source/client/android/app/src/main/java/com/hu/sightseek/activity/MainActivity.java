@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hu.sightseek.TravelCategory;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ActivityAdapter;
@@ -34,12 +36,18 @@ import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ActivityAdapter adapter;
     private ArrayList<Activity> activities;
+
     private int checkedSortByMethod;
+    private boolean isLocoChecked;
+    private boolean isMicroChecked;
+    private boolean isOtherChecked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
         Configuration.getInstance().setCacheMapTileOvershoot((short) 2);
 
         checkedSortByMethod = R.id.main_filtermenu_date_recent;
+        isLocoChecked = true;
+        isMicroChecked = true;
+        isOtherChecked = true;
 
         // Show banner when launching for the first time
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -180,8 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    
-    // Filter popup
+
     private void initFilterPopup(View menuItemView) {
         View popupView = LayoutInflater.from(this).inflate(R.layout.filter_main, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
@@ -191,12 +201,19 @@ public class MainActivity extends AppCompatActivity {
         RadioButton previousSortByMethod = popupView.findViewById(checkedSortByMethod);
         previousSortByMethod.toggle();
 
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            checkedSortByMethod = checkedId;
-        });
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> checkedSortByMethod = checkedId);
+
+        CheckBox locoCheckBox = popupView.findViewById(R.id.main_filtermenu_loco);
+        CheckBox microCheckBox = popupView.findViewById(R.id.main_filtermenu_micro);
+        CheckBox otherCheckBox = popupView.findViewById(R.id.main_filtermenu_other);
+
+        locoCheckBox.setChecked(isLocoChecked);
+        microCheckBox.setChecked(isMicroChecked);
+        otherCheckBox.setChecked(isOtherChecked);
 
         Button applyButton = popupView.findViewById(R.id.main_filtermenu_applybtn);
         applyButton.setOnClickListener(v -> {
+            // Sort by
             if(checkedSortByMethod == R.id.main_filtermenu_date_recent) {
                 Collections.sort(activities, (a1, a2) -> a2.getStarttime().compareTo(a1.getStarttime()));
             }
@@ -222,8 +239,26 @@ public class MainActivity extends AppCompatActivity {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a2.getElapsedtime(), a1.getElapsedtime()));
             }
 
-            adapter.setActivityListFiltered(activities);
-            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+            // Categories
+            isLocoChecked = locoCheckBox.isChecked();
+            isMicroChecked = microCheckBox.isChecked();
+            isOtherChecked = otherCheckBox.isChecked();
+
+            ArrayList<Activity> filtered = new ArrayList<>();
+            if(!(!isLocoChecked && !isMicroChecked && !isOtherChecked)) {
+                for(Activity activity : activities) {
+                    if(activity.getCategory() == TravelCategory.LOCOMOTOR && !isLocoChecked
+                            || activity.getCategory() == TravelCategory.MICROMOBILITY && !isMicroChecked
+                            || activity.getCategory() == TravelCategory.OTHER && !isOtherChecked) {
+                        continue;
+                    }
+
+                    filtered.add(activity);
+                }
+            }
+
+            adapter.setActivityListFiltered(filtered);
+            adapter.notifyDataSetChanged();
 
             popupWindow.dismiss();
         });
