@@ -36,8 +36,6 @@ import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -122,17 +120,18 @@ public class MainActivity extends AppCompatActivity {
         // Searchbar
         SearchView searchView = findViewById(R.id.main_searchbar);
         searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+        searchView.setQuery(adapter.getSearchQuery(), false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String s) {
-                adapter.getFilter().filter(s);
-                return false;
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                return true;
             }
 
             @Override
-            public boolean onQueryTextChange(String s) {
-                adapter.getFilter().filter(s);
-                return false;
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return true;
             }
         });
 
@@ -257,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            adapter.setActivityListFiltered(filtered);
+            adapter.applyCategoryFilter(filtered);
             adapter.notifyDataSetChanged();
 
             popupWindow.dismiss();

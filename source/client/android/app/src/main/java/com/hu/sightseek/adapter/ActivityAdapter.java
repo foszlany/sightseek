@@ -42,7 +42,10 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     private static final int w = 500, h = 500;
 
     private final ArrayList<Activity> activityListFull;
+    private ArrayList<Activity> activityListFilteredByCategory;
     private ArrayList<Activity> activityListFiltered;
+    private String searchQuery;
+
     private final Context context;
     private final Map<Integer, Bitmap> imageCache;
     private final MapView mapView;
@@ -50,7 +53,9 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     public ActivityAdapter(Context context, ArrayList<Activity> activityList) {
         this.context = context;
         this.activityListFull = new ArrayList<>(activityList);
+        this.activityListFilteredByCategory = new ArrayList<>(activityList);
         this.activityListFiltered = new ArrayList<>(activityList);
+        this.searchQuery = "";
         this.imageCache = new HashMap<>();
 
         // Map
@@ -181,6 +186,10 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     public void updateActivities(List<Activity> newActivities) {
         this.activityListFull.clear();
         this.activityListFull.addAll(newActivities);
+
+        this.activityListFiltered.clear();
+        this.activityListFiltered.addAll(newActivities);
+
         this.activityListFiltered.clear();
         this.activityListFiltered.addAll(newActivities);
 
@@ -191,38 +200,61 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     private final Filter activityFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            ArrayList<Activity> filtered_list = new ArrayList<>();
-            FilterResults res = new FilterResults();
+            ArrayList<Activity> filteredList = new ArrayList<>();
+            FilterResults results = new FilterResults();
 
-            if(constraint == null || constraint.length() == 0) {
-                res.count = activityListFull.size();
-                res.values = activityListFull;
+            String filterPattern = constraint == null ? "" : constraint.toString().toLowerCase().trim();
+
+            ArrayList<Activity> baseActivityList = activityListFilteredByCategory.isEmpty() ? activityListFull : activityListFilteredByCategory;
+
+            if(filterPattern.isEmpty()) {
+                filteredList.addAll(baseActivityList);
             }
             else {
-                String filter_pattern = constraint.toString().toLowerCase().trim();
-
-                for(Activity i : activityListFull) {
-                    if(i.getName().toLowerCase().contains(filter_pattern)) {
-                        filtered_list.add(i);
+                for(Activity activity : baseActivityList) {
+                    if(activity.getName() != null && activity.getName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(activity);
                     }
                 }
-
-                res.count = filtered_list.size();
-                res.values = filtered_list;
             }
 
-            return res;
+            results.values = filteredList;
+            results.count = filteredList.size();
+            return results;
         }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            activityListFiltered = (ArrayList<Activity>) results.values;
+            searchQuery = constraint != null ? constraint.toString() : "";
+            activityListFiltered = (results != null && results.values != null) ? ((ArrayList<Activity>) results.values) : new ArrayList<>();
+
             notifyDataSetChanged();
         }
     };
 
-    public void setActivityListFiltered(ArrayList<Activity> newActivities) {
-        activityListFiltered = newActivities;
+    public void applyCategoryFilter(List<Activity> categoryFilteredList) {
+        activityListFilteredByCategory.clear();
+        activityListFilteredByCategory.addAll(categoryFilteredList);
+
+        if(!searchQuery.isEmpty()) {
+            String filterPattern = searchQuery.toLowerCase().trim();
+            ArrayList<Activity> searchFiltered = new ArrayList<>();
+            for(Activity activity : activityListFilteredByCategory) {
+                if(activity.getName() != null && activity.getName().toLowerCase().contains(filterPattern)) {
+                    searchFiltered.add(activity);
+                }
+            }
+            activityListFiltered = searchFiltered;
+        }
+        else {
+            activityListFiltered = new ArrayList<>(activityListFilteredByCategory);
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public String getSearchQuery() {
+        return searchQuery;
     }
 
     @Override
