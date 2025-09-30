@@ -118,4 +118,6 @@
     <string name="main_filtermenu_sortby">Sort by</string>
     <string name="main_filtermenu_categories">Categories</string>
     <string name="main_filtermenu_apply">Apply</string>
+    <string name="login_error_incorrect">Incorrect email or password.</string>
+    <string name="register_error_email_taken">Email address is already taken.</string>
 </resources>

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.hu.sightseek.R;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -123,7 +124,14 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 else {
-                    errorTextView.setText(R.string.register_error_unknown);
+                    Exception e = task.getException();
+                    if(e instanceof FirebaseAuthUserCollisionException) {
+                        errorTextView.setText(R.string.register_error_email_taken);
+                    }
+                    else {
+                        errorTextView.setText(R.string.register_error_unknown);
+                    }
+
                 }
             });
         });

@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
@@ -83,11 +85,17 @@ public class LoginActivity extends AppCompatActivity {
                     errorTextView.setVisibility(INVISIBLE);
                     Toast.makeText(LoginActivity.this, "Successful login!", Toast.LENGTH_LONG).show();
 
-                    Intent intent = new Intent(this, MainActivity.class); // TODO: Change to ProfileActivity?
+                    Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                 }
                 else {
-                    errorTextView.setText(R.string.register_error_unknown);
+                    Exception e = task.getException();
+                    if(e instanceof FirebaseAuthInvalidUserException || e instanceof FirebaseAuthInvalidCredentialsException) {
+                        errorTextView.setText(R.string.login_error_incorrect);
+                    }
+                    else {
+                        errorTextView.setText(R.string.register_error_unknown);
+                    }
                 }
             });
         });
