@@ -5,12 +5,12 @@ import androidx.annotation.NonNull;
 import com.hu.sightseek.enums.SavedAttractionStatus;
 
 public class Attraction {
-    private int id;
+    private long id;
     private String name;
     private String place;
     private SavedAttractionStatus status;
 
-    public Attraction(int id, String name, String place, SavedAttractionStatus status) {
+    public Attraction(long id, String name, String place, SavedAttractionStatus status) {
         this.id = id;
         this.name = name;
         this.place = place;
@@ -19,7 +19,7 @@ public class Attraction {
 
     public Attraction() {}
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

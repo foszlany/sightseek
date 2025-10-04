@@ -17,6 +17,7 @@ import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class LocalDatabaseDAO {
@@ -290,7 +291,7 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow("id"));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_NAME));
                 String place = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_PLACE));
                 int status = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_STATUS));
@@ -305,7 +306,7 @@ public class LocalDatabaseDAO {
         return attractions;
     }
 
-    public long addAttraction(int id, String name, String place, int status) {
+    public long addAttraction(long id, String name, String place, int status) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -320,7 +321,7 @@ public class LocalDatabaseDAO {
         return id;
     }
 
-    public int updateAttractionStatus(int id, int newStatus) {
+    public int updateAttractionStatus(long id, int newStatus) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -335,6 +336,36 @@ public class LocalDatabaseDAO {
 
         db.close();
         return rowsAffected;
+    }
+
+    public HashSet<Long> getIgnorableAttractionIds() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        HashSet<Long> ids = new HashSet<>();
+
+        Cursor cursor = db.query(
+                LocalDatabaseImpl.ATTRACTIONS_TABLE,
+                new String[]{LocalDatabaseImpl.ATTRACTIONS_ID},
+                LocalDatabaseImpl.ATTRACTIONS_STATUS + " IN (?, ?)",
+                new String[]{
+                        String.valueOf(SavedAttractionStatus.IGNORED.getIndex()),
+                        String.valueOf(SavedAttractionStatus.VISITED.getIndex())
+                },
+                null,
+                null,
+                null
+        );
+
+        if(cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_ID));
+                ids.add(id);
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return ids;
     }
 
     public void printAllAttractions() {

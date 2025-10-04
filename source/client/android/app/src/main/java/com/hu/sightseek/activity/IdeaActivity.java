@@ -59,10 +59,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -72,6 +74,7 @@ public class IdeaActivity extends AppCompatActivity {
     private static final String overpassUrl = "https://overpass-api.de/api/interpreter";
 
     private Attraction currentAttraction;
+    private HashSet<Long> ignoredIds;
 
     private JSONArray data;
     private MapView mapView;
@@ -119,6 +122,11 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Variables
         currentAttraction = null;
+        Executors.newSingleThreadExecutor().execute(() -> {
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+            ignoredIds = dao.getIgnorableAttractionIds();
+            dao.close();
+        });
 
         referenceIndex = -1;
         referencePoint = null;
@@ -159,7 +167,9 @@ public class IdeaActivity extends AppCompatActivity {
             dao.printAllAttractions();
             dao.close();
 
+            ignoredIds.add(currentAttraction.getId());
             currentAttraction = null;
+
             findReferencePoint();
         });
 
@@ -455,6 +465,14 @@ public class IdeaActivity extends AppCompatActivity {
             JSONObject randomElement = data.getJSONObject(randomIndex);
             JSONObject tags = randomElement.optJSONObject("tags");
 
+            // Check for ignored ids
+            long id = tags != null ? randomElement.optLong("id", 0) : 0;
+            if(ignoredIds.contains(id)) {
+                data.remove(randomIndex);
+                retrieveAndSetupElementFromJson();
+                return;
+            }
+
             // Grab attributes
             String name = tags != null ? tags.optString("name", "") : "";
 
@@ -494,8 +512,7 @@ public class IdeaActivity extends AppCompatActivity {
                 });
             }
 
-            int id = tags != null ? randomElement.optInt("id", -1) : -1;
-            if(id != -1) {
+            if(id != 0) {
                 currentAttraction = new Attraction(id, name, locationString, SavedAttractionStatus.INVALID);
             }
 
