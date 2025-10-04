@@ -56,8 +56,10 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.model.Attraction;
 import com.hu.sightseek.utils.SightseekUtils;
 
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -68,10 +70,15 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import org.osmdroid.views.overlay.simplefastpoint.LabelledGeoPoint;
+import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
+import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlayOptions;
+import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
@@ -112,6 +119,8 @@ public class RecordActivity extends AppCompatActivity {
     private boolean isPolylinesOverlayOn;
 
     private boolean areAttractionsOn;
+    private SimpleFastPointOverlay attractionsOverlay;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,7 +264,6 @@ public class RecordActivity extends AppCompatActivity {
                 animateButton(polylineButton, true, R.color.darker_light_blue);
             }
             else {
-                // Remove overlay
                 executor.execute(() -> {
                     polylineGroup.setEnabled(false);
                     mapView.invalidate();
@@ -278,10 +286,45 @@ public class RecordActivity extends AppCompatActivity {
                 if(areAttractionsOn) {
                     animateButton(attractionButton, true, R.color.light_purple);
 
-                    // show
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        // Import if necessary
+                        if(attractionsOverlay == null) {
+                            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+                            ArrayList<Attraction> attractions = dao.getSavedAttractions();
+                            dao.close();
+
+                            List<IGeoPoint> points = new ArrayList<>();
+                            for(Attraction a : attractions) {
+                                points.add(new LabelledGeoPoint(a.getLatitude(), a.getLongitude(), a.getName()));
+                            }
+
+                            runOnUiThread(() -> {
+                                SimpleFastPointOverlayOptions opt = SimpleFastPointOverlayOptions.getDefaultStyle()
+                                        .setAlgorithm(SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
+                                        .setRadius(6)
+                                        .setIsClickable(true);
+
+                                attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), opt);
+
+                                mapView.getOverlays().add(attractionsOverlay);
+                                attractionsOverlay.setEnabled(true);
+                                mapView.invalidate();
+                            });
+                        }
+                        else {
+                            attractionsOverlay.setEnabled(true);
+                            mapView.invalidate();
+                        }
+                    });
                 }
                 else {
                     animateButton(attractionButton, false, R.color.light_purple);
+                    runOnUiThread(() -> {
+                        if(attractionsOverlay != null) {
+                            attractionsOverlay.setEnabled(false);
+                            mapView.invalidate();
+                        }
+                    });
                 }
             });
         }

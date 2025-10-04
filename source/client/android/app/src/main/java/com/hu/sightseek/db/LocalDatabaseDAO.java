@@ -291,12 +291,14 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow("id"));
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_ID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_NAME));
                 String place = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_PLACE));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LONGITUDE));
                 int status = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_STATUS));
 
-                attractions.add(new Attraction(id, name, place, SavedAttractionStatus.values()[status]));
+                attractions.add(new Attraction(id, name, place, latitude, longitude, SavedAttractionStatus.values()[status]));
             } while(cursor.moveToNext());
         }
 
@@ -306,13 +308,48 @@ public class LocalDatabaseDAO {
         return attractions;
     }
 
-    public long addAttraction(long id, String name, String place, int status) {
+    public ArrayList<Attraction> getSavedAttractions() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ArrayList<Attraction> attractions = new ArrayList<>();
+
+        Cursor cursor = db.query(
+                LocalDatabaseImpl.ATTRACTIONS_TABLE,
+                null,
+                LocalDatabaseImpl.ATTRACTIONS_STATUS + " = ?",
+                new String[]{String.valueOf(SavedAttractionStatus.SAVED.getIndex())},
+                null,
+                null,
+                LocalDatabaseImpl.ATTRACTIONS_ID + " DESC"
+        );
+
+        if(cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_NAME));
+                String place = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_PLACE));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LONGITUDE));
+                int status = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_STATUS));
+
+                attractions.add(new Attraction(id, name, place, latitude, longitude, SavedAttractionStatus.values()[status]));
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return attractions;
+    }
+
+    public long addAttraction(long id, String name, String place, double latitude, double longitude, int status) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put(LocalDatabaseImpl.ATTRACTIONS_ID, id);
         values.put(LocalDatabaseImpl.ATTRACTIONS_NAME, name);
         values.put(LocalDatabaseImpl.ATTRACTIONS_PLACE, place);
+        values.put(LocalDatabaseImpl.ATTRACTIONS_LATITUDE, latitude);
+        values.put(LocalDatabaseImpl.ATTRACTIONS_LONGITUDE, longitude);
         values.put(LocalDatabaseImpl.ATTRACTIONS_STATUS, status);
 
         db.insert(LocalDatabaseImpl.ATTRACTIONS_TABLE, null, values);

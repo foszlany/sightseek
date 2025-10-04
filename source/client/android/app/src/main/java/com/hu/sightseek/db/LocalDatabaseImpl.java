@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class LocalDatabaseImpl extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "activities.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     // Activity table
     public static final String ACTIVITIES_TABLE = "activities";
@@ -24,6 +24,8 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
     public static final String ATTRACTIONS_ID = "id";
     public static final String ATTRACTIONS_NAME = "name";
     public static final String ATTRACTIONS_PLACE = "place";
+    public static final String ATTRACTIONS_LATITUDE = "latitude";
+    public static final String ATTRACTIONS_LONGITUDE = "longitude";
     public static final String ATTRACTIONS_STATUS = "status";
 
     private static final String ACTIVITIES_TABLE_CREATE =
@@ -42,6 +44,8 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
                     ATTRACTIONS_ID + " BIGINT PRIMARY KEY, " +
                     ATTRACTIONS_NAME + " TEXT NOT NULL, " +
                     ATTRACTIONS_PLACE + " TEXT NOT NULL, " +
+                    ATTRACTIONS_LATITUDE + " REAL NOT NULL, " +
+                    ATTRACTIONS_LONGITUDE + " REAL NOT NULL, " +
                     ATTRACTIONS_STATUS + " TEXT NOT NULL);";
 
     public LocalDatabaseImpl(Context context) {

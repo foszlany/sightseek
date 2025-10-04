@@ -165,7 +165,7 @@ public class IdeaActivity extends AppCompatActivity {
             }
 
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), SavedAttractionStatus.SAVED.getIndex());
+            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.SAVED.getIndex());
             dao.printAllAttractions();
             dao.close();
 
@@ -183,7 +183,7 @@ public class IdeaActivity extends AppCompatActivity {
             }
 
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), SavedAttractionStatus.IGNORED.getIndex());
+            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.IGNORED.getIndex());
             dao.printAllAttractions();
             dao.close();
 
@@ -530,7 +530,7 @@ public class IdeaActivity extends AppCompatActivity {
             }
 
             if(id != 0) {
-                currentAttraction = new Attraction(id, name, locationString, SavedAttractionStatus.INVALID);
+                currentAttraction = new Attraction(id, name, locationString, latitude, longitude, SavedAttractionStatus.INVALID);
             }
 
             String fallbackUrl = "https://www.google.com/search?q=" + locationString + " " + name.replace(" ", "%20");

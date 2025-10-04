@@ -8,12 +8,16 @@ public class Attraction {
     private long id;
     private String name;
     private String place;
+    private double latitude;
+    private double longitude;
     private SavedAttractionStatus status;
 
-    public Attraction(long id, String name, String place, SavedAttractionStatus status) {
+    public Attraction(long id, String name, String place, double latitude, double longitude, SavedAttractionStatus status) {
         this.id = id;
         this.name = name;
         this.place = place;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.status = status;
     }
 
@@ -33,6 +37,14 @@ public class Attraction {
 
     public SavedAttractionStatus getStatus() {
         return status;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 
     @NonNull
