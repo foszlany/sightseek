@@ -124,7 +124,7 @@ public class IdeaActivity extends AppCompatActivity {
         currentAttraction = null;
         Executors.newSingleThreadExecutor().execute(() -> {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            ignoredIds = dao.getIgnorableAttractionIds();
+            ignoredIds = dao.getAttractionIds();
             dao.close();
         });
 
@@ -153,6 +153,24 @@ public class IdeaActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        });
+
+        // Add
+        Button addButton = findViewById(R.id.idea_addbtn);
+        addButton.setOnClickListener(v -> {
+            if(currentAttraction == null) {
+                return;
+            }
+
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), SavedAttractionStatus.SAVED.getIndex());
+            dao.printAllAttractions();
+            dao.close();
+
+            ignoredIds.add(currentAttraction.getId());
+            currentAttraction = null;
+
+            findReferencePoint();
         });
 
         // Ignore
@@ -468,6 +486,7 @@ public class IdeaActivity extends AppCompatActivity {
             // Check for ignored ids
             long id = tags != null ? randomElement.optLong("id", 0) : 0;
             if(ignoredIds.contains(id)) {
+                System.out.println("sKIPPING");
                 data.remove(randomIndex);
                 retrieveAndSetupElementFromJson();
                 return;

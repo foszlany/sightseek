@@ -120,4 +120,5 @@
     <string name="main_filtermenu_apply">Apply</string>
     <string name="login_error_incorrect">Incorrect email or password.</string>
     <string name="register_error_email_taken">Email address is already taken.</string>
+    <string name="idea_add">Add</string>
 </resources>

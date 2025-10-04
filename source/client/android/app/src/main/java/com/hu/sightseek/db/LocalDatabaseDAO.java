@@ -338,18 +338,15 @@ public class LocalDatabaseDAO {
         return rowsAffected;
     }
 
-    public HashSet<Long> getIgnorableAttractionIds() {
+    public HashSet<Long> getAttractionIds() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         HashSet<Long> ids = new HashSet<>();
 
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ATTRACTIONS_TABLE,
                 new String[]{LocalDatabaseImpl.ATTRACTIONS_ID},
-                LocalDatabaseImpl.ATTRACTIONS_STATUS + " IN (?, ?)",
-                new String[]{
-                        String.valueOf(SavedAttractionStatus.IGNORED.getIndex()),
-                        String.valueOf(SavedAttractionStatus.VISITED.getIndex())
-                },
+                null,
+                null,
                 null,
                 null,
                 null
