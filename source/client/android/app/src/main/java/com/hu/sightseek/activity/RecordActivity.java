@@ -16,6 +16,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
@@ -301,8 +302,23 @@ public class RecordActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 SimpleFastPointOverlayOptions opt = SimpleFastPointOverlayOptions.getDefaultStyle()
                                         .setAlgorithm(SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
-                                        .setRadius(6)
+                                        .setRadius(8)
                                         .setIsClickable(true);
+
+                                Paint pointStyle = new Paint();
+                                pointStyle.setColor(Color.parseColor("#DE003B"));
+                                opt.setPointStyle(pointStyle);
+
+                                Paint textStyle = new Paint();
+                                textStyle.setColor(Color.RED);
+                                textStyle.setTextSize(26);
+                                textStyle.setFakeBoldText(true);
+                                textStyle.setShadowLayer(1, 1, 1, Color.GRAY);
+                                textStyle.setTextAlign(Paint.Align.CENTER);
+                                opt.setTextStyle(textStyle);
+
+                                opt.setLabelPolicy(SimpleFastPointOverlayOptions.LabelPolicy.ZOOM_THRESHOLD);
+                                opt.setMinZoomShowLabels(10);
 
                                 attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), opt);
 
