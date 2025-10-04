@@ -58,6 +58,7 @@ import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Attraction;
+import com.hu.sightseek.model.AttractionGeoPoint;
 import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.api.IGeoPoint;
@@ -71,7 +72,6 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-import org.osmdroid.views.overlay.simplefastpoint.LabelledGeoPoint;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlayOptions;
 import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme;
@@ -296,7 +296,7 @@ public class RecordActivity extends AppCompatActivity {
 
                             List<IGeoPoint> points = new ArrayList<>();
                             for(Attraction a : attractions) {
-                                points.add(new LabelledGeoPoint(a.getLatitude(), a.getLongitude(), a.getName()));
+                                points.add(new AttractionGeoPoint(a.getLatitude(), a.getLongitude(), a.getName(), a.getId()));
                             }
 
                             runOnUiThread(() -> {
@@ -325,6 +325,12 @@ public class RecordActivity extends AppCompatActivity {
                                 mapView.getOverlays().add(attractionsOverlay);
                                 attractionsOverlay.setEnabled(true);
                                 mapView.invalidate();
+
+                                // Point listener
+                                attractionsOverlay.setOnClickListener((point, mapView) -> {
+                                    // TODO
+                                });
+
                             });
                         }
                         else {
