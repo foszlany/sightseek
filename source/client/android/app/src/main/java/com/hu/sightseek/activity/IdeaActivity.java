@@ -113,18 +113,20 @@ public class IdeaActivity extends AppCompatActivity {
         // Check if user is logged in
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null) {
-            runOnUiThread(() -> {
-                startActivity(new Intent(this, BannerActivity.class));
-                finish();
-            });
+            startActivity(new Intent(this, BannerActivity.class));
+            finish();
             return;
         }
 
         // Variables
         currentAttraction = null;
+        ignoredIds = new HashSet<>();
         Executors.newSingleThreadExecutor().execute(() -> {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            ignoredIds = dao.getAttractionIds();
+
+            activities = dao.getAllActivities();
+            ignoredIds.addAll(dao.getAttractionIds());
+
             dao.close();
         });
 
@@ -249,10 +251,6 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Check whether there are activities stored
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-        activities = dao.getAllActivities();
-        dao.close();
-
         if(activities.isEmpty()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             ViewGroup root = findViewById(android.R.id.content);
