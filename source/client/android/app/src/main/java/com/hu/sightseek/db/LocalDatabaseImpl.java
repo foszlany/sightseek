@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class LocalDatabaseImpl extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "activities.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     // Activity table
     public static final String ACTIVITIES_TABLE = "activities";

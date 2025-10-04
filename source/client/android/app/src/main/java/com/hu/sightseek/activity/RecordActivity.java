@@ -318,7 +318,7 @@ public class RecordActivity extends AppCompatActivity {
                             mapView.getOverlays().add(new MapEventsOverlay(mReceive));
 
                             runOnUiThread(() -> {
-                                SimpleFastPointOverlayOptions opt = SimpleFastPointOverlayOptions.getDefaultStyle()
+                                SimpleFastPointOverlayOptions layoutStyle = SimpleFastPointOverlayOptions.getDefaultStyle()
                                         .setAlgorithm(points.size() < 8000 ? SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION : SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
                                         .setRadius(8)
                                         .setIsClickable(true);
@@ -326,7 +326,7 @@ public class RecordActivity extends AppCompatActivity {
                                 // Styles
                                 Paint pointStyle = new Paint();
                                 pointStyle.setColor(Color.parseColor("#DE003B"));
-                                opt.setPointStyle(pointStyle);
+                                layoutStyle.setPointStyle(pointStyle);
 
                                 Paint textStyle = new Paint();
                                 textStyle.setColor(Color.RED);
@@ -334,17 +334,17 @@ public class RecordActivity extends AppCompatActivity {
                                 textStyle.setFakeBoldText(true);
                                 textStyle.setShadowLayer(1, 1, 1, Color.GRAY);
                                 textStyle.setTextAlign(Paint.Align.CENTER);
-                                opt.setTextStyle(textStyle);
+                                layoutStyle.setTextStyle(textStyle);
 
                                 Paint highlightStyle = new Paint();
                                 highlightStyle.setColor(Color.TRANSPARENT);
-                                opt.setSelectedPointStyle(highlightStyle);
+                                layoutStyle.setSelectedPointStyle(highlightStyle);
 
-                                opt.setLabelPolicy(SimpleFastPointOverlayOptions.LabelPolicy.ZOOM_THRESHOLD);
-                                opt.setMinZoomShowLabels(10);
+                                layoutStyle.setLabelPolicy(SimpleFastPointOverlayOptions.LabelPolicy.ZOOM_THRESHOLD);
+                                layoutStyle.setMinZoomShowLabels(10);
 
                                 // Create overlay
-                                attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), opt);
+                                attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
 
                                 mapView.getOverlays().add(attractionsOverlay);
                                 attractionsOverlay.setEnabled(true);
@@ -360,7 +360,7 @@ public class RecordActivity extends AppCompatActivity {
 
                                     InfoWindow.closeAllInfoWindowsOn(mapView);
 
-                                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView);
+                                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView, layoutStyle, points, attractionsOverlay);
                                     info.open(attractionPoint, new GeoPoint(attractionPoint.getLatitude(), attractionPoint.getLongitude()), 0, 0);
                                 });
                             });
