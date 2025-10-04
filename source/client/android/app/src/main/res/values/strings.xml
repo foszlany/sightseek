@@ -121,4 +121,7 @@
     <string name="login_error_incorrect">Incorrect email or password.</string>
     <string name="register_error_email_taken">Email address is already taken.</string>
     <string name="idea_add">Add</string>
+    <string name="record_attractionsdesc">Attractions</string>
+    <string name="attractionpopup_markasvisited">Mark as visited</string>
+    <string name="attractionpopup_removefromsaved">Remove from saved</string>
 </resources>

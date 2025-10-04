@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:background="@drawable/circle_button_bg"
-        android:contentDescription="@string/record_polylinedesc"
+        android:contentDescription="@string/record_attractionsdesc"
         android:elevation="5dp"
         android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@+id/record_polylinebtn"

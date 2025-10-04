@@ -402,6 +402,12 @@ public class LocalDatabaseDAO {
         return ids;
     }
 
+    public void deleteAttraction(long id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(LocalDatabaseImpl.ATTRACTIONS_TABLE, "id = ?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
     public void printAllAttractions() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 

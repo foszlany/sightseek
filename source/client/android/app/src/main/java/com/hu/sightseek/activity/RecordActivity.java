@@ -57,19 +57,23 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.fragment.AttractionInfoWindow;
 import com.hu.sightseek.model.Attraction;
 import com.hu.sightseek.model.AttractionGeoPoint;
 import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.IconOverlay;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
@@ -172,8 +176,6 @@ public class RecordActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
-
-        // TODO: Saved attractions button, I feel lucky button(?)
 
         // Lock button
         ImageButton lockButton = findViewById(R.id.record_lockbtn);
@@ -299,12 +301,29 @@ public class RecordActivity extends AppCompatActivity {
                                 points.add(new AttractionGeoPoint(a.getLatitude(), a.getLongitude(), a.getName(), a.getId()));
                             }
 
+                            // Cancel when clicking outside
+                            MapEventsReceiver mReceive = new MapEventsReceiver() {
+                                @Override
+                                public boolean singleTapConfirmedHelper(GeoPoint p) {
+                                    InfoWindow.closeAllInfoWindowsOn(mapView);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean longPressHelper(GeoPoint p) {
+                                    return false;
+                                }
+                            };
+
+                            mapView.getOverlays().add(new MapEventsOverlay(mReceive));
+
                             runOnUiThread(() -> {
                                 SimpleFastPointOverlayOptions opt = SimpleFastPointOverlayOptions.getDefaultStyle()
-                                        .setAlgorithm(SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
+                                        .setAlgorithm(points.size() < 8000 ? SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION : SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
                                         .setRadius(8)
                                         .setIsClickable(true);
 
+                                // Styles
                                 Paint pointStyle = new Paint();
                                 pointStyle.setColor(Color.parseColor("#DE003B"));
                                 opt.setPointStyle(pointStyle);
@@ -317,9 +336,14 @@ public class RecordActivity extends AppCompatActivity {
                                 textStyle.setTextAlign(Paint.Align.CENTER);
                                 opt.setTextStyle(textStyle);
 
+                                Paint highlightStyle = new Paint();
+                                highlightStyle.setColor(Color.TRANSPARENT);
+                                opt.setSelectedPointStyle(highlightStyle);
+
                                 opt.setLabelPolicy(SimpleFastPointOverlayOptions.LabelPolicy.ZOOM_THRESHOLD);
                                 opt.setMinZoomShowLabels(10);
 
+                                // Create overlay
                                 attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), opt);
 
                                 mapView.getOverlays().add(attractionsOverlay);
@@ -327,10 +351,18 @@ public class RecordActivity extends AppCompatActivity {
                                 mapView.invalidate();
 
                                 // Point listener
-                                attractionsOverlay.setOnClickListener((point, mapView) -> {
-                                    // TODO
-                                });
+                                attractionsOverlay.setOnClickListener((point, i) -> {
+                                    if(!areAttractionsOn) {
+                                        return;
+                                    }
 
+                                    AttractionGeoPoint attractionPoint = (AttractionGeoPoint) point.get(i);
+
+                                    InfoWindow.closeAllInfoWindowsOn(mapView);
+
+                                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView);
+                                    info.open(attractionPoint, new GeoPoint(attractionPoint.getLatitude(), attractionPoint.getLongitude()), 0, 0);
+                                });
                             });
                         }
                         else {
@@ -343,6 +375,7 @@ public class RecordActivity extends AppCompatActivity {
                     animateButton(attractionButton, false, R.color.light_purple);
                     runOnUiThread(() -> {
                         if(attractionsOverlay != null) {
+                            InfoWindow.closeAllInfoWindowsOn(mapView);
                             attractionsOverlay.setEnabled(false);
                             mapView.invalidate();
                         }
