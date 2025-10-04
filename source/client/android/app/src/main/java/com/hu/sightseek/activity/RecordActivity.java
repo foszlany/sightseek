@@ -50,6 +50,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
@@ -110,6 +111,8 @@ public class RecordActivity extends AppCompatActivity {
     FolderOverlay polylineGroup;
     private boolean isPolylinesOverlayOn;
 
+    private boolean areAttractionsOn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,6 +139,7 @@ public class RecordActivity extends AppCompatActivity {
         isLocked = true;
         isHeatmapOn = false;
         polylineGroup = new FolderOverlay();
+        areAttractionsOn = false;
 
         isPolylinesOverlayOn = false;
 
@@ -161,7 +165,7 @@ public class RecordActivity extends AppCompatActivity {
 
         // TODO: Saved attractions button, I feel lucky button(?)
 
-        // Lock listener
+        // Lock button
         ImageButton lockButton = findViewById(R.id.record_lockbtn);
         lockButton.setOnClickListener(v -> {
             isLocked = !isLocked;
@@ -182,7 +186,7 @@ public class RecordActivity extends AppCompatActivity {
             }
         });
 
-        // Heatmap listener
+        // Heatmap button
         ImageButton heatmapButton = findViewById(R.id.record_heatmapbtn);
         heatmapButton.setOnClickListener(v -> {
             isHeatmapOn = !isHeatmapOn;
@@ -222,7 +226,7 @@ public class RecordActivity extends AppCompatActivity {
             }
         });
 
-        // Polyline listener
+        // Polyline button
         ImageButton polylineButton = findViewById(R.id.record_polylinebtn);
         polylineButton.setOnClickListener(v -> {
             isPolylinesOverlayOn = !isPolylinesOverlayOn;
@@ -260,6 +264,27 @@ public class RecordActivity extends AppCompatActivity {
                 animateButton(polylineButton, false, R.color.darker_light_blue);
             }
         });
+
+        // Attractions button
+        ImageButton attractionButton = findViewById(R.id.record_attractionbtn);
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            attractionButton.setVisibility(INVISIBLE);
+            return;
+        }
+        else {
+            attractionButton.setOnClickListener(v -> {
+                areAttractionsOn = !areAttractionsOn;
+
+                if(areAttractionsOn) {
+                    animateButton(attractionButton, true, R.color.light_purple);
+
+                    // show
+                }
+                else {
+                    animateButton(attractionButton, false, R.color.light_purple);
+                }
+            });
+        }
 
         // Bottombar listener
         bottomNav = findViewById(R.id.record_bottommenu);
