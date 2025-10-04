@@ -1,5 +1,6 @@
 package com.hu.sightseek;
 
+import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.model.Activity;
 
 // Temporarily here

@@ -26,11 +26,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hu.sightseek.TravelCategory;
+import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ActivityAdapter;
-import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
 
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Setup adapter
-        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
 
         recyclerView = findViewById(R.id.main_activities);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         // Refresh
         SwipeRefreshLayout swipeRefresh = findViewById(R.id.main_swipecontainer);
         swipeRefresh.setOnRefreshListener(() -> {
-            LocalActivityDatabaseDAO dao2 = new LocalActivityDatabaseDAO(this);
+            LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
             ArrayList<Activity> newActivities = dao2.getAllActivities();
             dao2.close();
 

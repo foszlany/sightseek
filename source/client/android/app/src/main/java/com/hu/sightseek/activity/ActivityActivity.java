@@ -24,7 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
-import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 
 import org.osmdroid.config.Configuration;
@@ -77,7 +77,7 @@ public class ActivityActivity extends AppCompatActivity {
         int activityId = extras.getInt("id");
 
         // Get activity
-        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this); // TODO: CHANGE THIS LATER TO MAIN DATABASE AND ADD EXTRA FIELD FOR LOCAL QUERY TEST
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(this); // TODO: CHANGE THIS LATER TO MAIN DATABASE AND ADD EXTRA FIELD FOR LOCAL QUERY TEST
         activity = dao.getActivity(activityId);
 
         if(activity == null) {

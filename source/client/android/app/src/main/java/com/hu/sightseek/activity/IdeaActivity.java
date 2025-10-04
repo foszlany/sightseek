@@ -37,9 +37,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
-import com.hu.sightseek.SelectLocationFragment;
-import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.enums.SavedAttractionStatus;
+import com.hu.sightseek.fragment.SelectLocationFragment;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
+import com.hu.sightseek.model.Attraction;
 import com.hu.sightseek.utils.SightseekUtils;
 
 import org.json.JSONArray;
@@ -68,6 +70,8 @@ import okhttp3.Request;
 
 public class IdeaActivity extends AppCompatActivity {
     private static final String overpassUrl = "https://overpass-api.de/api/interpreter";
+
+    private Attraction currentAttraction;
 
     private JSONArray data;
     private MapView mapView;
@@ -114,6 +118,8 @@ public class IdeaActivity extends AppCompatActivity {
         }
 
         // Variables
+        currentAttraction = null;
+
         referenceIndex = -1;
         referencePoint = null;
         locationPoint = null;
@@ -144,7 +150,16 @@ public class IdeaActivity extends AppCompatActivity {
         // Ignore
         Button ignoreButton = findViewById(R.id.idea_ignorebtn);
         ignoreButton.setOnClickListener(v -> {
-            // TODO
+            if(currentAttraction == null) {
+                return;
+            }
+
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), SavedAttractionStatus.IGNORED.getIndex());
+            dao.printAllAttractions();
+            dao.close();
+
+            currentAttraction = null;
             findReferencePoint();
         });
 
@@ -155,6 +170,7 @@ public class IdeaActivity extends AppCompatActivity {
                     .load(R.drawable.loading)
                     .into(imageView);
 
+            currentAttraction = null;
             findReferencePoint();
         });
 
@@ -205,7 +221,7 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Check whether there are activities stored
-        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
         activities = dao.getAllActivities();
         dao.close();
 
@@ -476,6 +492,11 @@ public class IdeaActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Toast.makeText(IdeaActivity.this, "An unknown error has occurred.", Toast.LENGTH_LONG).show();
                 });
+            }
+
+            int id = tags != null ? randomElement.optInt("id", -1) : -1;
+            if(id != -1) {
+                currentAttraction = new Attraction(id, name, locationString, SavedAttractionStatus.INVALID);
             }
 
             String fallbackUrl = "https://www.google.com/search?q=" + locationString + " " + name.replace(" ", "%20");

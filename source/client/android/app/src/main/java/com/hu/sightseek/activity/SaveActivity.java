@@ -31,8 +31,8 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
-import com.hu.sightseek.TravelCategory;
-import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.enums.TravelCategory;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
@@ -202,7 +202,7 @@ public class SaveActivity extends AppCompatActivity {
             }
 
             executor.execute(() -> {
-                LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                 long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist);
 
                 Intent intent = new Intent(this, ActivityActivity.class);

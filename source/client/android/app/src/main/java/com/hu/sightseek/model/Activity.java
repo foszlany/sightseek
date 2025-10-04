@@ -2,7 +2,7 @@ package com.hu.sightseek.model;
 
 import androidx.annotation.NonNull;
 
-import com.hu.sightseek.TravelCategory;
+import com.hu.sightseek.enums.TravelCategory;
 
 public class Activity {
     private int id;

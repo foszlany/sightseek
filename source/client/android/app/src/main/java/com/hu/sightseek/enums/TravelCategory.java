@@ -1,4 +1,4 @@
-package com.hu.sightseek;
+package com.hu.sightseek.enums;
 
 import androidx.annotation.NonNull;
 

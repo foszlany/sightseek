@@ -1,4 +1,4 @@
-package com.hu.sightseek;
+package com.hu.sightseek.fragment;
 
 import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
 
@@ -19,13 +19,12 @@ import android.widget.Button;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.hu.sightseek.R;
 import com.hu.sightseek.activity.IdeaActivity;
 import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.events.MapEventsReceiver;
-import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;

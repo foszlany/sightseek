@@ -4,11 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class LocalActivityDatabaseImpl extends SQLiteOpenHelper {
+public class LocalDatabaseImpl extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "activities.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
-    // Database table and column names
+    // Activity table
     public static final String ACTIVITIES_TABLE = "activities";
     public static final String ACTIVITIES_ID = "id";
     public static final String ACTIVITIES_NAME = "name";
@@ -19,6 +19,12 @@ public class LocalActivityDatabaseImpl extends SQLiteOpenHelper {
     public static final String ACTIVITIES_ELAPSEDTIME = "elapsedtime";
     public static final String ACTIVITIES_DISTANCE = "distance";
 
+    // Saved attractions table
+    public static final String ATTRACTIONS_TABLE = "attractions";
+    public static final String ATTRACTIONS_ID = "id";
+    public static final String ATTRACTIONS_NAME = "name";
+    public static final String ATTRACTIONS_PLACE = "place";
+    public static final String ATTRACTIONS_STATUS = "status";
 
     private static final String ACTIVITIES_TABLE_CREATE =
             "CREATE TABLE " + ACTIVITIES_TABLE + " (" +
@@ -31,18 +37,27 @@ public class LocalActivityDatabaseImpl extends SQLiteOpenHelper {
                     ACTIVITIES_ELAPSEDTIME + " REAL, " +
                     ACTIVITIES_DISTANCE + " REAL);";
 
-    public LocalActivityDatabaseImpl(Context context) {
+    private static final String ATTRACTIONS_TABLE_CREATE =
+            "CREATE TABLE " + ATTRACTIONS_TABLE + " (" +
+                    ATTRACTIONS_ID + " INTEGER PRIMARY KEY, " +
+                    ATTRACTIONS_NAME + " TEXT NOT NULL, " +
+                    ATTRACTIONS_PLACE + " TEXT NOT NULL, " +
+                    ATTRACTIONS_STATUS + " TEXT NOT NULL);";
+
+    public LocalDatabaseImpl(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ACTIVITIES_TABLE_CREATE);
+        db.execSQL(ATTRACTIONS_TABLE_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + ACTIVITIES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ATTRACTIONS_TABLE);
         onCreate(db);
     }
 }

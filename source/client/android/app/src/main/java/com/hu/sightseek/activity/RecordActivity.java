@@ -54,7 +54,7 @@ import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
-import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.config.Configuration;
@@ -192,7 +192,7 @@ public class RecordActivity extends AppCompatActivity {
                 executor.execute(() -> {
                     // Import points if necessary
                     if(importedPoints == null) {
-                        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                         importedPoints = dao.getAllPoints();
                         dao.close();
                     }
@@ -232,7 +232,7 @@ public class RecordActivity extends AppCompatActivity {
                 executor.execute(() -> {
                     // Import polylines if necessary
                     if(polylineGroup.getItems().isEmpty()) {
-                        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+                        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                         ArrayList<Polyline> polylines = dao.getAllPolylines(6);
                         dao.close();
 

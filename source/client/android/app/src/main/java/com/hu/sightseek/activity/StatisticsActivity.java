@@ -24,8 +24,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
-import com.hu.sightseek.TravelCategory;
-import com.hu.sightseek.db.LocalActivityDatabaseDAO;
+import com.hu.sightseek.enums.TravelCategory;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
 
@@ -77,7 +77,7 @@ public class StatisticsActivity extends AppCompatActivity {
         });
 
         // Variables
-        LocalActivityDatabaseDAO dao = new LocalActivityDatabaseDAO(this);
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
 
         HashMap<String, Double> cardMap = dao.getStatistics();
         mainCategory = dao.getMainTravelCategory();
