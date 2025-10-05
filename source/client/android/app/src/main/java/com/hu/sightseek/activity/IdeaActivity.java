@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekUtils.getLocationString;
+import static com.hu.sightseek.utils.SightseekUtils.getMedianPoint;
 import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
@@ -319,25 +320,13 @@ public class IdeaActivity extends AppCompatActivity {
             if(medianPoint == null || referenceIndex != R.id.idea_radio_medianbtn) {
                 data = null;
 
-                ArrayList<Double> latPoints = new ArrayList<>();
-                ArrayList<Double> lonPoints = new ArrayList<>();
+                ArrayList<LatLng> points = new ArrayList<>();
 
                 for(int i = 0; i < activities.size(); i++) {
-                    ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
-
-                    for(LatLng p : points) {
-                        latPoints.add(p.latitude);
-                        lonPoints.add(p.longitude);
-                    }
+                    points.addAll(PolyUtil.decode(activities.get(i).getPolyline()));
                 }
 
-                Collections.sort(latPoints);
-                Collections.sort(lonPoints);
-
-                double medianX = latPoints.get(latPoints.size() / 2);
-                double medianY = lonPoints.get(lonPoints.size() / 2);
-
-                medianPoint = new LatLng(medianX, medianY);
+                medianPoint = getMedianPoint(points);
 
                 referenceIndex = R.id.idea_radio_medianbtn;
             }

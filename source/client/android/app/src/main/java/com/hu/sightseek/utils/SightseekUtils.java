@@ -153,6 +153,22 @@ public final class SightseekUtils {
         HashMap<String, Serializable> res = new HashMap<>();
 
         // Median and isolated point
+        LatLng medianPoint = getMedianPoint(allPoints);
+
+        res.put("median_lat", medianPoint.latitude);
+        res.put("median_lon", medianPoint.longitude);
+
+        // TODO
+        res.put("isolated_lat", 0.0);
+        res.put("isolated_lon", 0.0);
+
+        res.put("visited_cells", 0.0);
+        res.put("visited_countries", 0.0);
+
+        return res;
+    }
+
+    public static LatLng getMedianPoint(ArrayList<LatLng> allPoints) {
         int n = allPoints.size();
         double[] lats = new double[n];
         double[] lons = new double[n];
@@ -166,17 +182,7 @@ public final class SightseekUtils {
         Arrays.sort(lats);
         Arrays.sort(lons);
 
-        res.put("median_lat", lats[n / 2]);
-        res.put("median_lon", lons[n / 2]);
-
-        // TODO
-        res.put("isolated_lat", 0.0);
-        res.put("isolated_lon", 0.0);
-
-        res.put("visited_cells", 0.0);
-        res.put("visited_countries", 0.0);
-
-        return res;
+        return new LatLng(lats[n / 2], lons[n / 2]);
     }
 
     public static void createScreenshot(Context ctx, View view, String name, View excludedView) {
