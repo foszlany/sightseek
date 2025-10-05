@@ -291,7 +291,6 @@ public class StatisticsActivity extends AppCompatActivity {
 
                 Double medianLatitude = (Double)values.get("median_lat");
                 Double medianLongitude = (Double)values.get("median_lon");
-
                 if(medianLatitude == null || medianLongitude == null) {
                     throw new ClassCastException();
                 }
@@ -299,6 +298,27 @@ public class StatisticsActivity extends AppCompatActivity {
                 TextView medianPointTextView = findViewById(R.id.statistics_generalcard_medianpoint);
                 medianPointTextView.setText(
                         getString(R.string.statistics_generalcard_medianpoint, medianLatitude, medianLongitude, getLocationString(this, medianLatitude, medianLongitude))
+                );
+
+                Double isolatedLatitude = (Double)values.get("isolated_lat");
+                Double isolatedLongitude = (Double)values.get("isolated_lon");
+                if(isolatedLatitude == null || isolatedLongitude == null) {
+                    throw new ClassCastException();
+                }
+
+                TextView isolatedPointTextView = findViewById(R.id.statistics_generalcard_isolatedpoint);
+                isolatedPointTextView.setText(
+                        getString(R.string.statistics_generalcard_isolatedpoint, isolatedLatitude, isolatedLongitude, getLocationString(this, isolatedLatitude, isolatedLongitude))
+                );
+
+                TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
+                visitedCellsTextView.setText(
+                        getString(R.string.statistics_generalcard_visitedcells, (Double)values.get("visited_cells"))
+                );
+
+                TextView visitedCountriesTextView = findViewById(R.id.statistics_generalcard_visitedcountries);
+                visitedCountriesTextView.setText(
+                        getString(R.string.statistics_generalcard_visitedcountries, (Double)values.get("visited_countries"))
                 );
 
                 TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);

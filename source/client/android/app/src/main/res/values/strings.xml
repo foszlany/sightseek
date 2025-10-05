@@ -133,4 +133,7 @@
     <string name="statistics_generalcard_longesttime">Longest time: %1$s</string>
     <string name="statistics_generalcard_medianpoint">Median point: %1$.4f %2$.4f (%3$s)</string>
     <string name="statistics_generalcard_importedactivities">Imported activities: %1$.0f</string>
+    <string name="statistics_generalcard_isolatedpoint">Most isolated point: %1$.4f %2$.4f (%3$s)</string>
+    <string name="statistics_generalcard_visitedcells">Visited cells: %1$.0f</string>
+    <string name="statistics_generalcard_visitedcountries">Visited countries: %1$.0f</string>
 </resources>

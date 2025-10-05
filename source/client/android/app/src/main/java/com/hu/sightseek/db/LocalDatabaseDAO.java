@@ -191,6 +191,13 @@ public class LocalDatabaseDAO {
         res.put("median_lat", latPoints.get(latPoints.size() / 2));
         res.put("median_lon", lonPoints.get(lonPoints.size() / 2));
 
+        // TODO
+        res.put("isolated_lat", 0.0);
+        res.put("isolated_lon", 0.0);
+
+        res.put("visited_cells", 0.0);
+        res.put("visited_countries", 0.0);
+
         // Other
         res.put("imported_count", (double) getImportedActivityCount());
 
