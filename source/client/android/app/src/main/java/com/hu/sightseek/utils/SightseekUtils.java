@@ -145,9 +145,9 @@ public final class SightseekUtils {
 
         HashMap<String, Serializable> res = new HashMap<>();
 
-        // Median and isolated point
-        LatLng medianPoint = getMedianPoint(allPoints);
+        res.put("total_points", (double) allPoints.size());
 
+        LatLng medianPoint = getMedianPoint(allPoints);
         res.put("median_lat", medianPoint.latitude);
         res.put("median_lon", medianPoint.longitude);
 

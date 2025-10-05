@@ -49,6 +49,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private double activityCount;
     private double importedCount;
     private boolean isCardView;
+    private HashMap<String, Serializable> detailedGenericStatistics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,7 @@ public class StatisticsActivity extends AppCompatActivity {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
 
         HashMap<String, Double> baseStatistics = dao.getBaseStatistics();
+        detailedGenericStatistics = new HashMap<>();
         mainCategory = dao.getMainTravelCategory();
 
         dao.close();
@@ -266,12 +268,19 @@ public class StatisticsActivity extends AppCompatActivity {
         container.addView(detailedView);
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            HashMap<String, Serializable> values = getDetailedGenericStatistics(this);
+            if(detailedGenericStatistics.isEmpty()) {
+                detailedGenericStatistics = getDetailedGenericStatistics(this);
+            }
 
             runOnUiThread(() -> {
                 TextView totalActivitiesTextView = findViewById(R.id.statistics_generalcard_activitiescreated);
                 totalActivitiesTextView.setText(
                         getString(R.string.statistics_generalcard_activitiescreated, activityCount)
+                );
+
+                TextView totalPointsTextView = findViewById(R.id.statistics_generalcard_totalpoints);
+                totalPointsTextView.setText(
+                        getString(R.string.statistics_generalcard_totalpoints, (Double)detailedGenericStatistics.get("total_points"))
                 );
 
                 TextView totalKilometersTextView = findViewById(R.id.statistics_generalcard_totalkilometers);
@@ -299,8 +308,8 @@ public class StatisticsActivity extends AppCompatActivity {
                         getString(R.string.statistics_generalcard_longesttime, longestTimeText)
                 );
 
-                Double medianLatitude = (Double)values.get("median_lat");
-                Double medianLongitude = (Double)values.get("median_lon");
+                Double medianLatitude = (Double)detailedGenericStatistics.get("median_lat");
+                Double medianLongitude = (Double)detailedGenericStatistics.get("median_lon");
                 if(medianLatitude == null || medianLongitude == null) {
                     throw new ClassCastException();
                 }
@@ -310,8 +319,8 @@ public class StatisticsActivity extends AppCompatActivity {
                         getString(R.string.statistics_generalcard_medianpoint, medianLatitude, medianLongitude, getLocationString(this, medianLatitude, medianLongitude))
                 );
 
-                Double isolatedLatitude = (Double)values.get("isolated_lat");
-                Double isolatedLongitude = (Double)values.get("isolated_lon");
+                Double isolatedLatitude = (Double)detailedGenericStatistics.get("isolated_lat");
+                Double isolatedLongitude = (Double)detailedGenericStatistics.get("isolated_lon");
                 if(isolatedLatitude == null || isolatedLongitude == null) {
                     throw new ClassCastException();
                 }
@@ -323,12 +332,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
                 TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
                 visitedCellsTextView.setText(
-                        getString(R.string.statistics_generalcard_visitedcells, (Double)values.get("visited_cells"))
+                        getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))
                 );
 
                 TextView visitedCountriesTextView = findViewById(R.id.statistics_generalcard_visitedcountries);
                 visitedCountriesTextView.setText(
-                        getString(R.string.statistics_generalcard_visitedcountries, (Double)values.get("visited_countries"))
+                        getString(R.string.statistics_generalcard_visitedcountries, (Double)detailedGenericStatistics.get("visited_countries"))
                 );
 
                 TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);
@@ -336,6 +345,7 @@ public class StatisticsActivity extends AppCompatActivity {
                         getString(R.string.statistics_generalcard_importedactivities, importedCount)
                 );
 
+                // Anim
                 Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
 
                 View statistics_generalcontainer = findViewById(R.id.statistics_generalcontainer);
