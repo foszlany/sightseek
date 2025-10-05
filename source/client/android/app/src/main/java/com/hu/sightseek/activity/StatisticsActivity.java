@@ -300,6 +300,11 @@ public class StatisticsActivity extends AppCompatActivity {
                 medianPointTextView.setText(
                         getString(R.string.statistics_generalcard_medianpoint, medianLatitude, medianLongitude, getLocationString(this, medianLatitude, medianLongitude))
                 );
+
+                TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);
+                importedActivitiesTextView.setText(
+                        getString(R.string.statistics_generalcard_importedactivities, (Double)values.get("imported_count"))
+                );
             });
         });
 

@@ -203,7 +203,7 @@ public class SaveActivity extends AppCompatActivity {
 
             executor.execute(() -> {
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist);
+                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist, -1);
 
                 Intent intent = new Intent(this, ActivityActivity.class);
                 Bundle bundle = new Bundle();

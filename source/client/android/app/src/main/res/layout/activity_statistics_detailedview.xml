@@ -112,9 +112,10 @@
             android:textSize="18sp"/>
 
         <TextView
+            android:id="@+id/statistics_generalcard_importedactivities"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Imported activities: %1$d"
+            android:text="@string/statistics_generalcard_importedactivities"
             android:textColor="@color/white"
             android:textSize="18sp"/>
     </LinearLayout>

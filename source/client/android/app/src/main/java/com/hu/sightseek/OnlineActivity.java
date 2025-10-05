@@ -8,11 +8,11 @@ public class OnlineActivity extends Activity {
     private boolean isPublic;
 
     public OnlineActivity(int id, String name, TravelCategory category, String polyline, String starttime, String endtime, double elapsedtime, double distance) {
-        super(id, name, category.getIndex(), polyline, starttime, endtime, elapsedtime, distance);
+        super(id, name, category.getIndex(), polyline, starttime, endtime, elapsedtime, distance, -1);
     }
 
     public OnlineActivity(int id, String name, int category, String polyline, String starttime, String endtime, double elapsedtime, double distance) {
-        super(id, name, category, polyline, starttime, endtime, elapsedtime, distance);
+        super(id, name, category, polyline, starttime, endtime, elapsedtime, distance, -1);
     }
 
     public boolean isPublic() {

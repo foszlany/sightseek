@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class LocalDatabaseImpl extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "activities.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
 
     // Activity table
     public static final String ACTIVITIES_TABLE = "activities";
@@ -18,6 +18,8 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
     public static final String ACTIVITIES_ENDTIME = "endtime";
     public static final String ACTIVITIES_ELAPSEDTIME = "elapsedtime";
     public static final String ACTIVITIES_DISTANCE = "distance";
+    public static final String ACTIVITIES_STRAVAID = "stravaid";
+
 
     // Saved attractions table
     public static final String ATTRACTIONS_TABLE = "attractions";
@@ -37,7 +39,9 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
                     ACTIVITIES_STARTTIME + " TEXT NOT NULL, " +
                     ACTIVITIES_ENDTIME + " TEXT NOT NULL, " +
                     ACTIVITIES_ELAPSEDTIME + " REAL, " +
-                    ACTIVITIES_DISTANCE + " REAL);";
+                    ACTIVITIES_DISTANCE + " REAL, " +
+                    ACTIVITIES_STRAVAID + " REAL);";
+
 
     private static final String ATTRACTIONS_TABLE_CREATE =
             "CREATE TABLE " + ATTRACTIONS_TABLE + " (" +

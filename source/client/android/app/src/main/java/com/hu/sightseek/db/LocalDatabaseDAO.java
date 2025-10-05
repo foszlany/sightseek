@@ -36,7 +36,7 @@ public class LocalDatabaseDAO {
     }
 
     /* ############### ACTIVITIES ############### */
-    public long addActivity(String name, int category, String polyline, String startTime, String endTime, double elapsedTime, double distance) {
+    public long addActivity(String name, int category, String polyline, String startTime, String endTime, double elapsedTime, double distance, long stravaid) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -47,6 +47,7 @@ public class LocalDatabaseDAO {
         values.put(LocalDatabaseImpl.ACTIVITIES_ENDTIME, endTime);
         values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, elapsedTime);
         values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, distance);
+        values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, stravaid);
 
         long id = db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
         db.close();
@@ -60,6 +61,27 @@ public class LocalDatabaseDAO {
         String sql =
                 "SELECT COUNT(*) AS total_count " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE;
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        long count = 0;
+        if(cursor.moveToFirst()) {
+            count = cursor.getLong(cursor.getColumnIndexOrThrow("total_count"));
+        }
+
+        cursor.close();
+        db.close();
+
+        return count;
+    }
+
+    public long getImportedActivityCount() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String sql =
+                "SELECT COUNT(*) AS total_count " +
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1";
 
         Cursor cursor = db.rawQuery(sql, null);
 
@@ -169,6 +191,9 @@ public class LocalDatabaseDAO {
         res.put("median_lat", latPoints.get(latPoints.size() / 2));
         res.put("median_lon", lonPoints.get(lonPoints.size() / 2));
 
+        // Other
+        res.put("imported_count", (double) getImportedActivityCount());
+
         return res;
     }
 
@@ -197,7 +222,7 @@ public class LocalDatabaseDAO {
             cursor.close();
             db.close();
 
-            return new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance);
+            return new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance, -1);
         }
         else {
             cursor.close();
@@ -238,7 +263,7 @@ public class LocalDatabaseDAO {
                 double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
                 double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
 
-                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance));
+                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance, -1));
             } while(cursor.moveToNext());
         }
 

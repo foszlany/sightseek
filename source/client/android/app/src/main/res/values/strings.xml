@@ -132,4 +132,5 @@
     <string name="statistics_generalcard_longestdistance">Longest distance: %1$.2f km</string>
     <string name="statistics_generalcard_longesttime">Longest time: %1$s</string>
     <string name="statistics_generalcard_medianpoint">Median point: %1$.4f %2$.4f (%3$s)</string>
+    <string name="statistics_generalcard_importedactivities">Imported activities: %1$.0f</string>
 </resources>

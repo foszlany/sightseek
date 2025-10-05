@@ -1,7 +1,5 @@
 package com.hu.sightseek.model;
 
-import androidx.annotation.NonNull;
-
 import com.hu.sightseek.enums.TravelCategory;
 
 public class Activity {
@@ -13,8 +11,9 @@ public class Activity {
     private String endtime;
     private double elapsedtime;
     private double distance;
+    private long stravaId;
 
-    public Activity(int id, String name, int category, String polyline, String starttime, String endtime, double elapsedtime, double distance) {
+    public Activity(int id, String name, int category, String polyline, String starttime, String endtime, double elapsedtime, double distance, long stravaId) {
         this.id = id;
         this.name = name;
         this.category = TravelCategory.values()[category];
@@ -23,6 +22,7 @@ public class Activity {
         this.endtime = endtime;
         this.elapsedtime = elapsedtime;
         this.distance = distance;
+        this.stravaId = stravaId;
     }
 
     public int getId() {
@@ -89,7 +89,14 @@ public class Activity {
         this.distance = distance;
     }
 
-    @NonNull
+    public long getStravaId() {
+        return stravaId;
+    }
+
+    public void setStravaId(long stravaId) {
+        this.stravaId = stravaId;
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
@@ -101,6 +108,7 @@ public class Activity {
                 ", endtime='" + endtime + '\'' +
                 ", elapsedtime=" + elapsedtime +
                 ", distance=" + distance +
+                ", stravaId=" + stravaId +
                 '}';
     }
 }
