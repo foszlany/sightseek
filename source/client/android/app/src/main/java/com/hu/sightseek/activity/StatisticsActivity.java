@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekUtils.createScreenshot;
+import static com.hu.sightseek.utils.SightseekUtils.getDetailedGenericStatistics;
 import static com.hu.sightseek.utils.SightseekUtils.getLocationString;
 
 import android.content.Context;
@@ -37,12 +38,14 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 
 public class StatisticsActivity extends AppCompatActivity {
-    // Card view data
     private double totalDistance;
     private double totalDays;
     private TravelCategory mainCategory;
     private double longestDistance;
     private double longestTime;
+    private String longestTimeText;
+    private double activityCount;
+    private double importedCount;
     private boolean isCardView;
 
     @Override
@@ -82,12 +85,12 @@ public class StatisticsActivity extends AppCompatActivity {
         // Variables
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
 
-        HashMap<String, Double> cardMap = dao.getBaseStatistics();
+        HashMap<String, Double> baseStatistics = dao.getBaseStatistics();
         mainCategory = dao.getMainTravelCategory();
 
         dao.close();
 
-        if(cardMap == null || mainCategory == null) {
+        if(baseStatistics == null || mainCategory == null) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             ViewGroup root = findViewById(android.R.id.content);
             View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
@@ -103,17 +106,23 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Double valueHolder;
 
-        valueHolder = cardMap.get("total_distance");
+        valueHolder = baseStatistics.get("total_distance");
         totalDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = cardMap.get("total_time");
+        valueHolder = baseStatistics.get("total_time");
         totalDays = (valueHolder != null) ? (valueHolder / 86400.0) : 0.0;
 
-        valueHolder = cardMap.get("longest_distance");
+        valueHolder = baseStatistics.get("longest_distance");
         longestDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = cardMap.get("longest_time");
+        valueHolder = baseStatistics.get("longest_time");
         longestTime = (valueHolder != null) ? valueHolder : 0.0;
+
+        valueHolder = baseStatistics.get("activity_count");
+        activityCount = (valueHolder != null) ? valueHolder : 0.0;
+
+        valueHolder = baseStatistics.get("imported_count");
+        importedCount = (valueHolder != null) ? valueHolder : 0.0;
 
         initCardView();
 
@@ -234,8 +243,8 @@ public class StatisticsActivity extends AppCompatActivity {
         longestDistanceTextView.setText(getString(R.string.main_distancevalue, longestDistance));
 
         TextView longestTimeTextView = findViewById(R.id.statistics_topcard_timevalue);
-        String formattedTime = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTime / 3600, ((int) longestTime % 3600) / 60, (int) longestTime % 60);
-        longestTimeTextView.setText(formattedTime);
+        longestTimeText = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTime / 3600, ((int) longestTime % 3600) / 60, (int) longestTime % 60);
+        longestTimeTextView.setText(longestTimeText);
     }
 
     public void initDetailedView() {
@@ -254,39 +263,37 @@ public class StatisticsActivity extends AppCompatActivity {
         container.addView(detailedView);
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            HashMap<String, Serializable> values = dao.getDetailedGenericStatistics();
-            dao.close();
+            HashMap<String, Serializable> values = getDetailedGenericStatistics(this);
 
             runOnUiThread(() -> {
                 TextView totalActivitiesTextView = findViewById(R.id.statistics_generalcard_activitiescreated);
                 totalActivitiesTextView.setText(
-                        getString(R.string.statistics_generalcard_activitiescreated, (Double)values.get("total_activities"))
+                        getString(R.string.statistics_generalcard_activitiescreated, activityCount)
                 );
 
                 TextView totalKilometersTextView = findViewById(R.id.statistics_generalcard_totalkilometers);
                 totalKilometersTextView.setText(
-                        getString(R.string.statistics_generalcard_totalkilometers, (Double)values.get("total_distance"))
+                        getString(R.string.statistics_generalcard_totalkilometers, totalDistance)
                 );
 
                 TextView totalTimeTextView = findViewById(R.id.statistics_generalcard_totaltime);
                 totalTimeTextView.setText(
-                        getString(R.string.statistics_generalcard_totaltime, (Double)values.get("total_time"))
+                        getString(R.string.statistics_generalcard_totaltime, totalDays)
                 );
 
                 TextView mainActivityTypeTextView = findViewById(R.id.statistics_generalcard_mainactivitytype);
                 mainActivityTypeTextView.setText(
-                        getString(R.string.statistics_generalcard_mainactivitytype, (String)values.get("main_category"))
+                        getString(R.string.statistics_generalcard_mainactivitytype, mainCategory.toShortString())
                 );
 
                 TextView longestDistanceTextView = findViewById(R.id.statistics_generalcard_longestdistance);
                 longestDistanceTextView.setText(
-                        getString(R.string.statistics_generalcard_longestdistance, (Double)values.get("longest_distance"))
+                        getString(R.string.statistics_generalcard_longestdistance, longestDistance)
                 );
 
                 TextView longestTimeTextView = findViewById(R.id.statistics_generalcard_longesttime);
                 longestTimeTextView.setText(
-                        getString(R.string.statistics_generalcard_longesttime, (String)values.get("longest_time"))
+                        getString(R.string.statistics_generalcard_longesttime, longestTimeText)
                 );
 
                 Double medianLatitude = (Double)values.get("median_lat");
@@ -323,11 +330,10 @@ public class StatisticsActivity extends AppCompatActivity {
 
                 TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);
                 importedActivitiesTextView.setText(
-                        getString(R.string.statistics_generalcard_importedactivities, (Double)values.get("imported_count"))
+                        getString(R.string.statistics_generalcard_importedactivities, importedCount)
                 );
             });
         });
-
     }
 
     // Create top menubar

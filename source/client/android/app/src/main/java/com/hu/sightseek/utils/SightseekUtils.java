@@ -26,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.enums.TravelCategory;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -36,11 +38,20 @@ import org.osmdroid.views.overlay.Polyline;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public final class SightseekUtils {
     public static final double BUDAPEST_LATITUDE = 47.499;
@@ -130,6 +141,42 @@ public final class SightseekUtils {
         catch(IOException ignored) {}
 
         return locationString;
+    }
+
+    public static HashMap<String, Serializable> getDetailedGenericStatistics(Context ctx) {
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
+
+        ArrayList<LatLng> allPoints = dao.getAllPoints();
+
+        dao.close();
+
+        HashMap<String, Serializable> res = new HashMap<>();
+
+        // Median and isolated point
+        int n = allPoints.size();
+        double[] lats = new double[n];
+        double[] lons = new double[n];
+
+        for(int i = 0; i < n; i++) {
+            LatLng p = allPoints.get(i);
+            lats[i] = p.latitude;
+            lons[i] = p.longitude;
+        }
+
+        Arrays.sort(lats);
+        Arrays.sort(lons);
+
+        res.put("median_lat", lats[n / 2]);
+        res.put("median_lon", lons[n / 2]);
+
+        // TODO
+        res.put("isolated_lat", 0.0);
+        res.put("isolated_lon", 0.0);
+
+        res.put("visited_cells", 0.0);
+        res.put("visited_countries", 0.0);
+
+        return res;
     }
 
     public static void createScreenshot(Context ctx, View view, String name, View excludedView) {
