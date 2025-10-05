@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(id == R.id.bottommenu_main_record) {
                 Intent intent = new Intent(this, RecordActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
             else if(id == R.id.bottommenu_main_leaderboard) {

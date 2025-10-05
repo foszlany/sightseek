@@ -9,6 +9,8 @@ import static com.hu.sightseek.utils.SightseekUtils.defaultToBudapest;
 import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
 
 import android.animation.ValueAnimator;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +24,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -60,6 +63,7 @@ import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.AttractionInfoWindow;
 import com.hu.sightseek.model.Attraction;
 import com.hu.sightseek.model.AttractionGeoPoint;
+import com.hu.sightseek.service.RecordingService;
 import com.hu.sightseek.utils.SightseekUtils;
 
 import org.osmdroid.api.IGeoPoint;
@@ -103,7 +107,7 @@ public class RecordActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
     private DirectedLocationOverlay locationOverlay;
     private BroadcastReceiver locationModeReceiver;
-
+    private Intent recordServiceIntent;
     private ArrayList<LatLng> importedPoints;
     private ArrayList<LatLng> recordedPoints;
     private boolean isRecording;
@@ -398,8 +402,23 @@ public class RecordActivity extends AppCompatActivity {
                         return true;
                     }
 
-                    // Initialize overlay
+                    // First press
                     if(recordedPoints.isEmpty()) {
+                        // Start service
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            NotificationChannel channel = new NotificationChannel(
+                                    "channel_recording",
+                                    "Location recording",
+                                    NotificationManager.IMPORTANCE_LOW
+                            );
+                            NotificationManager manager = getSystemService(NotificationManager.class);
+                            manager.createNotificationChannel(channel);
+                        }
+
+                        recordServiceIntent = new Intent(RecordActivity.this, RecordingService.class);
+                        ContextCompat.startForegroundService(RecordActivity.this, recordServiceIntent);
+
+                        // Initialize overlay
                         statOverlay.setVisibility(VISIBLE);
 
                         TextView distanceView = findViewById(R.id.record_distance);
@@ -448,6 +467,8 @@ public class RecordActivity extends AppCompatActivity {
                     Toast.makeText(this, "Your activity is too short. Tap stop again to halt the recording.", Toast.LENGTH_LONG).show();
                 }
                 else {
+                    stopService(recordServiceIntent);
+
                     isRecording = false;
                     didPressStopWhileLowPointCount = false;
                     chronometer.stop();
