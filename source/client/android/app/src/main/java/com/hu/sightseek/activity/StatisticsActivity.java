@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekUtils.createScreenshot;
+import static com.hu.sightseek.utils.SightseekUtils.getLocationString;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,9 +30,11 @@ import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 public class StatisticsActivity extends AppCompatActivity {
     // Card view data
@@ -79,7 +82,7 @@ public class StatisticsActivity extends AppCompatActivity {
         // Variables
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
 
-        HashMap<String, Double> cardMap = dao.getStatistics();
+        HashMap<String, Double> cardMap = dao.getBaseStatistics();
         mainCategory = dao.getMainTravelCategory();
 
         dao.close();
@@ -249,6 +252,57 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         View detailedView = LayoutInflater.from(this).inflate(R.layout.activity_statistics_detailedview, container, false);
         container.addView(detailedView);
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+            HashMap<String, Serializable> values = dao.getDetailedGenericStatistics();
+            dao.close();
+
+            runOnUiThread(() -> {
+                TextView totalActivitiesTextView = findViewById(R.id.statistics_generalcard_activitiescreated);
+                totalActivitiesTextView.setText(
+                        getString(R.string.statistics_generalcard_activitiescreated, (Double)values.get("total_activities"))
+                );
+
+                TextView totalKilometersTextView = findViewById(R.id.statistics_generalcard_totalkilometers);
+                totalKilometersTextView.setText(
+                        getString(R.string.statistics_generalcard_totalkilometers, (Double)values.get("total_distance"))
+                );
+
+                TextView totalTimeTextView = findViewById(R.id.statistics_generalcard_totaltime);
+                totalTimeTextView.setText(
+                        getString(R.string.statistics_generalcard_totaltime, (Double)values.get("total_time"))
+                );
+
+                TextView mainActivityTypeTextView = findViewById(R.id.statistics_generalcard_mainactivitytype);
+                mainActivityTypeTextView.setText(
+                        getString(R.string.statistics_generalcard_mainactivitytype, (String)values.get("main_category"))
+                );
+
+                TextView longestDistanceTextView = findViewById(R.id.statistics_generalcard_longestdistance);
+                longestDistanceTextView.setText(
+                        getString(R.string.statistics_generalcard_longestdistance, (Double)values.get("longest_distance"))
+                );
+
+                TextView longestTimeTextView = findViewById(R.id.statistics_generalcard_longesttime);
+                longestTimeTextView.setText(
+                        getString(R.string.statistics_generalcard_longesttime, (String)values.get("longest_time"))
+                );
+
+                Double medianLatitude = (Double)values.get("median_lat");
+                Double medianLongitude = (Double)values.get("median_lon");
+
+                if(medianLatitude == null || medianLongitude == null) {
+                    throw new ClassCastException();
+                }
+
+                TextView medianPointTextView = findViewById(R.id.statistics_generalcard_medianpoint);
+                medianPointTextView.setText(
+                        getString(R.string.statistics_generalcard_medianpoint, medianLatitude, medianLongitude, getLocationString(this, medianLatitude, medianLongitude))
+                );
+            });
+        });
+
     }
 
     // Create top menubar

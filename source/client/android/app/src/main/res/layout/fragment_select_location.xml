@@ -19,7 +19,7 @@
         android:id="@+id/locationselectpopup_selectbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/dark_button_bg"
+        android:background="@drawable/generic_rounded_background"
         android:padding="12dp"
         android:text="@string/locationselectpopup_select"
         android:textColor="@color/white"

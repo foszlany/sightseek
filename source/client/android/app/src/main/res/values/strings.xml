@@ -124,4 +124,12 @@
     <string name="record_attractionsdesc">Attractions</string>
     <string name="attractionpopup_markasvisited">Mark as visited</string>
     <string name="attractionpopup_removefromsaved">Remove from saved</string>
+    <string name="statistics_generalcard_general">General</string>
+    <string name="statistics_generalcard_activitiescreated">Activities created: %1$.0f</string>
+    <string name="statistics_generalcard_totalkilometers">Total kilometers: %1$.2f km</string>
+    <string name="statistics_generalcard_totaltime">Time spent: %1$.2f days</string>
+    <string name="statistics_generalcard_mainactivitytype">Favourite type of activity: %1$s</string>
+    <string name="statistics_generalcard_longestdistance">Longest distance: %1$.2f km</string>
+    <string name="statistics_generalcard_longesttime">Longest time: %1$s</string>
+    <string name="statistics_generalcard_medianpoint">Median point: %1$.4f %2$.4f (%3$s)</string>
 </resources>

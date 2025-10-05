@@ -72,7 +72,7 @@ public class AttractionInfoWindow extends InfoWindow {
                 mMapView.postInvalidate();
 
                 if(points.size() >= 2000) {
-                    // this is terrible
+                    // TODO this is terrible
                     new Handler(Looper.getMainLooper()).postDelayed(() -> swapIcon(false), points.size() / 3);
                 }
             });

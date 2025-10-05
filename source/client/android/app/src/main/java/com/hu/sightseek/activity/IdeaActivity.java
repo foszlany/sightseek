@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekUtils.getLocationString;
 import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
@@ -503,26 +504,7 @@ public class IdeaActivity extends AppCompatActivity {
             double longitude = randomElement.optDouble("lon", 0);
             GeoPoint point = new GeoPoint(latitude, longitude);
 
-            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-            try {
-                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-                if(addresses != null && !addresses.isEmpty()) {
-                    locationString = addresses.get(0).getLocality();
-
-                    if(locationString == null) {
-                        locationString = addresses.get(0).getAdminArea();
-
-                        if(locationString == null) {
-                            locationString = addresses.get(0).getCountryName();
-
-                            if(locationString == null || "null".equals(locationString)) {
-                                locationString = "Unknown location";
-                            }
-                        }
-                    }
-                }
-            }
-            catch(IOException ignored) {}
+            locationString = getLocationString(this, latitude, longitude);
 
             if(id != 0) {
                 currentAttraction = new Attraction(id, name, locationString, latitude, longitude, SavedAttractionStatus.INVALID);

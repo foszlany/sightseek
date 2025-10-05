@@ -15,10 +15,14 @@ import com.hu.sightseek.model.Attraction;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class LocalDatabaseDAO {
     private final LocalDatabaseImpl dbHelper;
@@ -50,7 +54,27 @@ public class LocalDatabaseDAO {
         return id;
     }
 
-    public HashMap<String, Double> getStatistics() {
+    public long getActivityCount() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String sql =
+                "SELECT COUNT(*) AS total_count " +
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE;
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        long count = 0;
+        if(cursor.moveToFirst()) {
+            count = cursor.getLong(cursor.getColumnIndexOrThrow("total_count"));
+        }
+
+        cursor.close();
+        db.close();
+
+        return count;
+    }
+
+    public HashMap<String, Double> getBaseStatistics() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String sql =
@@ -105,6 +129,47 @@ public class LocalDatabaseDAO {
 
             return null;
         }
+    }
+
+    public HashMap<String, Serializable> getDetailedGenericStatistics() {
+        HashMap<String, Serializable> res = new HashMap<>();
+
+
+        // Base statistics
+        HashMap<String, Double> baseStatistics = getBaseStatistics();
+
+        res.put("total_activities", (double) getActivityCount());
+
+        res.put("total_distance", Objects.requireNonNull(baseStatistics.get("total_distance")) / 1000.0);
+        res.put("total_time", Objects.requireNonNull(baseStatistics.get("total_time")) / 86400.0);
+        res.put("longest_distance", Objects.requireNonNull(baseStatistics.get("longest_distance")) / 1000.0);
+
+        double longestTime = Objects.requireNonNull(baseStatistics.get("longest_time"));
+        String longestTimeString = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTime / 3600, ((int) longestTime % 3600) / 60, (int) longestTime % 60);
+        res.put("longest_time", longestTimeString);
+
+        res.put("main_category", getMainTravelCategory().toShortString());
+
+        // Median and isolated point
+        ArrayList<LatLng> allPoints = getAllPoints();
+
+        ArrayList<Double> latPoints = new ArrayList<>();
+        ArrayList<Double> lonPoints = new ArrayList<>();
+
+        for(int i = 0; i < allPoints.size(); i++) {
+            for(LatLng p : allPoints) {
+                latPoints.add(p.latitude);
+                lonPoints.add(p.longitude);
+            }
+        }
+
+        Collections.sort(latPoints);
+        Collections.sort(lonPoints);
+
+        res.put("median_lat", latPoints.get(latPoints.size() / 2));
+        res.put("median_lon", lonPoints.get(lonPoints.size() / 2));
+
+        return res;
     }
 
     public Activity getActivity(int id) {

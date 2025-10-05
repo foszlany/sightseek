@@ -13,6 +13,8 @@ import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -101,6 +103,33 @@ public final class SightseekUtils {
                 -85.0,
                 -180.0
         ));
+    }
+
+    public static String getLocationString(Context ctx, double latitude, double longitude) {
+        String locationString = "";
+
+        Geocoder geocoder = new Geocoder(ctx, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if(addresses != null && !addresses.isEmpty()) {
+                locationString = addresses.get(0).getLocality();
+
+                if(locationString == null) {
+                    locationString = addresses.get(0).getAdminArea();
+
+                    if(locationString == null) {
+                        locationString = addresses.get(0).getCountryName();
+
+                        if(locationString == null || "null".equals(locationString)) {
+                            locationString = "Unknown location";
+                        }
+                    }
+                }
+            }
+        }
+        catch(IOException ignored) {}
+
+        return locationString;
     }
 
     public static void createScreenshot(Context ctx, View view, String name, View excludedView) {
