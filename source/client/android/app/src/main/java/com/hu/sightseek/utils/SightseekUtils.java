@@ -27,7 +27,6 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-import com.hu.sightseek.enums.TravelCategory;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -42,16 +41,10 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public final class SightseekUtils {
     public static final double BUDAPEST_LATITUDE = 47.499;

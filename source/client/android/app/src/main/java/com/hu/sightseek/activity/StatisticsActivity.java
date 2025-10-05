@@ -1,5 +1,7 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekUtils.createScreenshot;
 import static com.hu.sightseek.utils.SightseekUtils.getDetailedGenericStatistics;
 import static com.hu.sightseek.utils.SightseekUtils.getLocationString;
@@ -260,6 +262,7 @@ public class StatisticsActivity extends AppCompatActivity {
             container.removeView(cardView);
         }
         View detailedView = LayoutInflater.from(this).inflate(R.layout.activity_statistics_detailedview, container, false);
+        detailedView.setVisibility(INVISIBLE);
         container.addView(detailedView);
 
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -332,6 +335,13 @@ public class StatisticsActivity extends AppCompatActivity {
                 importedActivitiesTextView.setText(
                         getString(R.string.statistics_generalcard_importedactivities, importedCount)
                 );
+
+                Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
+
+                View statistics_generalcontainer = findViewById(R.id.statistics_generalcontainer);
+                statistics_generalcontainer.startAnimation(slideToRightAnim);
+
+                detailedView.setVisibility(VISIBLE);
             });
         });
     }
