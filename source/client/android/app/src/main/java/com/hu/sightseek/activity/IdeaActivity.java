@@ -484,7 +484,6 @@ public class IdeaActivity extends AppCompatActivity {
             // Check for ignored ids
             long id = tags != null ? randomElement.optLong("id", 0) : 0;
             if(ignoredIds.contains(id)) {
-                System.out.println("sKIPPING");
                 data.remove(randomIndex);
                 retrieveAndSetupElementFromJson();
                 return;
@@ -523,11 +522,7 @@ public class IdeaActivity extends AppCompatActivity {
                     }
                 }
             }
-            catch(IOException e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(IdeaActivity.this, "An unknown error has occurred.", Toast.LENGTH_LONG).show();
-                });
-            }
+            catch(IOException ignored) {}
 
             if(id != 0) {
                 currentAttraction = new Attraction(id, name, locationString, latitude, longitude, SavedAttractionStatus.INVALID);

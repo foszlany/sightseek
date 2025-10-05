@@ -360,7 +360,7 @@ public class RecordActivity extends AppCompatActivity {
 
                                     InfoWindow.closeAllInfoWindowsOn(mapView);
 
-                                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView, layoutStyle, points, attractionsOverlay);
+                                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView, layoutStyle, points, attractionsOverlay, attractionButton);
                                     info.open(attractionPoint, new GeoPoint(attractionPoint.getLatitude(), attractionPoint.getLongitude()), 0, 0);
                                 });
                             });
@@ -598,6 +598,7 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void pauseRecord() {
+        recordedPoints.add(new LatLng(0, 0));
         isRecording = false;
         chronometer.stop();
         elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();

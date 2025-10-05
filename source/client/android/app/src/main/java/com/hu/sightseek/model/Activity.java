@@ -14,17 +14,6 @@ public class Activity {
     private double elapsedtime;
     private double distance;
 
-    public Activity(int id, String name, TravelCategory category, String polyline, String starttime, String endtime, double elapsedtime, double distance) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        this.polyline = polyline;
-        this.starttime = starttime;
-        this.endtime = endtime;
-        this.elapsedtime = elapsedtime;
-        this.distance = distance;
-    }
-
     public Activity(int id, String name, int category, String polyline, String starttime, String endtime, double elapsedtime, double distance) {
         this.id = id;
         this.name = name;
