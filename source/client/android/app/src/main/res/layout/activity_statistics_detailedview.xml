@@ -63,6 +63,14 @@
             android:textSize="18sp"/>
 
         <TextView
+            android:id="@+id/statistics_generalcard_averagespeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/statistics_generalcard_averagespeed"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+
+        <TextView
             android:id="@+id/statistics_generalcard_mainactivitytype"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

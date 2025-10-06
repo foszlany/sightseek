@@ -40,6 +40,7 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 
 public class StatisticsActivity extends AppCompatActivity {
+    // TODO: REFACTOR THESE INTO ONE BIG HASHMAP
     private double totalDistance;
     private double totalDays;
     private TravelCategory mainCategory;
@@ -291,6 +292,11 @@ public class StatisticsActivity extends AppCompatActivity {
                 TextView totalTimeTextView = findViewById(R.id.statistics_generalcard_totaltime);
                 totalTimeTextView.setText(
                         getString(R.string.statistics_generalcard_totaltime, totalDays)
+                );
+
+                TextView averageSpeedTextView = findViewById(R.id.statistics_generalcard_averagespeed);
+                averageSpeedTextView.setText(
+                        getString(R.string.statistics_generalcard_averagespeed, totalDistance / (totalDays * 24))
                 );
 
                 TextView mainActivityTypeTextView = findViewById(R.id.statistics_generalcard_mainactivitytype);
