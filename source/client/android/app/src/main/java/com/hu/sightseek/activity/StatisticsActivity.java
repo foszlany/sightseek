@@ -331,17 +331,6 @@ public class StatisticsActivity extends AppCompatActivity {
                         getString(R.string.statistics_generalcard_medianpoint, medianLatitude, medianLongitude, getLocationString(this, medianLatitude, medianLongitude))
                 );
 
-                Double isolatedLatitude = (Double)detailedGenericStatistics.get("isolated_lat");
-                Double isolatedLongitude = (Double)detailedGenericStatistics.get("isolated_lon");
-                if(isolatedLatitude == null || isolatedLongitude == null) {
-                    throw new ClassCastException();
-                }
-
-                TextView isolatedPointTextView = findViewById(R.id.statistics_generalcard_isolatedpoint);
-                isolatedPointTextView.setText(
-                        getString(R.string.statistics_generalcard_isolatedpoint, isolatedLatitude, isolatedLongitude, getLocationString(this, isolatedLatitude, isolatedLongitude))
-                );
-
                 TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);
                 importedActivitiesTextView.setText(
                         getString(R.string.statistics_generalcard_importedactivities, importedCount)

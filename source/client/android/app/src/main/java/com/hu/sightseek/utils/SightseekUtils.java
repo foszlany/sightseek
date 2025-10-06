@@ -183,10 +183,6 @@ public final class SightseekUtils {
         res.put("median_lat", medianPoint.latitude);
         res.put("median_lon", medianPoint.longitude);
 
-        // TODO
-        res.put("isolated_lat", 0.0);
-        res.put("isolated_lon", 0.0);
-
         return res;
     }
 

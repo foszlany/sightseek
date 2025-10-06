@@ -32,7 +32,6 @@ import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.maps.android.PolyUtil;
@@ -96,7 +95,6 @@ public class SaveActivity extends AppCompatActivity {
 
         String polylineString = extras.getString("polyline");
         String startTime = extras.getString("starttime");
-        String endTime = extras.getString("endtime");
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
         categoryIndex = TravelCategory.LOCOMOTOR;
@@ -215,7 +213,7 @@ public class SaveActivity extends AppCompatActivity {
 
             executor.execute(() -> {
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist, -1);
+                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1);
 
                 if(fireStoreDb != null) {
                     // Calculate geohashes

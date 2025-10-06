@@ -479,7 +479,6 @@ public class RecordActivity extends AppCompatActivity {
 
                     bundle.putString("polyline", PolyUtil.encode(recordedPoints));
                     bundle.putString("starttime", startTime);
-                    bundle.putString("endtime", dateFormat.format(new Date()));
                     bundle.putDouble("elapsedtime", Math.floor(elapsedTime / 1000.0));
                     bundle.putDouble("dist", totalDist);
                     bundle.putDouble("type", totalDist);

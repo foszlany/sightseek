@@ -32,7 +32,7 @@ public class LocalDatabaseDAO {
     }
 
     /* ############### ACTIVITIES ############### */
-    public long addActivity(String name, int category, String polyline, String startTime, String endTime, double elapsedTime, double distance, long stravaid) {
+    public long addActivity(String name, int category, String polyline, String startTime, double elapsedTime, double distance, long stravaid) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -40,7 +40,6 @@ public class LocalDatabaseDAO {
         values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, category);
         values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, polyline);
         values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, startTime);
-        values.put(LocalDatabaseImpl.ACTIVITIES_ENDTIME, endTime);
         values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, elapsedTime);
         values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, distance);
         values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, stravaid);
@@ -130,14 +129,13 @@ public class LocalDatabaseDAO {
             int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
             String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
             String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
-            String endtime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ENDTIME));
             double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
             double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
 
             cursor.close();
             db.close();
 
-            return new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance, -1);
+            return new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, -1);
         }
         else {
             cursor.close();
@@ -164,7 +162,7 @@ public class LocalDatabaseDAO {
                 null,
                 null,
                 null,
-                LocalDatabaseImpl.ACTIVITIES_ENDTIME + " DESC"
+                LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC"
         );
 
         if(cursor.moveToFirst()) {
@@ -174,11 +172,10 @@ public class LocalDatabaseDAO {
                 int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
                 String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
                 String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
-                String endtime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ENDTIME));
                 double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
                 double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
 
-                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, endtime, elapsedtime, distance, -1));
+                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, -1));
             } while(cursor.moveToNext());
         }
 

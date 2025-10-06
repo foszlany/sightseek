@@ -8,18 +8,16 @@ public class Activity {
     private TravelCategory category;
     private String polyline;
     private String starttime;
-    private String endtime;
     private double elapsedtime;
     private double distance;
     private long stravaId;
 
-    public Activity(int id, String name, int category, String polyline, String starttime, String endtime, double elapsedtime, double distance, long stravaId) {
+    public Activity(int id, String name, int category, String polyline, String starttime, double elapsedtime, double distance, long stravaId) {
         this.id = id;
         this.name = name;
         this.category = TravelCategory.values()[category];
         this.polyline = polyline;
         this.starttime = starttime;
-        this.endtime = endtime;
         this.elapsedtime = elapsedtime;
         this.distance = distance;
         this.stravaId = stravaId;
@@ -65,14 +63,6 @@ public class Activity {
         this.starttime = starttime;
     }
 
-    public String getEndtime() {
-        return endtime;
-    }
-
-    public void setEndtime(String endtime) {
-        this.endtime = endtime;
-    }
-
     public double getElapsedtime() {
         return elapsedtime;
     }
@@ -105,7 +95,6 @@ public class Activity {
                 ", category=" + category +
                 ", polyline='" + polyline + '\'' +
                 ", starttime='" + starttime + '\'' +
-                ", endtime='" + endtime + '\'' +
                 ", elapsedtime=" + elapsedtime +
                 ", distance=" + distance +
                 ", stravaId=" + stravaId +
