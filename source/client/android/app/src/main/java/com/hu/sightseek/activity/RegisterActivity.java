@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Patterns;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -17,14 +18,24 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.hu.sightseek.R;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.osmdroid.config.Configuration;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
+    private FirebaseFirestore fireStoreDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
         if(mAuth.getCurrentUser() != null) {
             finish();
         }
+
+        fireStoreDb = FirebaseFirestore.getInstance();
 
         // Register button
         Button registerButton = findViewById(R.id.register_registerbtn);
@@ -114,26 +127,65 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            // TODO: ADD EXISTING USERNAME CHECK AND DATABASE STUFF WHEN LOGOUT IS IMPLEMENTED
-            mAuth.createUserWithEmailAndPassword(email, password1).addOnCompleteListener(this, task -> {
-                if(task.isSuccessful()) {
-                    errorTextView.setVisibility(INVISIBLE);
-                    Toast.makeText(RegisterActivity.this, "Successful registration!", Toast.LENGTH_LONG).show();
+            fireStoreDb.collection("usernames")
+                    .document(username.toLowerCase())
+                    .get()
+                    .addOnCompleteListener(usernameDocTask -> {
+                        if(usernameDocTask.isSuccessful()) {
+                            // Username taken
+                            if(usernameDocTask.getResult().exists()) {
+                                errorTextView.setText(R.string.register_error_username_exists);
+                            }
+                            // Username available
+                            else {
+                                mAuth.createUserWithEmailAndPassword(email, password1)
+                                        .addOnCompleteListener(this, registerTask -> {
+                                            // Email available
+                                            if(registerTask.isSuccessful()) {
+                                                String uid = Objects.requireNonNull(registerTask.getResult().getUser()).getUid();
 
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
-                }
-                else {
-                    Exception e = task.getException();
-                    if(e instanceof FirebaseAuthUserCollisionException) {
-                        errorTextView.setText(R.string.register_error_email_taken);
-                    }
-                    else {
-                        errorTextView.setText(R.string.register_error_unknown);
-                    }
+                                                WriteBatch batch = fireStoreDb.batch();
 
-                }
-            });
+                                                DocumentReference userDocument = fireStoreDb.collection("users").document(uid);
+                                                batch.set(userDocument, Collections.singletonMap("username", username));
+
+                                                DocumentReference usernameDocument = fireStoreDb.collection("usernames").document(username.toLowerCase());
+                                                Map<String, Object> usernameEntry = new HashMap<>();
+                                                usernameEntry.put("uid", uid);
+                                                usernameEntry.put("username", username.toLowerCase());
+                                                batch.set(usernameDocument, usernameEntry);
+
+                                                batch.commit().addOnCompleteListener(batchTask -> {
+                                                    if(batchTask.isSuccessful()) {
+                                                        errorTextView.setVisibility(INVISIBLE);
+                                                        Toast.makeText(RegisterActivity.this, "Successful registration!", Toast.LENGTH_LONG).show();
+
+                                                        Intent intent = new Intent(this, MainActivity.class);
+                                                        startActivity(intent);
+                                                    }
+                                                    else {
+                                                        errorTextView.setText(R.string.register_error_unknown);
+                                                    }
+                                                });
+
+                                            }
+                                            // Email taken
+                                            else {
+                                                Exception e = registerTask.getException();
+                                                if(e instanceof FirebaseAuthUserCollisionException) {
+                                                    errorTextView.setText(R.string.register_error_email_taken);
+                                                }
+                                                else {
+                                                    errorTextView.setText(R.string.register_error_unknown);
+                                                }
+                                            }
+                                        });
+                            }
+                        }
+                        else {
+                            errorTextView.setText(R.string.register_error_unknown);
+                        }
+                    });
         });
 
         // Login button

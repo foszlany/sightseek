@@ -25,8 +25,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.firebase.geofire.GeoFireUtils;
-import com.firebase.geofire.core.GeoHashQuery;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -51,7 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 public final class SightseekUtils {
     public static final double BUDAPEST_LATITUDE = 47.499;
@@ -171,6 +168,9 @@ public final class SightseekUtils {
                     .addOnFailureListener(e -> {
                         res.put("visited_cells", 0.0);
                     });
+        }
+        else {
+            res.put("visited_cells", -1);
         }
 
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);

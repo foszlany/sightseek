@@ -304,6 +304,7 @@ public class StatisticsActivity extends AppCompatActivity {
                         getString(R.string.statistics_generalcard_mainactivitytype, mainCategory.toShortString())
                 );
 
+                // todo invis if -1
                 TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
                 visitedCellsTextView.setText(
                         getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))

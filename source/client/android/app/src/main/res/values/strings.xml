@@ -31,6 +31,7 @@
     <string name="register_createaccount">Create an account</string>
     <string name="register_error_username_empty">Username cannot be empty!</string>
     <string name="register_error_username_short">Username is too short!</string>
+    <string name="register_error_username_exists">This username is taken.</string>
     <string name="register_error_email_empty">Email address cannot be empty!</string>
     <string name="register_error_email_invalidformat">Invalid email address format!</string>
     <string name="register_error_password_doesntmatch">Passwords do not match!</string>
