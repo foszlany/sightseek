@@ -25,7 +25,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.core.GeoHashQuery;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.util.BoundingBox;
@@ -45,6 +50,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 public final class SightseekUtils {
     public static final double BUDAPEST_LATITUDE = 47.499;
@@ -137,13 +144,38 @@ public final class SightseekUtils {
     }
 
     public static HashMap<String, Serializable> getDetailedGenericStatistics(Context ctx) {
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
-
-        ArrayList<LatLng> allPoints = dao.getAllPoints();
-
-        dao.close();
-
         HashMap<String, Serializable> res = new HashMap<>();
+
+        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+            FirebaseFirestore fireStoreDb = FirebaseFirestore.getInstance();
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+            fireStoreDb.collection("users")
+                    .document(uid)
+                    .get(Source.SERVER)
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if(documentSnapshot.exists()) {
+                            Map<String, Object> data = documentSnapshot.getData();
+
+                            if(data == null) {
+                                res.put("visited_cells", 0.0);
+                            }
+                            else {
+                                res.put("visited_cells", (double) data.size());
+                            }
+                        }
+                        else {
+                            res.put("visited_cells", 0.0);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        res.put("visited_cells", 0.0);
+                    });
+        }
+
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
+        ArrayList<LatLng> allPoints = dao.getAllPoints();
+        dao.close();
 
         res.put("total_points", (double) allPoints.size());
 
@@ -154,9 +186,6 @@ public final class SightseekUtils {
         // TODO
         res.put("isolated_lat", 0.0);
         res.put("isolated_lon", 0.0);
-
-        res.put("visited_cells", 0.0);
-        res.put("favourite_cell", "asd");
 
         return res;
     }

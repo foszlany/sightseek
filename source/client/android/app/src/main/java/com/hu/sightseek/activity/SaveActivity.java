@@ -47,6 +47,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -217,8 +218,6 @@ public class SaveActivity extends AppCompatActivity {
                 long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist, -1);
 
                 if(fireStoreDb != null) {
-                    // TODO Upload activity
-
                     // Calculate geohashes
                     Map<String, Integer> visitedCells = new HashMap<>();
                     for(LatLng p : pointList) {
@@ -233,17 +232,9 @@ public class SaveActivity extends AppCompatActivity {
 
                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                    Map<String, Object> updates = new HashMap<>();
-                    for(Map.Entry<String, Integer> entry : visitedCells.entrySet()) {
-                        String hash = entry.getKey();
-                        Integer count = entry.getValue();
-
-                        updates.put("visitedCells." + hash, FieldValue.increment(count));
-                    }
-
                     fireStoreDb.collection("users")
                             .document(uid)
-                            .set(updates, SetOptions.merge());
+                            .set(Collections.singletonMap("visitedCells", visitedCells), SetOptions.merge());
                 }
 
                 Intent intent = new Intent(this, ActivityActivity.class);

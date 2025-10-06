@@ -76,7 +76,15 @@
             android:layout_height="wrap_content"
             android:text="@string/statistics_generalcard_mainactivitytype"
             android:textColor="@color/white"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/statistics_generalcard_visitedcells"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/statistics_generalcard_visitedcells"
             android:layout_marginBottom="10dp"
+            android:textColor="@color/white"
             android:textSize="18sp"/>
 
         <TextView
@@ -109,23 +117,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/statistics_generalcard_isolatedpoint"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-
-        <TextView
-            android:id="@+id/statistics_generalcard_visitedcells"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/statistics_generalcard_visitedcells"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-
-        <TextView
-            android:id="@+id/statistics_generalcard_favouritecell"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/statistics_generalcard_favouritecell"
             android:layout_marginBottom="10dp"
             android:textColor="@color/white"
             android:textSize="18sp"/>

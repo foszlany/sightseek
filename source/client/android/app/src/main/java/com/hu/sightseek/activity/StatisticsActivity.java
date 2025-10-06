@@ -304,6 +304,11 @@ public class StatisticsActivity extends AppCompatActivity {
                         getString(R.string.statistics_generalcard_mainactivitytype, mainCategory.toShortString())
                 );
 
+                TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
+                visitedCellsTextView.setText(
+                        getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))
+                );
+
                 TextView longestDistanceTextView = findViewById(R.id.statistics_generalcard_longestdistance);
                 longestDistanceTextView.setText(
                         getString(R.string.statistics_generalcard_longestdistance, longestDistance)
@@ -334,16 +339,6 @@ public class StatisticsActivity extends AppCompatActivity {
                 TextView isolatedPointTextView = findViewById(R.id.statistics_generalcard_isolatedpoint);
                 isolatedPointTextView.setText(
                         getString(R.string.statistics_generalcard_isolatedpoint, isolatedLatitude, isolatedLongitude, getLocationString(this, isolatedLatitude, isolatedLongitude))
-                );
-
-                TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
-                visitedCellsTextView.setText(
-                        getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))
-                );
-
-                TextView favouriteCellTextView = findViewById(R.id.statistics_generalcard_favouritecell);
-                favouriteCellTextView.setText(
-                        getString(R.string.statistics_generalcard_favouritecell, (String)detailedGenericStatistics.get("favourite_cell"), "asd")
                 );
 
                 TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);
