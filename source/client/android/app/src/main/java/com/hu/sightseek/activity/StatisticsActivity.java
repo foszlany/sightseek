@@ -3,11 +3,13 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
+import static com.hu.sightseek.utils.SightseekStatisticsUtils.getCategorySpecificStatistics;
 import static com.hu.sightseek.utils.SightseekStatisticsUtils.getDetailedGenericStatistics;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -51,6 +54,10 @@ public class StatisticsActivity extends AppCompatActivity {
     private double importedCount;
     private boolean isCardView;
     private HashMap<String, Serializable> detailedGenericStatistics;
+    private HashMap<String, Serializable> locoStatistics;
+    private HashMap<String, Serializable> microStatistics;
+    private HashMap<String, Serializable> otherStatistics;
+    private Button currentActiveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +96,12 @@ public class StatisticsActivity extends AppCompatActivity {
         // Variables
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
 
-        HashMap<String, Double> baseStatistics = dao.getBaseStatistics();
         detailedGenericStatistics = new HashMap<>();
+        locoStatistics = new HashMap<>();
+        microStatistics = new HashMap<>();
+        otherStatistics = new HashMap<>();
+
+        HashMap<String, Double> baseStatistics = dao.getBaseStatistics();
         mainCategory = dao.getMainTravelCategory();
 
         dao.close();
@@ -268,6 +279,43 @@ public class StatisticsActivity extends AppCompatActivity {
         detailedView.setVisibility(INVISIBLE);
         container.addView(detailedView);
 
+        // Listeners
+        Button locoButton = findViewById(R.id.statistics_percategory_locobtn);
+        locoButton.setOnClickListener(v -> {
+            swapActiveButton(currentActiveButton, locoButton);
+
+            locoStatistics = getCategorySpecificStatistics(this, TravelCategory.LOCOMOTOR);
+            // TODO: add method here with map parameter
+        });
+
+        Button microButton = findViewById(R.id.statistics_percategory_microbtn);
+        microButton.setOnClickListener(v -> {
+            swapActiveButton(currentActiveButton, microButton);
+
+            microStatistics = getCategorySpecificStatistics(this, TravelCategory.MICROMOBILITY);
+        });
+
+        Button otherButton = findViewById(R.id.statistics_percategory_otherbtn);
+        otherButton.setOnClickListener(v -> {
+            swapActiveButton(currentActiveButton, otherButton);
+
+            otherStatistics = getCategorySpecificStatistics(this, TravelCategory.OTHER);
+        });
+
+        switch(mainCategory) {
+            case LOCOMOTOR:
+            case INVALID:
+                currentActiveButton = locoButton;
+
+            case MICROMOBILITY:
+                swapActiveButton(locoButton, microButton);
+                break;
+
+            case OTHER:
+                swapActiveButton(locoButton, otherButton);
+        }
+
+
         Executors.newSingleThreadExecutor().execute(() -> {
             if(detailedGenericStatistics.isEmpty()) {
                 detailedGenericStatistics = getDetailedGenericStatistics(this);
@@ -339,12 +387,22 @@ public class StatisticsActivity extends AppCompatActivity {
                 // Anim
                 Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
 
-                View statistics_generalcontainer = findViewById(R.id.statistics_generalcontainer);
-                statistics_generalcontainer.startAnimation(slideToRightAnim);
+                View generalContainerView = findViewById(R.id.statistics_generalcontainer);
+                View perCategoryContainerView = findViewById(R.id.statistics_percategorycontainer);
+
+                generalContainerView.startAnimation(slideToRightAnim);
+                perCategoryContainerView.startAnimation(slideToRightAnim);
 
                 detailedView.setVisibility(VISIBLE);
             });
         });
+    }
+
+    private void swapActiveButton(Button from, Button to) {
+        from.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.transparent, null)));
+        to.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.light_purple, null)));
+
+        currentActiveButton = to;
     }
 
     // Create top menubar

@@ -64,7 +64,7 @@ public final class SightseekStatisticsUtils {
         return values;
     }
 
-    public static HashMap<String, Serializable> getCategorySpecificStatistics(Context ctx, TravelCategory) {
+    public static HashMap<String, Serializable> getCategorySpecificStatistics(Context ctx, TravelCategory category) {
         HashMap<String, Serializable> values = new HashMap<>();
 
         return values;

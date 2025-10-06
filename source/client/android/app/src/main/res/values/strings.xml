@@ -140,5 +140,11 @@
     <string name="statistics_generalcard_averagespeed">Average speed: %1$.2f km/h</string>
     <string name="travelmethod_micro_short">Micro</string>
     <string name="travelmethod_loco_short">Loco</string>
-    <string name="statistics_percategory_activitiescreated">Activities created: %1$.0f</string>
+    <string name="statistics_percategory_activitiescreated">Activities created: %1$.0f (%2$.1f%)</string>
+    <string name="statistics_percategory_longesttime">Longest time: %1$s</string>
+    <string name="statistics_percategory_approximatecaloriesburnt">Approximate calories burnt: %1$.0f kcal</string>
+    <string name="statistics_percategory_longestdistance">Longest distance: %1$.2f km</string>
+    <string name="statistics_percategory_averagespeed">Average speed: %1$.2f km/h</string>
+    <string name="statistics_percategory_totaltime">Total time: %1$.2f days</string>
+    <string name="statistics_percategory_totaldistance">Total distance: %1$.2f km</string>
 </resources>
