@@ -341,9 +341,9 @@ public class StatisticsActivity extends AppCompatActivity {
                         getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))
                 );
 
-                TextView visitedCountriesTextView = findViewById(R.id.statistics_generalcard_visitedcountries);
-                visitedCountriesTextView.setText(
-                        getString(R.string.statistics_generalcard_visitedcountries, (Double)detailedGenericStatistics.get("visited_countries"))
+                TextView favouriteCellTextView = findViewById(R.id.statistics_generalcard_favouritecell);
+                favouriteCellTextView.setText(
+                        getString(R.string.statistics_generalcard_favouritecell, (String)detailedGenericStatistics.get("favourite_cell"), "asd")
                 );
 
                 TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);

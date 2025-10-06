@@ -156,7 +156,7 @@ public final class SightseekUtils {
         res.put("isolated_lon", 0.0);
 
         res.put("visited_cells", 0.0);
-        res.put("visited_countries", 0.0);
+        res.put("favourite_cell", "asd");
 
         return res;
     }

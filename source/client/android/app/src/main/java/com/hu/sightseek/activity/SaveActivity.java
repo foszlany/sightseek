@@ -28,7 +28,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
@@ -41,12 +47,15 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SaveActivity extends AppCompatActivity {
+    private FirebaseFirestore fireStoreDb;
     private String title;
     private TravelCategory categoryIndex;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -60,6 +69,8 @@ public class SaveActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
+
+        fireStoreDb = (FirebaseAuth.getInstance().getCurrentUser() != null) ? FirebaseFirestore.getInstance() : null;
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.save_topmenu);
@@ -204,6 +215,36 @@ public class SaveActivity extends AppCompatActivity {
             executor.execute(() -> {
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                 long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, endTime, elapsedTime, totalDist, -1);
+
+                if(fireStoreDb != null) {
+                    // TODO Upload activity
+
+                    // Calculate geohashes
+                    Map<String, Integer> visitedCells = new HashMap<>();
+                    for(LatLng p : pointList) {
+                        String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.latitude, p.longitude), 3);
+
+                        Integer count = visitedCells.get(hash);
+                        if(count == null) {
+                            count = 0;
+                        }
+                        visitedCells.put(hash, count + 1);
+                    }
+
+                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                    Map<String, Object> updates = new HashMap<>();
+                    for(Map.Entry<String, Integer> entry : visitedCells.entrySet()) {
+                        String hash = entry.getKey();
+                        Integer count = entry.getValue();
+
+                        updates.put("visitedCells." + hash, FieldValue.increment(count));
+                    }
+
+                    fireStoreDb.collection("users")
+                            .document(uid)
+                            .set(updates, SetOptions.merge());
+                }
 
                 Intent intent = new Intent(this, ActivityActivity.class);
                 Bundle bundle = new Bundle();

@@ -45,10 +45,12 @@ dependencies {
     implementation(libs.android.maps.utils)
     implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
+    implementation(libs.geofire.android.common)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 
     // Other libraries
     implementation(libs.okhttp)
