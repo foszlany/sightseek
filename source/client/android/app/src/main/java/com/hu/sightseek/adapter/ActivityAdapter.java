@@ -1,7 +1,7 @@
 package com.hu.sightseek.adapter;
 
-import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 
 import android.content.Context;
 import android.content.Intent;

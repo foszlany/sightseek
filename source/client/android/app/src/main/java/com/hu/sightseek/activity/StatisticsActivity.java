@@ -2,9 +2,9 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.utils.SightseekUtils.createScreenshot;
-import static com.hu.sightseek.utils.SightseekUtils.getDetailedGenericStatistics;
-import static com.hu.sightseek.utils.SightseekUtils.getLocationString;
+import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
+import static com.hu.sightseek.utils.SightseekStatisticsUtils.getDetailedGenericStatistics;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
 
 import android.content.Context;
 import android.content.Intent;

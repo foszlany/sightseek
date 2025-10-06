@@ -1,15 +1,13 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.SightseekUtils.getLocationString;
-import static com.hu.sightseek.utils.SightseekUtils.getMedianPoint;
-import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
+import static com.hu.sightseek.utils.SightseekStatisticsUtils.getMedianPoint;
+import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -44,7 +42,7 @@ import com.hu.sightseek.fragment.SelectLocationFragment;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
-import com.hu.sightseek.utils.SightseekUtils;
+import com.hu.sightseek.utils.SightseekGenericUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,11 +58,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.Executors;
 
@@ -348,7 +343,7 @@ public class IdeaActivity extends AppCompatActivity {
                     allPoints.addAll(points);
                 }
 
-                BoundingBox boundingBox = SightseekUtils.getBoundingBox(allPoints);
+                BoundingBox boundingBox = SightseekGenericUtils.getBoundingBox(allPoints);
                 boundingBoxPoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude());
 
                 referenceIndex = R.id.idea_radio_boundingboxbtn;

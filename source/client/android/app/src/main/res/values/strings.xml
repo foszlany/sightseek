@@ -138,4 +138,7 @@
     <string name="statistics_generalcard_favouritecell">Favourite cell: %1$s (%2$s)</string>
     <string name="statistics_generalcard_totalpoints">Recorded points: %1$.0f</string>
     <string name="statistics_generalcard_averagespeed">Average speed: %1$.2f km/h</string>
+    <string name="travelmethod_micro_short">Micro</string>
+    <string name="travelmethod_loco_short">Loco</string>
+    <string name="statistics_percategory_activitiescreated">Activities created: %1$.0f</string>
 </resources>

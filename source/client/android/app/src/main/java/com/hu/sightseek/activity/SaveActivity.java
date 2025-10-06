@@ -1,8 +1,8 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.SightseekUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekUtils.setupRouteLine;
-import static com.hu.sightseek.utils.SightseekUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
+import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
 import android.content.Intent;
 import android.graphics.Color;

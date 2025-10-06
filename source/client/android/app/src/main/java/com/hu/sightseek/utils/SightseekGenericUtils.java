@@ -26,10 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Source;
-import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -40,21 +36,17 @@ import org.osmdroid.views.overlay.Polyline;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-public final class SightseekUtils {
+public final class SightseekGenericUtils {
     public static final double BUDAPEST_LATITUDE = 47.499;
     public static final double BUDAPEST_LONGITUDE = 19.044;
 
-    private SightseekUtils() {}
+    private SightseekGenericUtils() {}
 
     @NonNull
     public static BoundingBox getBoundingBox(List<LatLng> pointList) {
@@ -138,69 +130,6 @@ public final class SightseekUtils {
         catch(IOException ignored) {}
 
         return locationString;
-    }
-
-    public static HashMap<String, Serializable> getDetailedGenericStatistics(Context ctx) {
-        HashMap<String, Serializable> res = new HashMap<>();
-
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-            FirebaseFirestore fireStoreDb = FirebaseFirestore.getInstance();
-            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-            fireStoreDb.collection("users")
-                    .document(uid)
-                    .get(Source.SERVER)
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if(documentSnapshot.exists()) {
-                            Map<String, Object> data = documentSnapshot.getData();
-
-                            if(data == null) {
-                                res.put("visited_cells", 0.0);
-                            }
-                            else {
-                                res.put("visited_cells", (double) data.size());
-                            }
-                        }
-                        else {
-                            res.put("visited_cells", 0.0);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        res.put("visited_cells", 0.0);
-                    });
-        }
-        else {
-            res.put("visited_cells", -1);
-        }
-
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
-        ArrayList<LatLng> allPoints = dao.getAllPoints();
-        dao.close();
-
-        res.put("total_points", (double) allPoints.size());
-
-        LatLng medianPoint = getMedianPoint(allPoints);
-        res.put("median_lat", medianPoint.latitude);
-        res.put("median_lon", medianPoint.longitude);
-
-        return res;
-    }
-
-    public static LatLng getMedianPoint(ArrayList<LatLng> allPoints) {
-        int n = allPoints.size();
-        double[] lats = new double[n];
-        double[] lons = new double[n];
-
-        for(int i = 0; i < n; i++) {
-            LatLng p = allPoints.get(i);
-            lats[i] = p.latitude;
-            lons[i] = p.longitude;
-        }
-
-        Arrays.sort(lats);
-        Arrays.sort(lons);
-
-        return new LatLng(lats[n / 2], lons[n / 2]);
     }
 
     public static void createScreenshot(Context ctx, View view, String name, View excludedView) {
