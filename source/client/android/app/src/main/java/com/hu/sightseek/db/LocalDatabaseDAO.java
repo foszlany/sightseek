@@ -79,7 +79,6 @@ public class LocalDatabaseDAO {
                 "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = " + category.getIndex();
         }
 
-
         Cursor cursor = db.rawQuery(sql, null);
 
         HashMap<String, Serializable> res = new HashMap<>();

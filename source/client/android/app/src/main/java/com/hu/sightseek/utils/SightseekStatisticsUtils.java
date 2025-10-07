@@ -27,12 +27,12 @@ public final class SightseekStatisticsUtils {
 
         // Speed
         valueHolder = (Double)values.get("total_distance");
-        double totalDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
+        double totalDistance = (valueHolder != null) ? (valueHolder) : 0.0;
 
         valueHolder = (Double)values.get("total_time");
-        double totalTime = (valueHolder != null) ? (valueHolder * 3600) : 0.0;
+        double totalTime = (valueHolder != null) ? (valueHolder) : 0.0;
 
-        values.put("average_speed", totalDistance / totalTime);
+        values.put("average_speed", (totalTime != 0) ? ((totalDistance / totalTime) * 3.6) : 0);
 
         // Calories
         double approxCaloriesLow = 0;

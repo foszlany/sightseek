@@ -434,6 +434,37 @@ public class StatisticsActivity extends AppCompatActivity {
         totalActivitiesTextView.setText(
                 getString(R.string.statistics_percategory_activitiescreated, (Double)values.get("activity_count"))
         );
+
+        TextView totalDistanceTextView = findViewById(R.id.statistics_percategory_totaldistance);
+        totalDistanceTextView.setText(
+                getString(R.string.statistics_percategory_totaldistance, (Double)values.get("total_distance") / 1000.0)
+        );
+
+        TextView totalTimeTextView = findViewById(R.id.statistics_percategory_totaltime);
+        totalTimeTextView.setText(
+                getString(R.string.statistics_percategory_totaltime, (Double)values.get("total_time") / 86400.0)
+        );
+
+        TextView averageSpeedTextView = findViewById(R.id.statistics_percategory_averagespeed);
+        averageSpeedTextView.setText(
+                getString(R.string.statistics_percategory_averagespeed, (Double)values.get("average_speed"))
+        );
+
+        TextView longestDistanceTextView = findViewById(R.id.statistics_percategory_longestdistance);
+        longestDistanceTextView.setText(
+                getString(R.string.statistics_percategory_longestdistance, (Double)values.get("longest_distance") / 1000.0)
+        );
+
+        TextView longestTimeTextView = findViewById(R.id.statistics_percategory_longesttime);
+        longestTimeText = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTime / 3600, ((int) longestTime % 3600) / 60, (int) longestTime % 60);
+        longestTimeTextView.setText(
+                getString(R.string.statistics_percategory_longesttime, longestTimeText)
+        );
+
+        TextView approxCaloriesBurntTextView = findViewById(R.id.statistics_percategory_approximatecaloriesburnt);
+        approxCaloriesBurntTextView.setText(
+                getString(R.string.statistics_percategory_approximatecaloriesburnt, (Double)values.get("approx_calories_low"), (Double)values.get("approx_calories_high"))
+        );
     }
 
     private void swapActiveButton(Button from, Button to) {
