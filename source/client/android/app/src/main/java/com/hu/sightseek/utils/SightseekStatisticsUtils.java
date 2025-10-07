@@ -39,18 +39,18 @@ public final class SightseekStatisticsUtils {
         double approxCaloriesHigh = 0;
         switch(category) {
             case LOCOMOTOR:
-                approxCaloriesLow = 30 * totalDistance;
-                approxCaloriesHigh = 130 * totalDistance;
+                approxCaloriesLow = 30 * (totalDistance / 1000.0);
+                approxCaloriesHigh = 130 * (totalDistance / 1000.0);
                 break;
 
             case MICROMOBILITY:
-                approxCaloriesLow = 15 * totalDistance;
-                approxCaloriesHigh = 60 * totalDistance;
+                approxCaloriesLow = 15 * (totalDistance / 1000.0);
+                approxCaloriesHigh = 60 * (totalDistance / 1000.0);
                 break;
 
             case OTHER:
-                approxCaloriesLow = 2 * totalDistance;
-                approxCaloriesHigh = 10 * totalDistance;
+                approxCaloriesLow = 2 * (totalDistance / 1000.0);
+                approxCaloriesHigh = 10 * (totalDistance / 1000.0);
                 break;
         }
         values.put("approx_calories_low", approxCaloriesLow);
