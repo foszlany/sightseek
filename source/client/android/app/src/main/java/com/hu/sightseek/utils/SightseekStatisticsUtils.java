@@ -18,6 +18,47 @@ import java.util.Map;
 public final class SightseekStatisticsUtils {
     private SightseekStatisticsUtils() {}
 
+    public static HashMap<String, Serializable> getCategorySpecificStatistics(Context ctx, TravelCategory category) {
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
+        HashMap<String, Serializable> values = dao.getBaseStatistics(category);
+        dao.close();
+
+        Double valueHolder;
+
+        // Speed
+        valueHolder = (Double)values.get("total_distance");
+        double totalDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
+
+        valueHolder = (Double)values.get("total_time");
+        double totalTime = (valueHolder != null) ? (valueHolder * 3600) : 0.0;
+
+        values.put("average_speed", totalDistance / totalTime);
+
+        // Calories
+        double approxCaloriesLow = 0;
+        double approxCaloriesHigh = 0;
+        switch(category) {
+            case LOCOMOTOR:
+                approxCaloriesLow = 30 * totalDistance;
+                approxCaloriesHigh = 130 * totalDistance;
+                break;
+
+            case MICROMOBILITY:
+                approxCaloriesLow = 15 * totalDistance;
+                approxCaloriesHigh = 60 * totalDistance;
+                break;
+
+            case OTHER:
+                approxCaloriesLow = 2 * totalDistance;
+                approxCaloriesHigh = 10 * totalDistance;
+                break;
+        }
+        values.put("approx_calories_low", approxCaloriesLow);
+        values.put("approx_calories_high", approxCaloriesHigh);
+
+        return values;
+    }
+
     public static HashMap<String, Serializable> getDetailedGenericStatistics(Context ctx) {
         HashMap<String, Serializable> values = new HashMap<>();
 
@@ -60,12 +101,6 @@ public final class SightseekStatisticsUtils {
         LatLng medianPoint = getMedianPoint(allPoints);
         values.put("median_lat", medianPoint.latitude);
         values.put("median_lon", medianPoint.longitude);
-
-        return values;
-    }
-
-    public static HashMap<String, Serializable> getCategorySpecificStatistics(Context ctx, TravelCategory category) {
-        HashMap<String, Serializable> values = new HashMap<>();
 
         return values;
     }

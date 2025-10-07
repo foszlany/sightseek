@@ -53,10 +53,11 @@ public class StatisticsActivity extends AppCompatActivity {
     private double activityCount;
     private double importedCount;
     private boolean isCardView;
-    private HashMap<String, Serializable> detailedGenericStatistics;
+    private HashMap<String, Serializable> baseStatistics;
     private HashMap<String, Serializable> locoStatistics;
     private HashMap<String, Serializable> microStatistics;
     private HashMap<String, Serializable> otherStatistics;
+    private HashMap<String, Serializable> detailedGenericStatistics;
     private Button currentActiveButton;
 
     @Override
@@ -101,7 +102,7 @@ public class StatisticsActivity extends AppCompatActivity {
         microStatistics = new HashMap<>();
         otherStatistics = new HashMap<>();
 
-        HashMap<String, Double> baseStatistics = dao.getBaseStatistics();
+        baseStatistics = dao.getBaseStatistics(TravelCategory.INVALID);
         mainCategory = dao.getMainTravelCategory();
 
         dao.close();
@@ -122,22 +123,22 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Double valueHolder;
 
-        valueHolder = baseStatistics.get("total_distance");
+        valueHolder = (Double)baseStatistics.get("total_distance");
         totalDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = baseStatistics.get("total_time");
+        valueHolder = (Double)baseStatistics.get("total_time");
         totalDays = (valueHolder != null) ? (valueHolder / 86400.0) : 0.0;
 
-        valueHolder = baseStatistics.get("longest_distance");
+        valueHolder = (Double)baseStatistics.get("longest_distance");
         longestDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = baseStatistics.get("longest_time");
+        valueHolder = (Double)baseStatistics.get("longest_time");
         longestTime = (valueHolder != null) ? valueHolder : 0.0;
 
-        valueHolder = baseStatistics.get("activity_count");
+        valueHolder = (Double)baseStatistics.get("activity_count");
         activityCount = (valueHolder != null) ? valueHolder : 0.0;
 
-        valueHolder = baseStatistics.get("imported_count");
+        valueHolder = (Double)baseStatistics.get("imported_count");
         importedCount = (valueHolder != null) ? valueHolder : 0.0;
 
         initCardView();
@@ -281,108 +282,74 @@ public class StatisticsActivity extends AppCompatActivity {
 
         // Listeners
         Button locoButton = findViewById(R.id.statistics_percategory_locobtn);
+        currentActiveButton = locoButton;
         locoButton.setOnClickListener(v -> {
             swapActiveButton(currentActiveButton, locoButton);
 
-            locoStatistics = getCategorySpecificStatistics(this, TravelCategory.LOCOMOTOR);
-            // TODO: add method here with map parameter
+            if(locoStatistics.isEmpty()) {
+                locoStatistics = getCategorySpecificStatistics(this, TravelCategory.LOCOMOTOR);
+            }
+            setCategoryStatistics(locoStatistics);
         });
 
         Button microButton = findViewById(R.id.statistics_percategory_microbtn);
         microButton.setOnClickListener(v -> {
             swapActiveButton(currentActiveButton, microButton);
 
-            microStatistics = getCategorySpecificStatistics(this, TravelCategory.MICROMOBILITY);
+            if(microStatistics.isEmpty()) {
+                microStatistics = getCategorySpecificStatistics(this, TravelCategory.MICROMOBILITY);
+            }
+            setCategoryStatistics(microStatistics);
         });
 
         Button otherButton = findViewById(R.id.statistics_percategory_otherbtn);
         otherButton.setOnClickListener(v -> {
             swapActiveButton(currentActiveButton, otherButton);
 
-            otherStatistics = getCategorySpecificStatistics(this, TravelCategory.OTHER);
+            if(otherStatistics.isEmpty()) {
+                otherStatistics = getCategorySpecificStatistics(this, TravelCategory.OTHER);
+            }
+            setCategoryStatistics(otherStatistics);
         });
-
-        switch(mainCategory) {
-            case LOCOMOTOR:
-            case INVALID:
-                currentActiveButton = locoButton;
-
-            case MICROMOBILITY:
-                swapActiveButton(locoButton, microButton);
-                break;
-
-            case OTHER:
-                swapActiveButton(locoButton, otherButton);
-        }
-
 
         Executors.newSingleThreadExecutor().execute(() -> {
             if(detailedGenericStatistics.isEmpty()) {
                 detailedGenericStatistics = getDetailedGenericStatistics(this);
             }
 
+            switch(mainCategory) {
+                case LOCOMOTOR:
+                case INVALID:
+                    if(locoStatistics.isEmpty()) {
+                        locoStatistics = getCategorySpecificStatistics(this, TravelCategory.LOCOMOTOR);
+                    }
+                    runOnUiThread(() -> {
+                        setCategoryStatistics(locoStatistics);
+                    });
+                    break;
+
+                case MICROMOBILITY:
+                    if(microStatistics.isEmpty()) {
+                        microStatistics = getCategorySpecificStatistics(this, TravelCategory.MICROMOBILITY);
+                    }
+                    runOnUiThread(() -> {
+                        swapActiveButton(locoButton, microButton);
+                        setCategoryStatistics(microStatistics);
+                    });
+                    break;
+
+                case OTHER:
+                    if(otherStatistics.isEmpty()) {
+                        otherStatistics = getCategorySpecificStatistics(this, TravelCategory.OTHER);
+                    }
+                    runOnUiThread(() -> {
+                        swapActiveButton(locoButton, otherButton);
+                        setCategoryStatistics(otherStatistics);
+                    });
+            }
+
             runOnUiThread(() -> {
-                TextView totalActivitiesTextView = findViewById(R.id.statistics_generalcard_activitiescreated);
-                totalActivitiesTextView.setText(
-                        getString(R.string.statistics_generalcard_activitiescreated, activityCount)
-                );
-
-                TextView totalPointsTextView = findViewById(R.id.statistics_generalcard_totalpoints);
-                totalPointsTextView.setText(
-                        getString(R.string.statistics_generalcard_totalpoints, (Double)detailedGenericStatistics.get("total_points"))
-                );
-
-                TextView totalKilometersTextView = findViewById(R.id.statistics_generalcard_totalkilometers);
-                totalKilometersTextView.setText(
-                        getString(R.string.statistics_generalcard_totalkilometers, totalDistance)
-                );
-
-                TextView totalTimeTextView = findViewById(R.id.statistics_generalcard_totaltime);
-                totalTimeTextView.setText(
-                        getString(R.string.statistics_generalcard_totaltime, totalDays)
-                );
-
-                TextView averageSpeedTextView = findViewById(R.id.statistics_generalcard_averagespeed);
-                averageSpeedTextView.setText(
-                        getString(R.string.statistics_generalcard_averagespeed, totalDistance / (totalDays * 24))
-                );
-
-                TextView mainActivityTypeTextView = findViewById(R.id.statistics_generalcard_mainactivitytype);
-                mainActivityTypeTextView.setText(
-                        getString(R.string.statistics_generalcard_mainactivitytype, mainCategory.toShortString())
-                );
-
-                // todo invis if -1
-                TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
-                visitedCellsTextView.setText(
-                        getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))
-                );
-
-                TextView longestDistanceTextView = findViewById(R.id.statistics_generalcard_longestdistance);
-                longestDistanceTextView.setText(
-                        getString(R.string.statistics_generalcard_longestdistance, longestDistance)
-                );
-
-                TextView longestTimeTextView = findViewById(R.id.statistics_generalcard_longesttime);
-                longestTimeTextView.setText(
-                        getString(R.string.statistics_generalcard_longesttime, longestTimeText)
-                );
-
-                Double medianLatitude = (Double)detailedGenericStatistics.get("median_lat");
-                Double medianLongitude = (Double)detailedGenericStatistics.get("median_lon");
-                if(medianLatitude == null || medianLongitude == null) {
-                    throw new ClassCastException();
-                }
-
-                TextView medianPointTextView = findViewById(R.id.statistics_generalcard_medianpoint);
-                medianPointTextView.setText(
-                        getString(R.string.statistics_generalcard_medianpoint, medianLatitude, medianLongitude, getLocationString(this, medianLatitude, medianLongitude))
-                );
-
-                TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);
-                importedActivitiesTextView.setText(
-                        getString(R.string.statistics_generalcard_importedactivities, importedCount)
-                );
+                setDetailedGenericStatistics();
 
                 // Anim
                 Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
@@ -396,6 +363,77 @@ public class StatisticsActivity extends AppCompatActivity {
                 detailedView.setVisibility(VISIBLE);
             });
         });
+    }
+
+    private void setDetailedGenericStatistics() {
+        TextView totalActivitiesTextView = findViewById(R.id.statistics_generalcard_activitiescreated);
+        totalActivitiesTextView.setText(
+                getString(R.string.statistics_generalcard_activitiescreated, activityCount)
+        );
+
+        TextView totalPointsTextView = findViewById(R.id.statistics_generalcard_totalpoints);
+        totalPointsTextView.setText(
+                getString(R.string.statistics_generalcard_totalpoints, (Double)detailedGenericStatistics.get("total_points"))
+        );
+
+        TextView totalKilometersTextView = findViewById(R.id.statistics_generalcard_totalkilometers);
+        totalKilometersTextView.setText(
+                getString(R.string.statistics_generalcard_totalkilometers, totalDistance)
+        );
+
+        TextView totalTimeTextView = findViewById(R.id.statistics_generalcard_totaltime);
+        totalTimeTextView.setText(
+                getString(R.string.statistics_generalcard_totaltime, totalDays)
+        );
+
+        TextView averageSpeedTextView = findViewById(R.id.statistics_generalcard_averagespeed);
+        averageSpeedTextView.setText(
+                getString(R.string.statistics_generalcard_averagespeed, totalDistance / (totalDays * 24))
+        );
+
+        TextView mainActivityTypeTextView = findViewById(R.id.statistics_generalcard_mainactivitytype);
+        mainActivityTypeTextView.setText(
+                getString(R.string.statistics_generalcard_mainactivitytype, mainCategory.toShortString())
+        );
+
+        // todo invis if -1
+        TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
+        visitedCellsTextView.setText(
+                getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))
+        );
+
+        TextView longestDistanceTextView = findViewById(R.id.statistics_generalcard_longestdistance);
+        longestDistanceTextView.setText(
+                getString(R.string.statistics_generalcard_longestdistance, longestDistance)
+        );
+
+        TextView longestTimeTextView = findViewById(R.id.statistics_generalcard_longesttime);
+        longestTimeTextView.setText(
+                getString(R.string.statistics_generalcard_longesttime, longestTimeText)
+        );
+
+        Double medianLatitude = (Double)detailedGenericStatistics.get("median_lat");
+        Double medianLongitude = (Double)detailedGenericStatistics.get("median_lon");
+        if(medianLatitude == null || medianLongitude == null) {
+            throw new ClassCastException();
+        }
+
+        TextView medianPointTextView = findViewById(R.id.statistics_generalcard_medianpoint);
+        medianPointTextView.setText(
+                getString(R.string.statistics_generalcard_medianpoint, medianLatitude, medianLongitude, getLocationString(this, medianLatitude, medianLongitude))
+        );
+
+        TextView importedActivitiesTextView = findViewById(R.id.statistics_generalcard_importedactivities);
+        importedActivitiesTextView.setText(
+                getString(R.string.statistics_generalcard_importedactivities, importedCount)
+        );
+    }
+
+    private void setCategoryStatistics(HashMap<String, Serializable> values) {
+        TextView totalActivitiesTextView = findViewById(R.id.statistics_percategory_activitiescreated);
+        totalActivitiesTextView.setText(
+                getString(R.string.statistics_percategory_activitiescreated, (Double)values.get("activity_count"))
+        );
     }
 
     private void swapActiveButton(Button from, Button to) {

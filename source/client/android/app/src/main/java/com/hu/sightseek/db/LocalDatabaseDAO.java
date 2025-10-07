@@ -15,6 +15,7 @@ import com.hu.sightseek.model.Attraction;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,10 +51,12 @@ public class LocalDatabaseDAO {
         return id;
     }
 
-    public HashMap<String, Double> getBaseStatistics() {
+    public HashMap<String, Serializable> getBaseStatistics(TravelCategory category) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String sql =
+        String sql;
+        if(category == TravelCategory.INVALID) {
+            sql =
                 "SELECT " +
                 "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS total_distance, " +
                 "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS total_time, " +
@@ -62,10 +65,24 @@ public class LocalDatabaseDAO {
                 "COUNT(*) AS activity_count, " +
                 "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS imported_count " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE;
+        }
+        else {
+            sql =
+                "SELECT " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS total_distance, " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS total_time, " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS longest_distance, " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS longest_time, " +
+                "COUNT(*) AS activity_count, " +
+                "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS imported_count " +
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = " + category.getIndex();
+        }
+
 
         Cursor cursor = db.rawQuery(sql, null);
 
-        HashMap<String, Double> res = new HashMap<>();
+        HashMap<String, Serializable> res = new HashMap<>();
         if(cursor.moveToFirst()) {
             res.put("total_distance", cursor.getDouble(cursor.getColumnIndexOrThrow("total_distance")));
             res.put("total_time", cursor.getDouble(cursor.getColumnIndexOrThrow("total_time")));
