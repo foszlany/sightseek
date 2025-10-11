@@ -115,16 +115,56 @@ public class IdeaActivity extends AppCompatActivity {
             return;
         }
 
+        // Add Menu
+        Toolbar toolbar = findViewById(R.id.idea_topmenu);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        // Home button
+        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+
         // Variables
         currentAttraction = null;
         ignoredIds = new HashSet<>();
         Executors.newSingleThreadExecutor().execute(() -> {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-
             activities = dao.getAllActivities();
             ignoredIds.addAll(dao.getAttractionIds());
-
             dao.close();
+
+            // Check whether there are activities stored
+            if(activities.isEmpty()) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                ViewGroup root = findViewById(android.R.id.content);
+                View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
+
+                root.addView(overlayView);
+                toolbar.post(() -> {
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    params.topMargin = toolbar.getHeight();
+                    overlayView.setLayoutParams(params);
+                });
+            }
+            else {
+                // Setup map
+                mapView = findViewById(R.id.idea_map);
+                mapView.setBackgroundColor(Color.TRANSPARENT);
+                mapView.setUseDataConnection(true);
+
+                TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+                tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+                tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+                setupZoomSettings(mapView, 14.0);
+
+                findReferencePoint();
+            }
         });
 
         referenceIndex = -1;
@@ -139,20 +179,6 @@ public class IdeaActivity extends AppCompatActivity {
         typeTextView = findViewById(R.id.idea_type);
         radiusTextView = findViewById(R.id.idea_radiusvalue);
         imageView = findViewById(R.id.idea_img);
-
-        // Add Menu
-        Toolbar toolbar = findViewById(R.id.idea_topmenu);
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        // Home button
-        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
-        toolbar.setNavigationOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        });
 
         // Add
         Button addButton = findViewById(R.id.idea_addbtn);
@@ -253,34 +279,6 @@ public class IdeaActivity extends AppCompatActivity {
                 radiusTextView.setX(thumbPos - (radiusTextView.getWidth() / 2f) + thumbOffset);
             }
         });
-
-        // Check whether there are activities stored
-        if(activities.isEmpty()) {
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            ViewGroup root = findViewById(android.R.id.content);
-            View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
-
-            root.addView(overlayView);
-            toolbar.post(() -> {
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                params.topMargin = toolbar.getHeight();
-                overlayView.setLayoutParams(params);
-            });
-        }
-        else {
-            // Setup map
-            mapView = findViewById(R.id.idea_map);
-            mapView.setBackgroundColor(Color.TRANSPARENT);
-            mapView.setUseDataConnection(true);
-
-            TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
-            tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-            tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
-
-            setupZoomSettings(mapView, 14.0);
-
-            findReferencePoint();
-        }
     }
 
     private void initLocationFragment() {

@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingVertical="22dp"
+    android:background="@color/card_bg"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -15,7 +16,7 @@
         android:textSize="30sp"
         android:textColor="@color/white"
         android:gravity="center"
-        android:text="Change Status" />
+        android:text="Change Status"/>
 
     <Button
         android:id="@+id/ideamanager_popup_savedbtn"
@@ -27,7 +28,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:layout_gravity="center"
-        app:backgroundTint="@color/light_purple" />
+        app:backgroundTint="@color/light_purple"/>
 
     <Button
         android:id="@+id/ideamanager_popup_visitedbtn"
@@ -39,7 +40,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:layout_gravity="center"
-        app:backgroundTint="@color/theme_main" />
+        app:backgroundTint="@color/theme_main"/>
 
     <Button
         android:id="@+id/ideamanager_popup_ignorebtn"
@@ -50,5 +51,5 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:layout_gravity="center"
-        app:backgroundTint="@color/delete_red" />
+        app:backgroundTint="@color/delete_red"/>
 </LinearLayout>
