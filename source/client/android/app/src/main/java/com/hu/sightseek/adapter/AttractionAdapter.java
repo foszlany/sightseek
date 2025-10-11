@@ -1,5 +1,7 @@
 package com.hu.sightseek.adapter;
 
+import static android.view.View.GONE;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -61,19 +63,24 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
                     .setView(popupView)
                     .create();
 
-            popupDialog.show();
-
             Button savedButton = popupView.findViewById(R.id.ideamanager_popup_savedbtn);
-            Button visitedButton = popupView.findViewById(R.id.ideamanager_popup_visitedbtn);
             Button ignoreButton = popupView.findViewById(R.id.ideamanager_popup_ignorebtn);
+            Button visitedButton = popupView.findViewById(R.id.ideamanager_popup_visitedbtn);
+
+            if(attraction.getStatus() == SavedAttractionStatus.SAVED) {
+                savedButton.setVisibility(GONE);
+            }
+            else if(attraction.getStatus() == SavedAttractionStatus.IGNORED) {
+                ignoreButton.setVisibility(GONE);
+            }
+            else if(attraction.getStatus() == SavedAttractionStatus.VISITED) {
+                visitedButton.setVisibility(GONE);
+            }
+
+            popupDialog.show();
 
             savedButton.setOnClickListener(w -> {
                 changeStatus(attraction, SavedAttractionStatus.SAVED, holder, position);
-                popupDialog.dismiss();
-            });
-
-            visitedButton.setOnClickListener(w -> {
-                changeStatus(attraction, SavedAttractionStatus.VISITED, holder, position);
                 popupDialog.dismiss();
             });
 
@@ -81,8 +88,12 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
                 changeStatus(attraction, SavedAttractionStatus.IGNORED, holder, position);
                 popupDialog.dismiss();
             });
-        });
 
+            visitedButton.setOnClickListener(w -> {
+                changeStatus(attraction, SavedAttractionStatus.VISITED, holder, position);
+                popupDialog.dismiss();
+            });
+        });
 
         // Delete button
         ImageButton deleteButton = holder.itemView.findViewById(R.id.ideamanager_removebtn);
