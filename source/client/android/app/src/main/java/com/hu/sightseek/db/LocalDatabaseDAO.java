@@ -304,7 +304,7 @@ public class LocalDatabaseDAO {
                 null,
                 null,
                 null,
-                LocalDatabaseImpl.ATTRACTIONS_ID + " DESC"
+                LocalDatabaseImpl.ATTRACTIONS_STATUS + " DESC"
         );
 
         if(cursor.moveToFirst()) {

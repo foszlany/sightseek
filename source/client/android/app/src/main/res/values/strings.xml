@@ -147,4 +147,5 @@
     <string name="statistics_percategory_averagespeed">Average speed: %1$.2f km/h</string>
     <string name="statistics_percategory_totaltime">Total time: %1$.2f days</string>
     <string name="statistics_percategory_totaldistance">Total distance: %1$.2f km</string>
+    <string name="save_manageideas">Manage your saved ideas</string>
 </resources>

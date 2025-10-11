@@ -6,10 +6,11 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.ProfileActivity">
+    android:background="@color/main_bg"
+    tools:context=".activity.IdeaManagerActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/profile_topmenu"
+        android:id="@+id/ideamanager_topmenu"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:background="@color/theme_main"
@@ -18,14 +19,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <Button
-        android:id="@+id/profile_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="285dp"
-        android:text="@string/profile_logout"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ideamanager_ideas"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu" />
+        app:layout_constraintTop_toBottomOf="@+id/ideamanager_topmenu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

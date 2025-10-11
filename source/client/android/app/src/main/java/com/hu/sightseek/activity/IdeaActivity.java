@@ -201,6 +201,13 @@ public class IdeaActivity extends AppCompatActivity {
             findReferencePoint();
         });
 
+        // Manage
+        Button manageButton = findViewById(R.id.idea_managebtn);
+        manageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, IdeaManagerActivity.class);
+            startActivity(intent);
+        });
+
         // Location button
         radioGroup = findViewById(R.id.idea_radiogroup);
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
