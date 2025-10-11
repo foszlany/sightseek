@@ -152,4 +152,5 @@
     <string name="ideamanager_searchhint">Search for attractions…</string>
     <string name="ideamanager_visited">Visited</string>
     <string name="ideamanager_remove">Remove</string>
+    <string name="ideamanager_saved">Saved</string>
 </resources>

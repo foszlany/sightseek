@@ -53,6 +53,13 @@ public class IdeaManagerActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
+        // Home button
+        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+
         // Setup adapter
         recyclerView = findViewById(R.id.ideamanager_ideas);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

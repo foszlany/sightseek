@@ -47,6 +47,10 @@ public class Attraction {
         return longitude;
     }
 
+    public void setStatus(SavedAttractionStatus status) {
+        this.status = status;
+    }
+
     @NonNull
     @Override
     public String toString() {
