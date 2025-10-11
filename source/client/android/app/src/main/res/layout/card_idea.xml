@@ -3,34 +3,50 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/ideamanager_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="73dp"
+        android:layout_height="52dp"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:maxWidth="200dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textColor="@color/white"
         android:text="@string/example_sampletext" />
 
     <TextView
         android:id="@+id/ideamanager_status"
-        android:layout_width="wrap_content"
+        android:layout_width="3dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="1"
-        android:text="@string/example_example" />
+        android:text="@string/example_example"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/ideamanager_option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Visited" />
+    <ImageButton
+        android:id="@+id/ideamanager_statuschange"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        android:background="@drawable/circle_button_bg"
+        android:backgroundTint="@color/dark_gray"
+        android:contentDescription="@string/idea_ignore"
+        app:srcCompat="@drawable/baseline_horizontal_rule_24"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/ideamanager_remove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remove" />
-
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        android:background="@drawable/circle_button_bg"
+        android:backgroundTint="@color/red"
+        android:contentDescription="@string/ideamanager_remove"
+        app:srcCompat="@drawable/baseline_delete_24"/>
 </LinearLayout>

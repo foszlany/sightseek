@@ -19,6 +19,54 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:background="@drawable/search_bar"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ideamanager_topmenu">
+
+        <ImageButton
+            android:id="@+id/ideamanager_filterbtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:backgroundTint="@color/transparent"
+            android:contentDescription="@string/main_filterdesc"
+            app:srcCompat="@drawable/baseline_filter_alt_24"
+            app:tint="@color/black" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/hint" />
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/ideamanager_searchbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:layoutDirection="rtl"
+            app:closeIcon="@drawable/baseline_close_24"
+            app:queryHint="@string/ideamanager_searchhint"
+            app:searchHintIcon="@null"
+            app:searchIcon="@drawable/baseline_search_24" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/ideamanager_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/hint"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ideamanager_ideas"
         android:layout_width="match_parent"
@@ -26,7 +74,9 @@
         android:layout_marginHorizontal="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ideamanager_topmenu" />
+        app:layout_constraintTop_toBottomOf="@+id/ideamanager_separator"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

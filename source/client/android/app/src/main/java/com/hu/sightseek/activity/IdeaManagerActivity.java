@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,6 +64,24 @@ public class IdeaManagerActivity extends AppCompatActivity {
 
         adapter = new AttractionAdapter(this, attractions);
         recyclerView.setAdapter(adapter);
+
+        // Searchbar
+        SearchView searchView = findViewById(R.id.ideamanager_searchbar);
+        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+        searchView.setQuery(adapter.getSearchQuery(), false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return true;
+            }
+        });
     }
 
     // Create top menubar
