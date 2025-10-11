@@ -6,12 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hu.sightseek.R;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Attraction;
 
 import java.util.ArrayList;
@@ -47,6 +49,16 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
         // Values
         holder.name.setText(attraction.getName());
         holder.status.setText(attraction.getStatus().toString());
+
+        // Delete button
+        ImageButton deleteButton = holder.itemView.findViewById(R.id.ideamanager_removebtn);
+        deleteButton.setOnClickListener(v -> {
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(holder.itemView.getContext());
+            dao.deleteAttraction(attraction.getId());
+            dao.close();
+
+            notifyItemRemoved(position);
+        });
     }
 
     @Override

@@ -41,7 +41,7 @@
         app:srcCompat="@drawable/baseline_horizontal_rule_24"/>
 
     <ImageButton
-        android:id="@+id/ideamanager_remove"
+        android:id="@+id/ideamanager_removebtn"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_margin="4dp"
