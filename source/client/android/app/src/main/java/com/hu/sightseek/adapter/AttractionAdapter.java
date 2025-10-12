@@ -53,6 +53,7 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
 
         // Values
         holder.name.setText(attraction.getName());
+        holder.place.setText(attraction.getPlace());
         holder.status.setText(attraction.getStatus().toString());
 
         // Status change button
@@ -124,12 +125,13 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
     }
 
     public static class IdeaViewHolder extends RecyclerView.ViewHolder {
-        TextView name, status;
+        TextView name, place, status;
 
         public IdeaViewHolder(@NonNull View itemView) {
             super(itemView);
 
             name = itemView.findViewById(R.id.ideamanager_name);
+            place = itemView.findViewById(R.id.ideamanager_place);
             status = itemView.findViewById(R.id.ideamanager_status);
         }
     }

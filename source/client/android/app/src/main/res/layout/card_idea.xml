@@ -27,16 +27,40 @@
             android:textColor="@color/white"
             android:text="@string/example_sampletext"/>
 
-        <TextView
-            android:id="@+id/ideamanager_status"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="@string/example_example"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:orientation="horizontal"
+            android:layout_marginEnd="24dp"
+            android:paddingTop="3dp">
+
+            <TextView
+                android:id="@+id/ideamanager_place"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="@string/example_example"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="5dp"
+                android:background="@color/hint" />
+
+            <TextView
+                android:id="@+id/ideamanager_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/example_example"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <ImageButton
