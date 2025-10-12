@@ -430,19 +430,24 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setCategoryStatistics(HashMap<String, Serializable> values) {
+        Double valueHolder;
+
         TextView totalActivitiesTextView = findViewById(R.id.statistics_percategory_activitiescreated);
+        valueHolder = (Double)values.get("activity_count");
         totalActivitiesTextView.setText(
-                getString(R.string.statistics_percategory_activitiescreated, (Double)values.get("activity_count"))
+                getString(R.string.statistics_percategory_activitiescreated, valueHolder == null ? 0 : valueHolder)
         );
 
         TextView totalDistanceTextView = findViewById(R.id.statistics_percategory_totaldistance);
+        valueHolder = (Double)values.get("total_distance");
         totalDistanceTextView.setText(
-                getString(R.string.statistics_percategory_totaldistance, (Double)values.get("total_distance") / 1000.0)
+                getString(R.string.statistics_percategory_totaldistance, valueHolder == null ? 0 : (valueHolder / 1000.0))
         );
 
         TextView totalTimeTextView = findViewById(R.id.statistics_percategory_totaltime);
+        valueHolder = (Double)values.get("total_time");
         totalTimeTextView.setText(
-                getString(R.string.statistics_percategory_totaltime, (Double)values.get("total_time") / 86400.0)
+                getString(R.string.statistics_percategory_totaltime, valueHolder == null ? 0 : (valueHolder / 86400.0))
         );
 
         TextView averageSpeedTextView = findViewById(R.id.statistics_percategory_averagespeed);
@@ -451,12 +456,14 @@ public class StatisticsActivity extends AppCompatActivity {
         );
 
         TextView longestDistanceTextView = findViewById(R.id.statistics_percategory_longestdistance);
+        valueHolder = (Double)values.get("longest_distance");
         longestDistanceTextView.setText(
-                getString(R.string.statistics_percategory_longestdistance, (Double)values.get("longest_distance") / 1000.0)
+                getString(R.string.statistics_percategory_longestdistance, valueHolder == null ? 0 : (valueHolder / 1000.0))
         );
 
         TextView longestTimeTextView = findViewById(R.id.statistics_percategory_longesttime);
-        double longestTimeCategory = (Double)values.get("longest_time");
+        valueHolder = (Double)values.get("longest_time");
+        double longestTimeCategory = valueHolder == null ? 0 : valueHolder;
         longestTimeText = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTimeCategory / 3600, ((int) longestTimeCategory % 3600) / 60, (int) longestTimeCategory % 60);
         longestTimeTextView.setText(
                 getString(R.string.statistics_percategory_longesttime, longestTimeText)
