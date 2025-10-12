@@ -103,7 +103,6 @@ public class IdeaActivity extends AppCompatActivity {
     Button nextButton;
     Button ignoreButton;
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,12 +114,13 @@ public class IdeaActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Check if user is logged in
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() == null) {
-            startActivity(new Intent(this, BannerActivity.class));
-            finish();
-            return;
-        }
+        Executors.newSingleThreadExecutor().execute(() -> {
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            if(mAuth.getCurrentUser() == null) {
+                startActivity(new Intent(this, BannerActivity.class));
+                finish();
+            }
+        });
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.idea_topmenu);
@@ -192,103 +192,6 @@ public class IdeaActivity extends AppCompatActivity {
 
         ignoreButton.setVisibility(GONE);
         saveButton.setVisibility(GONE);
-
-        // Save
-        saveButton.setOnClickListener(v -> {
-            if(currentAttraction == null) {
-                return;
-            }
-
-            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.SAVED.getIndex());
-            dao.printAllAttractions();
-            dao.close();
-
-            ignoredIds.add(currentAttraction.getId());
-            currentAttraction = null;
-
-            findReferencePoint();
-        });
-
-        // Ignore
-        ignoreButton.setOnClickListener(v -> {
-            if(currentAttraction == null) {
-                return;
-            }
-
-            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.IGNORED.getIndex());
-            dao.printAllAttractions();
-            dao.close();
-
-            ignoredIds.add(currentAttraction.getId());
-            currentAttraction = null;
-
-            findReferencePoint();
-        });
-
-        // Next
-        nextButton.setOnClickListener(v -> {
-            Glide.with(imageView)
-                    .load(R.drawable.loading)
-                    .into(imageView);
-
-            currentAttraction = null;
-            findReferencePoint();
-        });
-
-        // Manage
-        Button manageButton = findViewById(R.id.idea_managebtn);
-        manageButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, IdeaManagerActivity.class);
-            startActivity(intent);
-        });
-
-        // Location button
-        radioGroup = findViewById(R.id.idea_radiogroup);
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if(checkedId == R.id.idea_radio_locationbtn) {
-                initLocationFragment();
-            }
-        });
-
-        // Allow multiple clicks
-        RadioButton locationButton = findViewById(R.id.idea_radio_locationbtn);
-        locationButton.setOnTouchListener((v, event) -> {
-            if(event.getAction() == MotionEvent.ACTION_UP && locationButton.isChecked()) {
-                initLocationFragment();
-            }
-            return false;
-        });
-
-        // Radius bar
-        radiusTextView.setText(getString(R.string.idea_radiuskm, 13.0));
-        SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
-        radius = radiusBar.getProgress();
-        radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                radiusTextView.setText(getString(R.string.idea_radiuskm, progress + 1.0));
-                moveText(seekBar, progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                radius = seekBar.getProgress();
-                data = null;
-            }
-
-            public void moveText(SeekBar seekBar, int progress) {
-                int thumbOffset = seekBar.getThumbOffset();
-                int seekBarWidth = seekBar.getWidth() - seekBar.getPaddingLeft() - seekBar.getPaddingRight();
-                float thumbPos = seekBar.getPaddingLeft() + ((seekBarWidth * progress) / (float)seekBar.getMax());
-
-                radiusTextView.setX(thumbPos - (radiusTextView.getWidth() / 2f) + thumbOffset);
-            }
-        });
     }
 
     private void initLocationFragment() {
@@ -716,6 +619,109 @@ public class IdeaActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Save
+        saveButton.setOnClickListener(v -> {
+            if(currentAttraction == null) {
+                return;
+            }
+
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.SAVED.getIndex());
+            dao.printAllAttractions();
+            dao.close();
+
+            ignoredIds.add(currentAttraction.getId());
+            currentAttraction = null;
+
+            findReferencePoint();
+        });
+
+        // Ignore
+        ignoreButton.setOnClickListener(v -> {
+            if(currentAttraction == null) {
+                return;
+            }
+
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.IGNORED.getIndex());
+            dao.printAllAttractions();
+            dao.close();
+
+            ignoredIds.add(currentAttraction.getId());
+            currentAttraction = null;
+
+            findReferencePoint();
+        });
+
+        // Next
+        nextButton.setOnClickListener(v -> {
+            Glide.with(imageView)
+                    .load(R.drawable.loading)
+                    .into(imageView);
+
+            currentAttraction = null;
+            findReferencePoint();
+        });
+
+        // Manage
+        Button manageButton = findViewById(R.id.idea_managebtn);
+        manageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, IdeaManagerActivity.class);
+            startActivity(intent);
+        });
+
+        // Location button
+        radioGroup = findViewById(R.id.idea_radiogroup);
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId == R.id.idea_radio_locationbtn) {
+                initLocationFragment();
+            }
+        });
+
+        // Allow multiple clicks
+        RadioButton locationButton = findViewById(R.id.idea_radio_locationbtn);
+        locationButton.setOnTouchListener((v, event) -> {
+            if(event.getAction() == MotionEvent.ACTION_UP && locationButton.isChecked()) {
+                initLocationFragment();
+            }
+            return false;
+        });
+
+        // Radius bar
+        radiusTextView.setText(getString(R.string.idea_radiuskm, 13.0));
+        SeekBar radiusBar = findViewById(R.id.idea_radiusbar);
+        radius = radiusBar.getProgress();
+        radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                radiusTextView.setText(getString(R.string.idea_radiuskm, progress + 1.0));
+                moveText(seekBar, progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                radius = seekBar.getProgress();
+                data = null;
+            }
+
+            public void moveText(SeekBar seekBar, int progress) {
+                int thumbOffset = seekBar.getThumbOffset();
+                int seekBarWidth = seekBar.getWidth() - seekBar.getPaddingLeft() - seekBar.getPaddingRight();
+                float thumbPos = seekBar.getPaddingLeft() + ((seekBarWidth * progress) / (float)seekBar.getMax());
+
+                radiusTextView.setX(thumbPos - (radiusTextView.getWidth() / 2f) + thumbOffset);
+            }
+        });
     }
 
     @Override

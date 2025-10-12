@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:padding="16dp"
     android:background="?android:attr/windowBackground"
-    android:backgroundTint="@color/main_bg">
+    android:backgroundTint="@color/card_bg">
 
     <LinearLayout
         android:id="@+id/ideamanager_filtermenu_sortcontainer"
