@@ -71,8 +71,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class IdeaActivity extends AppCompatActivity {
-    private static final String overpassUrl = "https://overpass-api.de/api/interpreter";
-
     private Attraction currentAttraction;
     private HashSet<Long> ignoredIds;
 
@@ -314,7 +312,7 @@ public class IdeaActivity extends AppCompatActivity {
                     + referencePoint.longitude + ");"
                     + "out body;";
 
-            String url = overpassUrl + "?data=" + URLEncoder.encode(query, "UTF-8");
+            String url = "https://overpass-api.de/api/interpreter?data=" + URLEncoder.encode(query, "UTF-8");
 
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()

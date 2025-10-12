@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 
 public final class SightseekGenericUtils {
+    public static final String STRAVA_CLIENT_ID = "180650";
     public static final double BUDAPEST_LATITUDE = 47.499;
     public static final double BUDAPEST_LONGITUDE = 19.044;
 

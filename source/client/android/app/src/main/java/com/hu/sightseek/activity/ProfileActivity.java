@@ -1,6 +1,9 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
+
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -58,7 +61,16 @@ public class ProfileActivity extends AppCompatActivity {
         // Strava
         Button stravaButton = findViewById(R.id.profile_strava);
         stravaButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, StravaActivity.class);
+            Uri uri = Uri.parse("https://www.strava.com/oauth/mobile/authorize")
+                    .buildUpon()
+                    .appendQueryParameter("client_id", STRAVA_CLIENT_ID)
+                    .appendQueryParameter("response_type", "code")
+                    .appendQueryParameter("redirect_uri", "sightseek://strava-auth")
+                    .appendQueryParameter("approval_prompt", "auto")
+                    .appendQueryParameter("scope", "read,activity:read_all")
+                    .build();
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         });
 

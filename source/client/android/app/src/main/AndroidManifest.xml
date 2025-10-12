@@ -25,8 +25,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activity.StravaActivity"
-            android:exported="false" />
+            android:name=".activity.StravaImportActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="sightseek" android:host="strava-auth"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.IdeaManagerActivity"
             android:exported="false" />

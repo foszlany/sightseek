@@ -162,4 +162,6 @@
     <string name="idea_motto">Use search to find something new</string>
     <string name="idea_defaulttitle">Search for ideas</string>
     <string name="profile_strava">Import from Strava</string>
+    <string name="strava_auth">Authenticate</string>
+    <string name="strava_import">Import activities from Strava</string>
 </resources>

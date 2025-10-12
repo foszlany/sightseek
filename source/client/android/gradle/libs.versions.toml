@@ -18,6 +18,7 @@ playServicesLocation = "21.3.0"
 firebaseAuth = "24.0.1"
 navigationFragment = "2.9.3"
 navigationUi = "2.9.3"
+securityCrypto = "1.1.0"
 swiperefreshlayout = "1.2.0-beta01"
 
 [libraries]
