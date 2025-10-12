@@ -1,5 +1,8 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.hu.sightseek.utils.SightseekGenericUtils.defaultToBudapest;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
 import static com.hu.sightseek.utils.SightseekStatisticsUtils.getMedianPoint;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
@@ -96,6 +99,10 @@ public class IdeaActivity extends AppCompatActivity {
     private LatLng boundingBoxPoint;
     private int referenceIndex;
 
+    Button saveButton;
+    Button nextButton;
+    Button ignoreButton;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,9 +168,8 @@ public class IdeaActivity extends AppCompatActivity {
                 tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
                 tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
+                defaultToBudapest(mapView);
                 setupZoomSettings(mapView, 14.0);
-
-                findReferencePoint();
             }
         });
 
@@ -180,9 +186,15 @@ public class IdeaActivity extends AppCompatActivity {
         radiusTextView = findViewById(R.id.idea_radiusvalue);
         imageView = findViewById(R.id.idea_img);
 
-        // Add
-        Button addButton = findViewById(R.id.idea_addbtn);
-        addButton.setOnClickListener(v -> {
+        saveButton = findViewById(R.id.idea_addbtn);
+        nextButton = findViewById(R.id.idea_nextbtn);
+        ignoreButton = findViewById(R.id.idea_ignorebtn);
+
+        ignoreButton.setVisibility(GONE);
+        saveButton.setVisibility(GONE);
+
+        // Save
+        saveButton.setOnClickListener(v -> {
             if(currentAttraction == null) {
                 return;
             }
@@ -199,7 +211,6 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Ignore
-        Button ignoreButton = findViewById(R.id.idea_ignorebtn);
         ignoreButton.setOnClickListener(v -> {
             if(currentAttraction == null) {
                 return;
@@ -217,7 +228,6 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Next
-        Button nextButton = findViewById(R.id.idea_nextbtn);
         nextButton.setOnClickListener(v -> {
             Glide.with(imageView)
                     .load(R.drawable.loading)
@@ -431,6 +441,12 @@ public class IdeaActivity extends AppCompatActivity {
                                 }
                             }
                             else {
+                                runOnUiThread(() -> {
+                                    nextButton.setText(R.string.idea_next);
+                                    ignoreButton.setVisibility(VISIBLE);
+                                    saveButton.setVisibility(VISIBLE);
+                                });
+
                                 retrieveAndSetupElementFromJson();
                             }
 
@@ -665,6 +681,10 @@ public class IdeaActivity extends AppCompatActivity {
 
             nameTextView.setText(R.string.idea_nothingwasfound);
             typeTextView.setText(R.string.idea_increaseradius);
+
+            nextButton.setText(R.string.idea_search);
+            ignoreButton.setVisibility(GONE);
+            saveButton.setVisibility(GONE);
         });
     }
 

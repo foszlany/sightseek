@@ -158,4 +158,7 @@
     <string name="ideamanager_filter_nameza">Name Z-A</string>
     <string name="ideamanager_filter_placeaz">Place A-Z</string>
     <string name="ideamanager_filter_placeza">Place Z-A</string>
+    <string name="idea_search">Search</string>
+    <string name="idea_motto">Use search to find something new</string>
+    <string name="idea_defaulttitle">Search for ideas</string>
 </resources>
