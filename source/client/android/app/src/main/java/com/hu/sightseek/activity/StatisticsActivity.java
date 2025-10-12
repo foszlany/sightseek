@@ -456,7 +456,8 @@ public class StatisticsActivity extends AppCompatActivity {
         );
 
         TextView longestTimeTextView = findViewById(R.id.statistics_percategory_longesttime);
-        longestTimeText = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTime / 3600, ((int) longestTime % 3600) / 60, (int) longestTime % 60);
+        double longestTimeCategory = (Double)values.get("longest_time");
+        longestTimeText = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTimeCategory / 3600, ((int) longestTimeCategory % 3600) / 60, (int) longestTimeCategory % 60);
         longestTimeTextView.setText(
                 getString(R.string.statistics_percategory_longesttime, longestTimeText)
         );

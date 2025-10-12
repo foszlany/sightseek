@@ -14,7 +14,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hu.sightseek.R;
@@ -133,19 +132,6 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
             name = itemView.findViewById(R.id.ideamanager_name);
             status = itemView.findViewById(R.id.ideamanager_status);
         }
-    }
-
-    public void updateActivities(List<Attraction> newActivities) {
-        this.attractionListFull.clear();
-        this.attractionListFull.addAll(newActivities);
-
-        this.attractionListFiltered.clear();
-        this.attractionListFiltered.addAll(newActivities);
-
-        this.attractionListFiltered.clear();
-        this.attractionListFiltered.addAll(newActivities);
-
-        notifyDataSetChanged();
     }
 
     // Filters

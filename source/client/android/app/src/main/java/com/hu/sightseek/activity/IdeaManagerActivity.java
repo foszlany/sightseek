@@ -28,8 +28,6 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.AttractionAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.SavedAttractionStatus;
-import com.hu.sightseek.enums.TravelCategory;
-import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
 
 import org.osmdroid.config.Configuration;
@@ -38,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class IdeaManagerActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
     private AttractionAdapter adapter;
     private ArrayList<Attraction> attractions;
     private int checkedSortByMethod;
@@ -83,7 +80,7 @@ public class IdeaManagerActivity extends AppCompatActivity {
         });
 
         // Setup adapter
-        recyclerView = findViewById(R.id.ideamanager_ideas);
+        RecyclerView recyclerView = findViewById(R.id.ideamanager_ideas);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
