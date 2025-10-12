@@ -3,6 +3,8 @@ package com.hu.sightseek.utils;
 import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Source;
@@ -59,7 +61,8 @@ public final class SightseekStatisticsUtils {
         return values;
     }
 
-    public static HashMap<String, Serializable> getDetailedGenericStatistics(Context ctx) {
+    public static Task<HashMap<String, Serializable>> getDetailedGenericStatistics(Context ctx) {
+        TaskCompletionSource<HashMap<String, Serializable>> source = new TaskCompletionSource<>();
         HashMap<String, Serializable> values = new HashMap<>();
 
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
@@ -69,29 +72,28 @@ public final class SightseekStatisticsUtils {
             fireStoreDb.collection("users")
                     .document(uid)
                     .get(Source.SERVER)
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if(documentSnapshot.exists()) {
-                            Map<String, Object> data = documentSnapshot.getData();
+                    .addOnCompleteListener(task -> {
+                        double visited = 0.0;
+                        if(task.isSuccessful() && task.getResult().exists()) {
+                            Map<String, Object> data = task.getResult().getData();
+                            visited = (data != null) ? data.size() : 0.0;
+                        }
+                        values.put("visited_cells", visited);
 
-                            if(data == null) {
-                                values.put("visited_cells", 0.0);
-                            }
-                            else {
-                                values.put("visited_cells", (double) data.size());
-                            }
-                        }
-                        else {
-                            values.put("visited_cells", 0.0);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        values.put("visited_cells", 0.0);
+                        fillLocalStats(ctx, values);
+                        source.setResult(values);
                     });
         }
         else {
-            values.put("visited_cells", -1);
+            values.put("visited_cells", -1.0);
+            fillLocalStats(ctx, values);
+            source.setResult(values);
         }
 
+        return source.getTask();
+    }
+
+    private static void fillLocalStats(Context ctx, HashMap<String, Serializable> values) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
         ArrayList<LatLng> allPoints = dao.getAllPoints();
         dao.close();
@@ -101,8 +103,6 @@ public final class SightseekStatisticsUtils {
         LatLng medianPoint = getMedianPoint(allPoints);
         values.put("median_lat", medianPoint.latitude);
         values.put("median_lon", medianPoint.longitude);
-
-        return values;
     }
 
     public static LatLng getMedianPoint(ArrayList<LatLng> allPoints) {

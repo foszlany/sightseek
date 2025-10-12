@@ -314,55 +314,65 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Executors.newSingleThreadExecutor().execute(() -> {
             if(detailedGenericStatistics.isEmpty()) {
-                detailedGenericStatistics = getDetailedGenericStatistics(this);
+                getDetailedGenericStatistics(this).addOnSuccessListener(stats -> {
+                    detailedGenericStatistics = stats;
+
+                    switch(mainCategory) {
+                        case LOCOMOTOR:
+                        case INVALID:
+                            if(locoStatistics.isEmpty()) {
+                                locoStatistics = getCategorySpecificStatistics(this, TravelCategory.LOCOMOTOR);
+                            }
+                            runOnUiThread(() -> {
+                                setCategoryStatistics(locoStatistics);
+                            });
+                            break;
+
+                        case MICROMOBILITY:
+                            if(microStatistics.isEmpty()) {
+                                microStatistics = getCategorySpecificStatistics(this, TravelCategory.MICROMOBILITY);
+                            }
+                            runOnUiThread(() -> {
+                                swapActiveButton(locoButton, microButton);
+                                setCategoryStatistics(microStatistics);
+                            });
+                            break;
+
+                        case OTHER:
+                            if(otherStatistics.isEmpty()) {
+                                otherStatistics = getCategorySpecificStatistics(this, TravelCategory.OTHER);
+                            }
+                            runOnUiThread(() -> {
+                                swapActiveButton(locoButton, otherButton);
+                                setCategoryStatistics(otherStatistics);
+                            });
+                    }
+
+                    runOnUiThread(() -> {
+                        setDetailedGenericValues(detailedView);
+                    });
+                });
             }
-
-            switch(mainCategory) {
-                case LOCOMOTOR:
-                case INVALID:
-                    if(locoStatistics.isEmpty()) {
-                        locoStatistics = getCategorySpecificStatistics(this, TravelCategory.LOCOMOTOR);
-                    }
-                    runOnUiThread(() -> {
-                        setCategoryStatistics(locoStatistics);
-                    });
-                    break;
-
-                case MICROMOBILITY:
-                    if(microStatistics.isEmpty()) {
-                        microStatistics = getCategorySpecificStatistics(this, TravelCategory.MICROMOBILITY);
-                    }
-                    runOnUiThread(() -> {
-                        swapActiveButton(locoButton, microButton);
-                        setCategoryStatistics(microStatistics);
-                    });
-                    break;
-
-                case OTHER:
-                    if(otherStatistics.isEmpty()) {
-                        otherStatistics = getCategorySpecificStatistics(this, TravelCategory.OTHER);
-                    }
-                    runOnUiThread(() -> {
-                        swapActiveButton(locoButton, otherButton);
-                        setCategoryStatistics(otherStatistics);
-                    });
+            else {
+                runOnUiThread(() -> {
+                    setDetailedGenericValues(detailedView);
+                });
             }
-
-            runOnUiThread(() -> {
-                setDetailedGenericStatistics();
-
-                // Anim
-                Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
-
-                View generalContainerView = findViewById(R.id.statistics_generalcontainer);
-                View perCategoryContainerView = findViewById(R.id.statistics_percategorycontainer);
-
-                generalContainerView.startAnimation(slideToRightAnim);
-                perCategoryContainerView.startAnimation(slideToRightAnim);
-
-                detailedView.setVisibility(VISIBLE);
-            });
         });
+    }
+
+    private void setDetailedGenericValues(View detailedView) {
+        setDetailedGenericStatistics();
+
+        Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
+
+        View generalContainerView = findViewById(R.id.statistics_generalcontainer);
+        View perCategoryContainerView = findViewById(R.id.statistics_percategorycontainer);
+
+        generalContainerView.startAnimation(slideToRightAnim);
+        perCategoryContainerView.startAnimation(slideToRightAnim);
+
+        detailedView.setVisibility(VISIBLE);
     }
 
     private void setDetailedGenericStatistics() {
