@@ -2,29 +2,26 @@ package com.hu.sightseek.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
-
 import com.hu.sightseek.R;
 
 import org.osmdroid.config.Configuration;
 
-public class ProfileActivity extends AppCompatActivity {
+public class StravaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_strava);
         Configuration.getInstance().load(
                 getApplicationContext(),
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -42,7 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // Add Menu
-        Toolbar toolbar = findViewById(R.id.profile_topmenu);
+        Toolbar toolbar = findViewById(R.id.strava_topmenu);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -53,20 +50,6 @@ public class ProfileActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-        });
-
-        // Strava
-        Button stravaButton = findViewById(R.id.profile_strava);
-        stravaButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, StravaActivity.class);
-            startActivity(intent);
-        });
-
-        // Logout
-        Button logoutButton = findViewById(R.id.profile_logout);
-        logoutButton.setOnClickListener(v -> {
-            mAuth.signOut();
-            finish();
         });
     }
 
@@ -86,6 +69,13 @@ public class ProfileActivity extends AppCompatActivity {
         // Statistics
         if(id == R.id.topmenu_statistics) {
             Intent intent = new Intent(this, StatisticsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        // Profile
+        if(id == R.id.topmenu_profile) {
+            Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
             return true;
         }
