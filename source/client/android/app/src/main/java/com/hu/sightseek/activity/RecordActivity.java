@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -100,6 +101,7 @@ public class RecordActivity extends AppCompatActivity {
     private static final int MINIMUM_REQUIRED_POINTS_PER_ACTIVITY = 4; // TODO CHANGE LATER
 
     private BottomNavigationView bottomNav;
+    private LinearLayout statOverlay;
 
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationClient;
@@ -164,7 +166,7 @@ public class RecordActivity extends AppCompatActivity {
         chronometer = findViewById(R.id.record_chronometer);
         chronometer.setVisibility(INVISIBLE);
 
-        LinearLayout statOverlay = findViewById(R.id.record_statoverlay);
+        statOverlay = findViewById(R.id.record_statoverlay);
         statOverlay.setVisibility(INVISIBLE);
 
         // Add Menu
@@ -180,6 +182,300 @@ public class RecordActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+
+        // Initialize MapView
+        Configuration.getInstance().setUserAgentValue(BuildConfig.LIBRARY_PACKAGE_NAME);
+        Configuration.getInstance().setOsmdroidBasePath(getCacheDir());
+        Configuration.getInstance().setOsmdroidTileCache(getCacheDir());
+        Configuration.getInstance().setCacheMapTileCount((short) 2000);
+        Configuration.getInstance().setCacheMapTileOvershoot((short) 800);
+
+        mapView = findViewById(R.id.record_map);
+        mapView.setBackgroundColor(Color.TRANSPARENT);
+        mapView.setUseDataConnection(true);
+
+        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+        setupZoomSettings(mapView, 14.0);
+
+        // Initialize route overlay
+        setupRouteLine(route, false);
+        mapView.getOverlays().add(0, route);
+
+        // Marker for current location
+        Bitmap markerIcon = getBitmapFromVectorDrawable(this, R.drawable.baseline_navigation_48);
+
+        locationOverlay = new DirectedLocationOverlay(mapView.getContext());
+        locationOverlay.setShowAccuracy(false);
+        locationOverlay.setEnabled(true);
+        locationOverlay.setDirectionArrow(markerIcon);
+
+        mapView.getOverlays().add(1, locationOverlay);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Ask for permissions
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+        }
+        else {
+            startLocationUpdates();
+        }
+
+        // Detect location access changes
+        IntentFilter filter = new IntentFilter(LocationManager.MODE_CHANGED_ACTION);
+        locationModeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) {
+                    if(!isLocationEnabled(RecordActivity.this)) {
+                        locationOverlay.setEnabled(true);
+                    }
+                    else {
+                        locationOverlay.setEnabled(false);
+                        if(isRecording) {
+                            pauseRecord();
+                            Toast.makeText(RecordActivity.this, "Location disabled, recording paused", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    mapView.invalidate();
+                }
+            }
+        };
+        registerReceiver(locationModeReceiver, filter);
+    }
+
+    private void animateButton(ImageButton polylineButton, boolean on, int color) {
+        ValueAnimator animator;
+
+        if(on) {
+             animator = ValueAnimator.ofArgb(
+                    ContextCompat.getColor(this, R.color.lock_overlay),
+                    ContextCompat.getColor(this, color)
+             );
+        }
+        else {
+            animator = ValueAnimator.ofArgb(
+                    ContextCompat.getColor(this, color),
+                    ContextCompat.getColor(this, R.color.lock_overlay)
+            );
+        }
+
+        GradientDrawable polylineBackground = (GradientDrawable) polylineButton.getBackground().mutate();
+
+        animator.addUpdateListener(valueAnimator -> {
+            int animatedColor = (Integer) valueAnimator.getAnimatedValue();
+            polylineBackground.setColor(animatedColor);
+        });
+
+        animator.setDuration(144);
+        animator.start();
+    }
+
+    private void pauseRecord() {
+        recordedPoints.add(new LatLng(0, 0));
+        isRecording = false;
+        chronometer.stop();
+        elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
+
+        bottomNav.getMenu()
+                .findItem(R.id.bottommenu_record)
+                .setIcon(R.drawable.baseline_play_circle_24);
+
+        bottomNav.getMenu()
+                .findItem(R.id.bottommenu_record)
+                .setTitle("Record");
+    }
+
+    private void startLocationUpdates() {
+        // Set update intervals
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL_MAX)
+                .setMinUpdateIntervalMillis(UPDATE_INTERVAL_MIN)
+                .build();
+
+        // Check for permissions
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Default to Budapest
+            defaultToBudapest(mapView);
+
+            Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+            return;
+        }
+        else if(!isLocationEnabled(this)) {
+            // Default to Budapest
+            defaultToBudapest(mapView);
+        }
+        else {
+            centerToCurrentLocation();
+        }
+
+        // Get current location
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if(location != null) {
+                    GeoPoint point = new GeoPoint(
+                            location.getLatitude(),
+                            location.getLongitude()
+                    );
+
+                    // Animate marker
+                    if(mapView != null && isLocked) {
+                        mapView.getController().animateTo(point, mapView.getZoomLevelDouble(), 666L);
+
+                        locationOverlay.setLocation(new GeoPoint(location.getLatitude(), location.getLongitude()));
+                        if(location.hasBearing()) {
+                            locationOverlay.setBearing(location.getBearing());
+                        }
+                    }
+
+                    // Record point if needed
+                    if(isRecording) {
+                        // Get current location
+                        double lat = point.getLatitude();
+                        double lng = point.getLongitude();
+                        LatLng newPoint = new LatLng(lat, lng);
+
+                        // Prevent small changes from occurring in the final polyline
+                        if(!recordedPoints.isEmpty()) {
+                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(recordedPoints.size() - 1), newPoint);
+                            if(newDistanceLength < 0.25) {
+                                return;
+                            }
+                        }
+
+                        // Record
+                        recordedPoints.add(newPoint);
+
+                        // Add point to the route
+                        route.addPoint(point);
+
+                        // Mark first point, record start time
+                        if(recordedPoints.size() == 1) {
+                            startTime = dateFormat.format(new Date());
+
+                            Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_circle_24, null);
+                            if(icon != null) {
+                                icon.setTint(Color.BLUE);
+                            }
+
+                            IconOverlay firstPoint = new IconOverlay(point, icon);
+
+                            mapView.getOverlays().add(0, firstPoint);
+                        }
+                        // Update variables
+                        else {
+                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(recordedPoints.size() - 2), recordedPoints.get(recordedPoints.size() - 1));
+
+                            // Speed
+                            currentSpeed = (newDistanceLength / (UPDATE_INTERVAL_MIN / 1000.0)) * 3.6;
+
+                            TextView speedView = findViewById(R.id.record_speed);
+                            speedView.setText(getString(R.string.main_speed, currentSpeed));
+
+                            // Distance
+                            totalDist += newDistanceLength;
+
+                            TextView distanceView = findViewById(R.id.record_distance);
+                            distanceView.setText(getString(R.string.main_distance, totalDist / 1000.0));
+                        }
+                    }
+                }
+                else {
+                    System.out.println("NULL LOCATION"); // TODO: Bad connection?
+                }
+
+                if(mapView != null) {
+                    mapView.invalidate();
+                }
+            }
+        };
+
+        // Update location
+        fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+        );
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            // Start location updates
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Marker for current location
+                startLocationUpdates();
+            }
+            // Check if user clicked on "Don't ask again"
+            else if(!ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+                Toast.makeText(this, "You must allow precise tracking to use this feature!", Toast.LENGTH_LONG).show();
+            }
+            else {
+                Toast.makeText(this, "Precise location permission is required to track your position!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // Create top menubar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_top, menu);
+        return true;
+    }
+
+    // Top menubar actions
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.topmenu_profile) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        // Statistics
+        if(id == R.id.topmenu_statistics) {
+            Intent intent = new Intent(this, StatisticsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Returns whether location **feature** is enabled
+    public boolean isLocationEnabled(Context context) {
+        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    public void centerToCurrentLocation() {
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if(location != null) {
+                    GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    mapView.getController().setCenter(point);
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         // Lock button
         ImageButton lockButton = findViewById(R.id.record_lockbtn);
@@ -526,224 +822,22 @@ public class RecordActivity extends AppCompatActivity {
             return false;
         });
 
-        // Initialize MapView
-        Configuration.getInstance().setUserAgentValue(BuildConfig.LIBRARY_PACKAGE_NAME);
-        Configuration.getInstance().setOsmdroidBasePath(getCacheDir());
-        Configuration.getInstance().setOsmdroidTileCache(getCacheDir());
-        Configuration.getInstance().setCacheMapTileCount((short) 2000);
-        Configuration.getInstance().setCacheMapTileOvershoot((short) 800);
-
-        mapView = findViewById(R.id.record_map);
-        mapView.setBackgroundColor(Color.TRANSPARENT);
-        mapView.setUseDataConnection(true);
-
-        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
-        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
-
-        setupZoomSettings(mapView, 14.0);
-
-        // Initialize route overlay
-        setupRouteLine(route, false);
-        mapView.getOverlays().add(0, route);
-
-        // Marker for current location
-        Bitmap markerIcon = getBitmapFromVectorDrawable(this, R.drawable.baseline_navigation_48);
-
-        locationOverlay = new DirectedLocationOverlay(mapView.getContext());
-        locationOverlay.setShowAccuracy(false);
-        locationOverlay.setEnabled(true);
-        locationOverlay.setDirectionArrow(markerIcon);
-
-        mapView.getOverlays().add(1, locationOverlay);
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        // Ask for permissions
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
-        else {
-            startLocationUpdates();
-        }
-
-        // Detects whenever location access is changed
-        IntentFilter filter = new IntentFilter(LocationManager.MODE_CHANGED_ACTION);
-        locationModeReceiver = new BroadcastReceiver() {
+        // Prevent back button from destroying the view when recording
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
-            public void onReceive(Context context, Intent intent) {
-                if(LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) {
-                    if(!isLocationEnabled(RecordActivity.this)) {
-                        locationOverlay.setEnabled(true);
-                    }
-                    else {
-                        locationOverlay.setEnabled(false);
-                        if(isRecording) {
-                            pauseRecord();
-                            Toast.makeText(RecordActivity.this, "Location disabled, recording paused", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                    mapView.invalidate();
-                }
-            }
-        };
-        registerReceiver(locationModeReceiver, filter);
-    }
-
-    private void animateButton(ImageButton polylineButton, boolean on, int color) {
-        ValueAnimator animator;
-
-        if(on) {
-             animator = ValueAnimator.ofArgb(
-                    ContextCompat.getColor(this, R.color.lock_overlay),
-                    ContextCompat.getColor(this, color)
-             );
-        }
-        else {
-            animator = ValueAnimator.ofArgb(
-                    ContextCompat.getColor(this, color),
-                    ContextCompat.getColor(this, R.color.lock_overlay)
-            );
-        }
-
-        GradientDrawable polylineBackground = (GradientDrawable) polylineButton.getBackground().mutate();
-
-        animator.addUpdateListener(valueAnimator -> {
-            int animatedColor = (Integer) valueAnimator.getAnimatedValue();
-            polylineBackground.setColor(animatedColor);
-        });
-
-        animator.setDuration(144);
-        animator.start();
-    }
-
-    private void pauseRecord() {
-        recordedPoints.add(new LatLng(0, 0));
-        isRecording = false;
-        chronometer.stop();
-        elapsedTime = SystemClock.elapsedRealtime() - chronometer.getBase();
-
-        bottomNav.getMenu()
-                .findItem(R.id.bottommenu_record)
-                .setIcon(R.drawable.baseline_play_circle_24);
-
-        bottomNav.getMenu()
-                .findItem(R.id.bottommenu_record)
-                .setTitle("Record");
-    }
-
-    private void startLocationUpdates() {
-        // Set update intervals
-        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL_MAX)
-                .setMinUpdateIntervalMillis(UPDATE_INTERVAL_MIN)
-                .build();
-
-        // Check for permissions
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Default to Budapest
-            defaultToBudapest(mapView);
-
-            Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-            return;
-        }
-        else if(!isLocationEnabled(this)) {
-            // Default to Budapest
-            defaultToBudapest(mapView);
-        }
-        else {
-            centerToCurrentLocation();
-        }
-
-        // Get current location
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                Location location = locationResult.getLastLocation();
-                if(location != null) {
-                    GeoPoint point = new GeoPoint(
-                            location.getLatitude(),
-                            location.getLongitude()
-                    );
-
-                    // Animate marker
-                    if(mapView != null && isLocked) {
-                        mapView.getController().animateTo(point, mapView.getZoomLevelDouble(), 666L);
-
-                        locationOverlay.setLocation(new GeoPoint(location.getLatitude(), location.getLongitude()));
-                        if(location.hasBearing()) {
-                            locationOverlay.setBearing(location.getBearing());
-                        }
-                    }
-
-                    // Record point if needed
-                    if(isRecording) {
-                        // Get current location
-                        double lat = point.getLatitude();
-                        double lng = point.getLongitude();
-                        LatLng newPoint = new LatLng(lat, lng);
-
-                        // Prevent small changes from occurring in the final polyline
-                        if(!recordedPoints.isEmpty()) {
-                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(recordedPoints.size() - 1), newPoint);
-                            if(newDistanceLength < 0.25) {
-                                return;
-                            }
-                        }
-
-                        // Record
-                        recordedPoints.add(newPoint);
-
-                        // Add point to the route
-                        route.addPoint(point);
-
-                        // Mark first point, record start time
-                        if(recordedPoints.size() == 1) {
-                            startTime = dateFormat.format(new Date());
-
-                            Drawable icon = ResourcesCompat.getDrawable(getResources(), R.drawable.baseline_circle_24, null);
-                            if(icon != null) {
-                                icon.setTint(Color.BLUE);
-                            }
-
-                            IconOverlay firstPoint = new IconOverlay(point, icon);
-
-                            mapView.getOverlays().add(0, firstPoint);
-                        }
-                        // Update variables
-                        else {
-                            double newDistanceLength = SphericalUtil.computeDistanceBetween(recordedPoints.get(recordedPoints.size() - 2), recordedPoints.get(recordedPoints.size() - 1));
-
-                            // Speed
-                            currentSpeed = (newDistanceLength / (UPDATE_INTERVAL_MIN / 1000.0)) * 3.6;
-
-                            TextView speedView = findViewById(R.id.record_speed);
-                            speedView.setText(getString(R.string.main_speed, currentSpeed));
-
-                            // Distance
-                            totalDist += newDistanceLength;
-
-                            TextView distanceView = findViewById(R.id.record_distance);
-                            distanceView.setText(getString(R.string.main_distance, totalDist / 1000.0));
-                        }
-                    }
+            public void handleOnBackPressed() {
+                if(isRecording) {
+                    Intent intent = new Intent(RecordActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
                 }
                 else {
-                    System.out.println("NULL LOCATION"); // TODO: Bad connection?
-                }
-
-                if(mapView != null) {
-                    mapView.invalidate();
+                    finish();
                 }
             }
         };
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
 
-        // Update location
-        fusedLocationClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-        );
     }
 
     @Override
@@ -772,83 +866,31 @@ public class RecordActivity extends AppCompatActivity {
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
         }
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if (location != null) {
+                    GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    if(isLocked && mapView != null) {
+                        mapView.getController().setCenter(point);
+                    }
+                    if(locationOverlay != null) {
+                        locationOverlay.setLocation(point);
+                        mapView.invalidate();
+                    }
+                }
+            }
+        };
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if(locationModeReceiver != null) {
             unregisterReceiver(locationModeReceiver);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            // Start location updates
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Marker for current location
-                startLocationUpdates();
-            }
-            // Check if user clicked on "Don't ask again"
-            else if(!ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-                Toast.makeText(this, "You must allow precise tracking to use this feature!", Toast.LENGTH_LONG).show();
-            }
-            else {
-                Toast.makeText(this, "Precise location permission is required to track your position!", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    // Create top menubar
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_top, menu);
-        return true;
-    }
-
-    // Top menubar actions
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if(id == R.id.topmenu_profile) {
-            Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        // Statistics
-        if(id == R.id.topmenu_statistics) {
-            Intent intent = new Intent(this, StatisticsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    // Returns whether location **feature** is enabled
-    public boolean isLocationEnabled(Context context) {
-        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }
-
-    public void centerToCurrentLocation() {
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                if(location != null) {
-                    GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    mapView.getController().setCenter(point);
-                }
-            });
         }
     }
 }
