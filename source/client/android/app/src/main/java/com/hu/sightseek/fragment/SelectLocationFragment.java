@@ -85,12 +85,6 @@ public class SelectLocationFragment extends DialogFragment {
         MapEventsOverlay eventsOverlay = getMapEventsOverlay();
         mapView.getOverlays().add(eventsOverlay);
 
-        Button selectButton = view.findViewById(R.id.locationselectpopup_selectbtn);
-        selectButton.setOnClickListener(v -> {
-            ((IdeaActivity) requireActivity()).onNewLocationSelected(marker.getPosition());
-            dismiss();
-        });
-
         return view;
     }
 

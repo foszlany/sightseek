@@ -49,8 +49,8 @@ public final class SightseekStatisticsUtils {
                 break;
 
             case OTHER:
-                approxCaloriesLow = 2 * (totalDistance / 1000.0);
-                approxCaloriesHigh = 10 * (totalDistance / 1000.0);
+                approxCaloriesLow = 2 * (totalTime / 3600.0);
+                approxCaloriesHigh = 10 * (totalTime / 3600.0);
                 break;
         }
         values.put("approx_calories_low", approxCaloriesLow);
