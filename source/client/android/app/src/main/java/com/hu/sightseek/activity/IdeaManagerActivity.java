@@ -3,9 +3,18 @@ package com.hu.sightseek.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,16 +27,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.AttractionAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.enums.SavedAttractionStatus;
+import com.hu.sightseek.enums.TravelCategory;
+import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
 
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class IdeaManagerActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AttractionAdapter adapter;
     private ArrayList<Attraction> attractions;
+    private int checkedSortByMethod;
+    private boolean isSavedChecked;
+    private boolean isIgnoredChecked;
+    private boolean isVisitedChecked;
 
 
     @Override
@@ -39,6 +56,11 @@ public class IdeaManagerActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
+
+        checkedSortByMethod = R.id.ideamanager_filtermenu_nameaz;
+        isSavedChecked = true;
+        isIgnoredChecked = true;
+        isVisitedChecked = true;
 
         // Auth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -89,6 +111,10 @@ public class IdeaManagerActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        // Filter button
+        ImageButton filterButton = findViewById(R.id.ideamanager_filterbtn);
+        filterButton.setOnClickListener(this::initFilterPopup);
     }
 
     // Create top menubar
@@ -119,5 +145,65 @@ public class IdeaManagerActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initFilterPopup(View menuItemView) {
+        View popupView = LayoutInflater.from(this).inflate(R.layout.filter_attraction, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.showAsDropDown(menuItemView);
+
+        RadioGroup radioGroup = popupView.findViewById(R.id.ideamanager_filtermenu_radiogroup);
+        RadioButton previousSortByMethod = popupView.findViewById(checkedSortByMethod);
+        previousSortByMethod.toggle();
+
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> checkedSortByMethod = checkedId);
+
+        CheckBox savedCheckBox = popupView.findViewById(R.id.ideamanager_filtermenu_saved);
+        CheckBox ignoredCheckBox = popupView.findViewById(R.id.ideamanager_filtermenu_ignored);
+        CheckBox visitedCheckBox = popupView.findViewById(R.id.ideamanager_filtermenu_visited);
+
+        savedCheckBox.setChecked(isSavedChecked);
+        ignoredCheckBox.setChecked(isIgnoredChecked);
+        visitedCheckBox.setChecked(isVisitedChecked);
+
+        Button applyButton = popupView.findViewById(R.id.ideamanager_filtermenu_applybtn);
+        applyButton.setOnClickListener(v -> {
+            // Sort by
+            if(checkedSortByMethod == R.id.ideamanager_filtermenu_nameaz) {
+                Collections.sort(attractions, (a1, a2) -> a1.getName().compareTo(a2.getName()));
+            }
+            else if(checkedSortByMethod == R.id.ideamanager_filtermenu_nameza) {
+                Collections.sort(attractions, (a1, a2) -> a2.getName().compareTo(a1.getName()));
+            }
+            else if(checkedSortByMethod == R.id.ideamanager_filtermenu_placeaz) {
+                Collections.sort(attractions, (a1, a2) -> a1.getPlace().compareToIgnoreCase(a2.getPlace()));
+            }
+            else if(checkedSortByMethod == R.id.ideamanager_filtermenu_placeza) {
+                Collections.sort(attractions, (a1, a2) -> a2.getPlace().compareToIgnoreCase(a1.getPlace()));
+            }
+
+            // Categories
+            isSavedChecked = savedCheckBox.isChecked();
+            isIgnoredChecked = ignoredCheckBox.isChecked();
+            isVisitedChecked = visitedCheckBox.isChecked();
+
+            ArrayList<Attraction> filtered = new ArrayList<>();
+            if(!(!isSavedChecked && !isIgnoredChecked && !isVisitedChecked)) {
+                for(Attraction attraction : attractions) {
+                    if(attraction.getStatus() == SavedAttractionStatus.SAVED && !isSavedChecked
+                            || attraction.getStatus() == SavedAttractionStatus.IGNORED && !isIgnoredChecked
+                            || attraction.getStatus() == SavedAttractionStatus.VISITED && !isVisitedChecked) {
+                        continue;
+                    }
+
+                    filtered.add(attraction);
+                }
+            }
+
+            adapter.applyCategoryFilter(filtered);
+            adapter.notifyDataSetChanged();
+
+            popupWindow.dismiss();
+        });
     }
 }

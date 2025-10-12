@@ -153,4 +153,9 @@
     <string name="ideamanager_visited">Visited</string>
     <string name="ideamanager_remove">Remove</string>
     <string name="ideamanager_saved">Saved</string>
+    <string name="ideamanager_ignored">Ignored</string>
+    <string name="ideamanager_filter_nameaz">Name A-Z</string>
+    <string name="ideamanager_filter_nameza">Name Z-A</string>
+    <string name="ideamanager_filter_placeaz">Place A-Z</string>
+    <string name="ideamanager_filter_placeza">Place Z-A</string>
 </resources>
