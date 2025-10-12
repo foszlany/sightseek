@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -22,22 +21,28 @@
         android:id="@+id/profile_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="285dp"
+        android:layout_marginTop="76dp"
+        android:background="@drawable/generic_rounded_background"
         android:text="@string/profile_logout"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/dark_gray"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_strava" />
 
     <Button
         android:id="@+id/profile_strava"
-        android:backgroundTint="@color/strava"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="116dp"
+        android:layout_marginTop="172dp"
+        android:background="@drawable/generic_rounded_background"
         android:text="@string/profile_strava"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:backgroundTint="@color/strava"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_logout" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
