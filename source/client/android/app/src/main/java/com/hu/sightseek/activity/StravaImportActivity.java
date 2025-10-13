@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ConsoleAdapter;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.model.Activity;
 
@@ -37,9 +38,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -56,7 +59,9 @@ public class StravaImportActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
     private ArrayList<Activity> activities;
+    private HashSet<Long> stravaIds;
     private String importDate;
+    private String tempImportDate;
     private String accessToken;
 
     @Override
@@ -95,6 +100,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         activities = new ArrayList<>();
+        stravaIds = new HashSet<>();
 
         consoleRecyclerView = findViewById(R.id.strava_console);
         consoleAdapter = new ConsoleAdapter();
@@ -104,6 +110,13 @@ public class StravaImportActivity extends AppCompatActivity {
         logIntoConsole("Progress will appear here.\n\n" +
                        "\"Import Latest\" fetches recent unimported activities.\n" +
                        "\"Import Missing\" fetches deleted activities too.\n");
+
+        // Strava ids
+        Executors.newSingleThreadExecutor().execute(() -> {
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
+            stravaIds = dao.getAllStravaIds();
+            dao.close();
+        });
 
         // Get access token
         Uri uri = getIntent().getData();
@@ -214,24 +227,23 @@ public class StravaImportActivity extends AppCompatActivity {
         Button importLatestButton = findViewById(R.id.strava_importlatestbtn);
         importLatestButton.setOnClickListener(v -> {
             consoleAdapter.clearLogs();
-            importLatest(1);
+            importLatest(1, "after");
         });
 
         Button importMissingButton = findViewById(R.id.strava_importmissingbtn);
         importMissingButton.setOnClickListener(v -> {
             consoleAdapter.clearLogs();
-            // TODO
+            importLatest(1, "before");
         });
     }
 
-    public void importLatest(int page) {
+    public void importLatest(int page, String mode) {
         HttpUrl url = Objects.requireNonNull(HttpUrl.parse("https://www.strava.com/api/v3/athlete/activities"))
                 .newBuilder()
-                .addQueryParameter("after", Long.toString(getUnixTimestamp(importDate)))
+                .addQueryParameter(mode, Long.toString("before".equals(mode) ? (System.currentTimeMillis() / 1000) : getUnixTimestamp(importDate)))
                 .addQueryParameter("page", String.valueOf(page))
                 .addQueryParameter("per_page", Integer.toString(ACTIVITIES_PER_PAGE))
                 .build();
-
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -271,13 +283,12 @@ public class StravaImportActivity extends AppCompatActivity {
                                 logIntoConsole("Nothing else was found!\n");
                                 logIntoConsole("Saving to database...");
 
-                                /* TODO: REMOVE COMMENT
                                 LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
                                 dao.addActivities(activities);
                                 dao.close();
-                                */
 
-                                prefs.edit().putString("StravaLatestImportDate", importDate).apply();
+                                prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();
+                                importDate = tempImportDate;
 
                                 logIntoConsole("Importing done.");
 
@@ -288,12 +299,21 @@ public class StravaImportActivity extends AppCompatActivity {
                                 JSONObject jsonActivity = jsonActivities.getJSONObject(i);
 
                                 String name = jsonActivity.getString("name");
+                                long stravaId = jsonActivity.getLong("id");
+                                if(stravaIds.contains(stravaId)) {
+                                    logIntoConsole("Activity " + name + " already exists. (" + (i + 1) + "/" + jsonActivities.length() + ")");
+
+                                    if(i + 1 == jsonActivities.length()) {
+                                        logIntoConsole("\n");
+                                    }
+                                    continue;
+                                }
+
                                 TravelCategory category = getCategoryFromStravaType(jsonActivity.getString("sport_type"));
                                 String polyline = jsonActivity.getJSONObject("map").getString("summary_polyline");
                                 String startDate = jsonActivity.getString("start_date").replace("Z", "");
                                 int elapsedTime = jsonActivity.getInt("elapsed_time");
                                 int distance = jsonActivity.getInt("distance");
-                                long stravaId = jsonActivity.getLong("id");
 
                                 Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId);
                                 activities.add(a);
@@ -301,14 +321,14 @@ public class StravaImportActivity extends AppCompatActivity {
                                 logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
 
                                 if(i + 1 == jsonActivities.length()) {
-                                    importDate = startDate;
+                                    tempImportDate = startDate;
                                     logIntoConsole("\n");
                                 }
 
                                 // TODO: update cells
                             }
 
-                            importLatest(page + 1);
+                            importLatest(page + 1, mode);
                         }
                         catch(JSONException | IOException e) {
                             logIntoConsole("An unknown error has occurred. Nothing was saved. Please try again later.");

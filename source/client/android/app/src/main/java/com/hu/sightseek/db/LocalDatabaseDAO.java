@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LocalDatabaseDAO {
     private final LocalDatabaseImpl dbHelper;
@@ -219,6 +220,33 @@ public class LocalDatabaseDAO {
         db.close();
 
         return activities;
+    }
+
+    public HashSet<Long> getAllStravaIds() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        HashSet<Long> ids = new HashSet<>();
+
+        Cursor cursor = db.query(
+                LocalDatabaseImpl.ACTIVITIES_TABLE,
+                new String[]{LocalDatabaseImpl.ACTIVITIES_STRAVAID},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
+                ids.add(id);
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return ids;
     }
 
     public ArrayList<LatLng> getAllPoints() {
