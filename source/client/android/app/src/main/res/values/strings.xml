@@ -68,7 +68,7 @@
     <string name="idea_googleicondesc">An image of the Google logo.</string>
     <string name="idea_location">Location</string>
     <string name="idea_median">Median</string>
-    <string name="idea_bounding">Bounding box</string>
+    <string name="idea_lucky">I\'m feeling lucky</string>
     <string name="idea_reference">Reference point</string>
     <string name="idea_radius">Radius</string>
     <string name="idea_loading">Loading…</string>

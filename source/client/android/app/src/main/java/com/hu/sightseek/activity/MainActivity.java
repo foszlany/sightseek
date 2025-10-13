@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ActivityAdapter adapter;
     private ArrayList<Activity> activities;
-
     private int checkedSortByMethod;
     private boolean isLocoChecked;
     private boolean isMicroChecked;

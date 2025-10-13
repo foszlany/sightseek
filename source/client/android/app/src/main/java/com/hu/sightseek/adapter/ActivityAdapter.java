@@ -113,7 +113,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         if(cache == null) {
             List<LatLng> points = PolyUtil.decode(activity.getPolyline());
             try {
-                cache = renderMapImage(points, holder.itemView.getContext());
+                cache = renderMapImage(points);
             }
             catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -158,7 +158,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         }
     }
 
-    private Bitmap renderMapImage(List<LatLng> points, Context context) throws InterruptedException {
+    private Bitmap renderMapImage(List<LatLng> points) throws InterruptedException {
         // Polyline
         Polyline line = new Polyline();
         for(LatLng p : points) {

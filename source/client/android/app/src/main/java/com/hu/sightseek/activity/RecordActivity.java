@@ -837,7 +837,6 @@ public class RecordActivity extends AppCompatActivity {
             }
         };
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
-
     }
 
     @Override

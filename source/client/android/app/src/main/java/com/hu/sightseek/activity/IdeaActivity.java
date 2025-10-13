@@ -8,21 +8,16 @@ import static com.hu.sightseek.utils.SightseekStatisticsUtils.getMedianPoint;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -143,32 +138,17 @@ public class IdeaActivity extends AppCompatActivity {
             ignoredIds.addAll(dao.getAttractionIds());
             dao.close();
 
-            // Check whether there are activities stored
-            if(activities.isEmpty()) {
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                ViewGroup root = findViewById(android.R.id.content);
-                View overlayView = inflater.inflate(R.layout.overlay_noactivities, root, false);
+            // Setup map
+            mapView = findViewById(R.id.idea_map);
+            mapView.setBackgroundColor(Color.TRANSPARENT);
+            mapView.setUseDataConnection(true);
 
-                root.addView(overlayView);
-                toolbar.post(() -> {
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    params.topMargin = toolbar.getHeight();
-                    overlayView.setLayoutParams(params);
-                });
-            }
-            else {
-                // Setup map
-                mapView = findViewById(R.id.idea_map);
-                mapView.setBackgroundColor(Color.TRANSPARENT);
-                mapView.setUseDataConnection(true);
+            TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+            tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+            tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
-                TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
-                tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-                tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
-
-                defaultToBudapest(mapView);
-                setupZoomSettings(mapView, 14.0);
-            }
+            defaultToBudapest(mapView);
+            setupZoomSettings(mapView, 14.0);
         });
 
         referenceIndex = -1;
@@ -228,6 +208,11 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Median point
         else if(checkedId == R.id.idea_radio_medianbtn) {
+            if(activities.isEmpty()) {
+                Toast.makeText(this, "You do not have any activities stored. Please use the location option.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             if(medianPoint == null || referenceIndex != R.id.idea_radio_medianbtn) {
                 data = null;
 
@@ -246,9 +231,14 @@ public class IdeaActivity extends AppCompatActivity {
             findAttraction();
         }
 
-        // Bounding box
-        else if(checkedId == R.id.idea_radio_boundingboxbtn) {
-            if(boundingBoxPoint == null || referenceIndex != R.id.idea_radio_boundingboxbtn) {
+        // I'm feeling lucky (Random point within bounding box)
+        else if(checkedId == R.id.idea_radio_luckybtn) {
+            if(activities.isEmpty()) {
+                Toast.makeText(this, "You do not have any activities stored. Please use the location option.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if(referenceIndex != R.id.idea_radio_luckybtn) {
                 data = null;
 
                 ArrayList<LatLng> allPoints = new ArrayList<>();
@@ -259,10 +249,12 @@ public class IdeaActivity extends AppCompatActivity {
                     allPoints.addAll(points);
                 }
 
-                BoundingBox boundingBox = SightseekGenericUtils.getBoundingBox(allPoints);
-                boundingBoxPoint = new LatLng(boundingBox.getCenterLatitude(), boundingBox.getCenterLongitude());
+                BoundingBox boundingBox = SightseekGenericUtils.getBoundingBox(allPoints).increaseByScale(1.2f);
+                double lat = boundingBox.getLatSouth() + Math.random() * (boundingBox.getLatNorth() - boundingBox.getLatSouth());
+                double lon = boundingBox.getLonWest() + Math.random() * (boundingBox.getLonEast() - boundingBox.getLonWest());
+                boundingBoxPoint = new LatLng(lat, lon);
 
-                referenceIndex = R.id.idea_radio_boundingboxbtn;
+                referenceIndex = R.id.idea_radio_luckybtn;
             }
 
             referencePoint = boundingBoxPoint;

@@ -228,11 +228,11 @@
                 android:textSize="17sp" />
 
             <RadioButton
-                android:id="@+id/idea_radio_boundingboxbtn"
+                android:id="@+id/idea_radio_luckybtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/idea_bounding"
+                android:text="@string/idea_lucky"
                 android:textColor="@color/white"
                 android:textSize="17sp" />
         </RadioGroup>
