@@ -287,9 +287,11 @@ public class StravaImportActivity extends AppCompatActivity {
                                 dao.addActivities(activities);
                                 dao.close();
 
-                                prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();
-                                importDate = tempImportDate;
-
+                                if("after".equals(mode)) {
+                                    prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();
+                                    importDate = tempImportDate;
+                                }
+                                
                                 logIntoConsole("Importing done.");
 
                                 return;
