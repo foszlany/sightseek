@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ConsoleAdapter;
 import com.hu.sightseek.enums.TravelCategory;
@@ -115,7 +116,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
             RequestBody body = new FormBody.Builder()
                     .add("client_id", STRAVA_CLIENT_ID)
-                    .add("client_secret", "still nothing for you")
+                    .add("client_secret", BuildConfig.STRAVA_API_KEY)
                     .add("code", code)
                     .add("grant_type", "authorization_code")
                     .build();
@@ -261,6 +262,7 @@ public class StravaImportActivity extends AppCompatActivity {
                             // End query chain
                             if(jsonActivities.length() == 0) {
                                 if(page == 1) {
+                                    consoleAdapter.clearLogs();
                                     logIntoConsole("Nothing new was found.\n" +
                                                    "Use \"Import missing\" if you wish to restore deleted activities.\n");
                                     return;

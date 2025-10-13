@@ -1,3 +1,11 @@
+import java.util.Properties
+
+android.buildFeatures.buildConfig = true
+
+val keysPropertiesFile = rootProject.file("keys.properties")
+val keysProperties = Properties()
+keysProperties.load(keysPropertiesFile.inputStream())
+
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
@@ -15,6 +23,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val stravaApiKey = keysProperties["STRAVA_API_KEY"]?.toString() ?: ""
+        buildConfigField("String", "STRAVA_API_KEY", "\"$stravaApiKey\"")
     }
 
     buildTypes {
