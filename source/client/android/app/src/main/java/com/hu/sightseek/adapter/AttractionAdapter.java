@@ -43,7 +43,7 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
     @NonNull
     @Override
     public IdeaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.card_idea, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_idea, parent, false);
         return new IdeaViewHolder(view);
     }
 

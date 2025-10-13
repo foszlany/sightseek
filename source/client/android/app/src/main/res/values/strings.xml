@@ -164,4 +164,7 @@
     <string name="profile_strava">Import from Strava</string>
     <string name="strava_auth">Authenticate</string>
     <string name="strava_import">Import activities from Strava</string>
+    <string name="strava_startimport">Start importing</string>
+    <string name="strava_importmissing">Import missing</string>
+    <string name="strava_importlatest">Import Latest</string>
 </resources>

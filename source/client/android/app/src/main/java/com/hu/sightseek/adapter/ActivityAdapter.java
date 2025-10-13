@@ -76,7 +76,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     @NonNull
     @Override
     public ActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.card_activity, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_activity, parent, false);
         return new ActivityViewHolder(view);
     }
 

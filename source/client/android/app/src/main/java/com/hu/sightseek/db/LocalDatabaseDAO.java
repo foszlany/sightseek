@@ -51,6 +51,26 @@ public class LocalDatabaseDAO {
         return id;
     }
 
+    public void addActivities(List<Activity> activities) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        for(Activity activity : activities) {
+            ContentValues values = new ContentValues();
+            values.put(LocalDatabaseImpl.ACTIVITIES_NAME, activity.getName());
+            values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, activity.getCategory().getIndex());
+            values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, activity.getPolyline());
+            values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, activity.getStarttime());
+            values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedtime());
+            values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, activity.getDistance());
+            values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
+
+            db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
+        }
+
+        db.close();
+    }
+
+
     public HashMap<String, Serializable> getBaseStatistics(TravelCategory category) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 

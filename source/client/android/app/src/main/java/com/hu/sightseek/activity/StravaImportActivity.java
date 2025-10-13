@@ -2,7 +2,9 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,9 +17,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
+import com.hu.sightseek.adapter.ConsoleAdapter;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.model.Activity;
 
@@ -27,8 +32,13 @@ import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -38,7 +48,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class StravaImportActivity extends AppCompatActivity {
+    private final int ACTIVITIES_PER_PAGE = 6;
+
+    private RecyclerView consoleRecyclerView;
+    private ConsoleAdapter consoleAdapter;
+
+    private SharedPreferences prefs;
     private ArrayList<Activity> activities;
+    private String importDate;
     private String accessToken;
 
     @Override
@@ -75,7 +92,17 @@ public class StravaImportActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         activities = new ArrayList<>();
+
+        consoleRecyclerView = findViewById(R.id.strava_console);
+        consoleAdapter = new ConsoleAdapter();
+        consoleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        consoleRecyclerView.setAdapter(consoleAdapter);
+
+        logIntoConsole("Progress will appear here.\n\n" +
+                       "\"Import Latest\" fetches recent unimported activities.\n" +
+                       "\"Import Missing\" fetches deleted activities too.\n");
 
         // Get access token
         Uri uri = getIntent().getData();
@@ -88,7 +115,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
             RequestBody body = new FormBody.Builder()
                     .add("client_id", STRAVA_CLIENT_ID)
-                    .add("client_secret", "no secret for u")
+                    .add("client_secret", "still nothing for you")
                     .add("code", code)
                     .add("grant_type", "authorization_code")
                     .build();
@@ -112,6 +139,15 @@ public class StravaImportActivity extends AppCompatActivity {
                                 JSONObject json = new JSONObject(responseBody);
 
                                 accessToken = json.getString("access_token");
+
+                                // Last import date to prevent duplicate activities
+                                if(!prefs.contains("StravaLatestImportDate")) {
+                                    importDate = json.getJSONObject("athlete").getString("created_at");
+                                    prefs.edit().putString("StravaLatestImportDate", importDate).apply();
+                                }
+                                else {
+                                    importDate = prefs.getString("StravaLatestImportDate", "");
+                                }
                             }
                             catch(JSONException | IOException e) {
                                 onFailReturnToProfile();
@@ -174,18 +210,25 @@ public class StravaImportActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Button importButton = findViewById(R.id.strava_importlatestbtn);
-        importButton.setOnClickListener(v -> {
+        Button importLatestButton = findViewById(R.id.strava_importlatestbtn);
+        importLatestButton.setOnClickListener(v -> {
+            consoleAdapter.clearLogs();
             importLatest(1);
+        });
+
+        Button importMissingButton = findViewById(R.id.strava_importmissingbtn);
+        importMissingButton.setOnClickListener(v -> {
+            consoleAdapter.clearLogs();
+            // TODO
         });
     }
 
     public void importLatest(int page) {
         HttpUrl url = Objects.requireNonNull(HttpUrl.parse("https://www.strava.com/api/v3/athlete/activities"))
                 .newBuilder()
-                .addQueryParameter("before", String.valueOf(System.currentTimeMillis() / 1000))
+                .addQueryParameter("after", Long.toString(getUnixTimestamp(importDate)))
                 .addQueryParameter("page", String.valueOf(page))
-                .addQueryParameter("per_page", "3")
+                .addQueryParameter("per_page", Integer.toString(ACTIVITIES_PER_PAGE))
                 .build();
 
 
@@ -196,32 +239,77 @@ public class StravaImportActivity extends AppCompatActivity {
                 .get()
                 .build();
 
+        logIntoConsole("Fetching page " + page + "...");
+
+        // TODO: HANDLE MULTIPLE USERS
+        // TODO: PREVENT DUPLICATES BY ONLY INSERTING
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) {
+                if(response.code() == 429) {
+                    logIntoConsole("The API has reached its rate limit. Please try again later.");
+                }
                 if(!response.isSuccessful() || response.body() == null) {
-                    onFailReturnToProfile();
+                    logIntoConsole("An unknown error has occurred. Please try again later.");
                 }
                 else {
                     runOnUiThread(() -> {
                         try {
                             String responseBody = response.body().string();
-                            JSONArray activities = new JSONArray(responseBody);
-                            for(int i = 0; i < activities.length(); i++) {
-                                JSONObject jsonActivity = activities.getJSONObject(i);
+                            JSONArray jsonActivities = new JSONArray(responseBody);
 
-                                int id = 1;
+                            // End query chain
+                            if(jsonActivities.length() == 0) {
+                                if(page == 1) {
+                                    logIntoConsole("Nothing new was found.\n" +
+                                                   "Use \"Import missing\" if you wish to restore deleted activities.\n");
+                                    return;
+                                }
+
+                                logIntoConsole("Nothing else was found!\n");
+                                logIntoConsole("Saving to database...");
+
+                                /* TODO: REMOVE COMMENT
+                                LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
+                                dao.addActivities(activities);
+                                dao.close();
+                                */
+
+                                prefs.edit().putString("StravaLatestImportDate", importDate).apply();
+
+                                logIntoConsole("Importing done.");
+
+                                return;
+                            }
+
+                            for(int i = 0; i < jsonActivities.length(); i++) {
+                                JSONObject jsonActivity = jsonActivities.getJSONObject(i);
+
                                 String name = jsonActivity.getString("name");
                                 TravelCategory category = getCategoryFromStravaType(jsonActivity.getString("sport_type"));
                                 String polyline = jsonActivity.getJSONObject("map").getString("summary_polyline");
-                                int elapsedTime = jsonActivity.getInt("elapsed_time");
                                 String startDate = jsonActivity.getString("start_date").replace("Z", "");
+                                int elapsedTime = jsonActivity.getInt("elapsed_time");
                                 int distance = jsonActivity.getInt("distance");
-                                long stravaId = jsonActivity.getInt("id");
+                                long stravaId = jsonActivity.getLong("id");
+
+                                Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId);
+                                activities.add(a);
+
+                                logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
+
+                                if(i + 1 == jsonActivities.length()) {
+                                    importDate = startDate;
+                                    logIntoConsole("\n");
+                                }
+
+                                // TODO: update cells
                             }
+
+                            importLatest(page + 1);
                         }
                         catch(JSONException | IOException e) {
-                            onFailReturnToProfile();
+                            logIntoConsole("An unknown error has occurred. Nothing was saved. Please try again later.");
                         }
                     });
                 }
@@ -232,6 +320,19 @@ public class StravaImportActivity extends AppCompatActivity {
                 onFailReturnToProfile();
             }
         });
+    }
+
+    private long getUnixTimestamp(String dateStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        try {
+            Date date = sdf.parse(dateStr);
+            return date == null ? 0 : date.getTime() / 1000;
+        }
+        catch(ParseException e) {
+            return 0;
+        }
     }
 
     private TravelCategory getCategoryFromStravaType(String type) {
@@ -281,5 +382,10 @@ public class StravaImportActivity extends AppCompatActivity {
             default:
                 return TravelCategory.OTHER;
         }
+    }
+
+    private void logIntoConsole(String message) {
+        consoleAdapter.addLog(message);
+        consoleRecyclerView.scrollToPosition(consoleAdapter.getItemCount() - 1);
     }
 }
