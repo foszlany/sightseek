@@ -312,7 +312,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 TravelCategory category = getCategoryFromStravaType(jsonActivity.getString("sport_type"));
                                 String polyline = jsonActivity.getJSONObject("map").getString("summary_polyline");
                                 String startDate = jsonActivity.getString("start_date").replace("Z", "");
-                                int elapsedTime = jsonActivity.getInt("elapsed_time");
+                                int elapsedTime = jsonActivity.getInt("moving_time");
                                 int distance = jsonActivity.getInt("distance");
 
                                 Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId);
