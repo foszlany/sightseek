@@ -11,7 +11,6 @@ import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -31,7 +30,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
@@ -423,11 +421,18 @@ public class StatisticsActivity extends AppCompatActivity {
                 getString(R.string.statistics_generalcard_mainactivitytype, mainCategory.toShortString())
         );
 
-        // todo invis if -1
+        Double visitedCellsHolder = (Double)detailedGenericStatistics.get("visited_cells");
+        double visitedCells = visitedCellsHolder == null ? 0 : visitedCellsHolder;
         TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
-        visitedCellsTextView.setText(
-                getString(R.string.statistics_generalcard_visitedcells, (Double)detailedGenericStatistics.get("visited_cells"))
-        );
+        if(visitedCells == -1) {
+            visitedCellsTextView.setVisibility(GONE);
+        }
+        else {
+            visitedCellsTextView.setText(
+                    getString(R.string.statistics_generalcard_visitedcells, visitedCells)
+            );
+        }
+
 
         TextView longestDistanceTextView = findViewById(R.id.statistics_generalcard_longestdistance);
         longestDistanceTextView.setText(
