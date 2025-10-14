@@ -142,7 +142,7 @@
     <string name="travelmethod_loco_short">Loco</string>
     <string name="statistics_percategory_activitiescreated">Activities created: %1$.0f</string>
     <string name="statistics_percategory_longesttime">Longest time: %1$s</string>
-    <string name="statistics_percategory_approximatecaloriesburnt">Approximate calories burnt: %1$.0f-%2$.0f kcal</string>
+    <string name="statistics_percategory_approximatecaloriesburnt">Calories burnt: %1$.0f-%2$.0f kcal</string>
     <string name="statistics_percategory_longestdistance">Longest distance: %1$.2f km</string>
     <string name="statistics_percategory_averagespeed">Average speed: %1$.2f km/h</string>
     <string name="statistics_percategory_totaltime">Total time: %1$.2f days</string>
@@ -161,7 +161,7 @@
     <string name="idea_search">Search</string>
     <string name="idea_motto">Use search to find something new</string>
     <string name="idea_defaulttitle">Search for ideas</string>
-    <string name="profile_strava">Import from Strava</string>
+    <string name="profile_importfromstrava">Import from Strava</string>
     <string name="strava_auth">Authenticate</string>
     <string name="strava_import">Import activities from Strava</string>
     <string name="strava_startimport">Start importing</string>
@@ -170,4 +170,6 @@
     <string name="profile_unlink">Unlink Strava account</string>
     <string name="strava_unlinkwarn">You may only have one account linked.</string>
     <string name="statistics_percategory">Per category</string>
+    <string name="profile_accountmanagement">Account management</string>
+    <string name="profile_strava">Strava</string>
 </resources>

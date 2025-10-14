@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="@color/main_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_bg"
     tools:context=".activity.ProfileActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -18,58 +18,82 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <Button
-        android:id="@+id/profile_unlinkbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/generic_rounded_background"
-        android:text="@string/profile_unlink"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:backgroundTint="@color/dark_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_strava" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/main_bg"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu"
+        tools:context=".activity.ProfileActivity"
+        tools:layout_editor_absoluteX="178dp">
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/strava_unlinkwarn"
-        android:textColor="@color/hint_light"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_unlinkbtn" />
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/profile_strava"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
 
-    <Button
-        android:id="@+id/profile_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
-        android:background="@drawable/generic_rounded_background"
-        android:text="@string/profile_logout"
-        android:textColor="@color/white"
-        app:backgroundTint="@color/dark_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="10dp"
+            android:background="@color/hint" />
 
-    <Button
-        android:id="@+id/profile_strava"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="124dp"
-        android:background="@drawable/generic_rounded_background"
-        android:text="@string/profile_strava"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:backgroundTint="@color/strava"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu" />
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/strava_unlinkwarn"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
 
+        <Button
+            android:id="@+id/profile_strava"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/generic_rounded_background"
+            android:text="@string/profile_importfromstrava"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:backgroundTint="@color/strava" />
+
+        <Button
+            android:id="@+id/profile_unlinkbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/generic_rounded_background"
+            android:text="@string/profile_unlink"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:backgroundTint="@color/dark_gray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/profile_accountmanagement"
+            android:textColor="@color/white"
+            android:textSize="28dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="10dp"
+            android:background="@color/hint" />
+
+        <Button
+            android:id="@+id/profile_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/generic_rounded_background"
+            android:text="@string/profile_logout"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/dark_gray" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
