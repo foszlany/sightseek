@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -67,6 +66,7 @@ public class StravaImportActivity extends AppCompatActivity {
     private RecyclerView consoleRecyclerView;
     private ConsoleAdapter consoleAdapter;
 
+    private FirebaseAuth mAuth;
     private SharedPreferences prefs;
     private ArrayList<Activity> activities;
     private HashSet<Long> stravaIds;
@@ -86,7 +86,7 @@ public class StravaImportActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Check if user is logged in = FirebaseAuth.getInstance();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null) {
             runOnUiThread(() -> {
                 startActivity(new Intent(this, BannerActivity.class));
@@ -266,8 +266,6 @@ public class StravaImportActivity extends AppCompatActivity {
 
         logIntoConsole("Fetching page " + page + "...");
 
-        // TODO: HANDLE MULTIPLE USERS
-        // TODO: PREVENT DUPLICATES BY ONLY INSERTING
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) {
@@ -298,6 +296,11 @@ public class StravaImportActivity extends AppCompatActivity {
                                 LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
                                 dao.addActivities(activities);
                                 dao.close();
+
+                                String uid = mAuth.getUid();
+                                FirebaseFirestore.getInstance().collection("users")
+                                        .document(uid)
+                                        .set(Collections.singletonMap("visitedCells", visitedCells), SetOptions.merge());
 
                                 if("after".equals(mode)) {
                                     prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();
@@ -343,12 +346,6 @@ public class StravaImportActivity extends AppCompatActivity {
                                     }
                                     visitedCells.put(hash, count + 1);
                                 }
-
-                                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-                                FirebaseFirestore.getInstance().collection("users")
-                                        .document(uid)
-                                        .set(Collections.singletonMap("visitedCells", visitedCells), SetOptions.merge());
 
                                 logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
 

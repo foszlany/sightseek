@@ -2,7 +2,9 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -15,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -87,9 +90,12 @@ public class ProfileActivity extends AppCompatActivity {
                         dao.deleteImportedActivities();
                         dao.close();
 
-                        Intent intent = new Intent(this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+                        if(prefs.contains("StravaLatestImportDate")) {
+                            prefs.edit().remove("StravaLatestImportDate").apply();
+                        }
+
+                        Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
                     })
                     .setNegativeButton("No", (d, which) -> d.dismiss())
                     .setCancelable(true)
