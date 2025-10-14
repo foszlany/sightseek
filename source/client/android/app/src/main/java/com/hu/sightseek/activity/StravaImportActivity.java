@@ -309,7 +309,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                     return;
                                 }
 
-                                logIntoConsole("Nothing else was found!\n" +
+                                logIntoConsole("Nothing else was found!\n\n" +
                                                "Saving to database...");
 
                                 LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
