@@ -26,6 +26,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.R;
@@ -36,6 +37,7 @@ import org.osmdroid.config.Configuration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -109,6 +111,17 @@ public class ProfileActivity extends AppCompatActivity {
                             if(prefs.contains("StravaLatestImportDate")) {
                                 prefs.edit().remove("StravaLatestImportDate").apply();
                             }
+
+                            String uid = Objects.requireNonNull(mAuth.getUid());
+                            DocumentReference userDocument = FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(uid);
+
+                            userDocument.get().addOnSuccessListener(documentSnapshot -> {
+                                if(documentSnapshot.contains("stravaId")) {
+                                    userDocument.update("stravaId", -1);
+                                }
+                            });
 
                             runOnUiThread(() -> {
                                 Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
