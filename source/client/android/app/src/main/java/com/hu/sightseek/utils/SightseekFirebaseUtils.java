@@ -12,6 +12,8 @@ public final class SightseekFirebaseUtils {
 
     public static void updateCellsInFirebase(FirebaseAuth mAuth, HashMap<String, Integer> cells) {
         String uid = mAuth.getUid();
+        assert uid != null;
+
         Map<String, Object> updates = new HashMap<>();
         for(Map.Entry<String, Integer> entry : cells.entrySet()) {
             updates.put("visitedCells." + entry.getKey(), FieldValue.increment(entry.getValue()));
@@ -24,16 +26,20 @@ public final class SightseekFirebaseUtils {
 
     public static void removeCellsFromFirebase(FirebaseAuth mAuth, HashMap<String, Integer> cells) {
         String uid = mAuth.getUid();
+        assert uid != null;
+
         FirebaseFirestore.getInstance().collection("users")
                 .document(uid)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    HashMap<String, Long> firestoreMap = (HashMap<String, Long>) documentSnapshot.get("visitedCells");
                     HashMap<String, Object> newMap = new HashMap<>();
+                    HashMap<String, Long> firestoreMap = (HashMap<String, Long>) documentSnapshot.get("visitedCells");
+                    assert firestoreMap != null;
 
                     for(HashMap.Entry<String, Integer> entry : cells.entrySet()) {
                         String key = entry.getKey();
                         long subtractValue = entry.getValue();
+
                         Long currentValue = firestoreMap.get(key);
 
                         if(currentValue != null) {
