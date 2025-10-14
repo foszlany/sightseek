@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -81,8 +82,9 @@ public class ActivityActivity extends AppCompatActivity {
         int activityId = extras.getInt("id");
 
         // Get activity
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(this); // TODO: CHANGE THIS LATER TO MAIN DATABASE AND ADD EXTRA FIELD FOR LOCAL QUERY TEST
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
         activity = dao.getActivity(activityId);
+        dao.close();
 
         if(activity == null) {
             Intent intent = new Intent(this, MainActivity.class);
@@ -156,10 +158,17 @@ public class ActivityActivity extends AppCompatActivity {
                     .setTitle("Confirmation")
                     .setMessage("Are you sure you want to delete this activity? This cannot be undone!")
                     .setPositiveButton("Yes", (d, which) -> {
-                        dao.deleteActivity(activityId);
-                        dao.close();
-
                         FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+                        if(mAuth.getCurrentUser() == null && activity.getStravaId() != -1) {
+                            Toast.makeText(this, "Imported activities cannot be deleted while offline.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
+                        dao2.deleteActivity(activityId);
+                        dao2.close();
+
                         if(mAuth.getCurrentUser() != null) {
                             HashMap<String, Integer> cells = getVisitedCells(PolyUtil.decode(polylineString));
 
