@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekFirebaseUtils.removeCellsFromFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 
@@ -106,31 +107,7 @@ public class ProfileActivity extends AppCompatActivity {
                             dao2.close();
 
                             HashMap<String, Integer> cells = getVisitedCells(points);
-
-                            String uid = mAuth.getUid();
-                            FirebaseFirestore.getInstance().collection("users")
-                                    .document(uid)
-                                    .get()
-                                    .addOnSuccessListener(documentSnapshot -> {
-                                        HashMap<String, Long> firestoreMap = (HashMap<String, Long>) documentSnapshot.get("visitedCells");
-                                        HashMap<String, Object> newMap = new HashMap<>();
-
-                                        for(HashMap.Entry<String, Integer> entry : cells.entrySet()) {
-                                            String key = entry.getKey();
-                                            long subtractValue = entry.getValue();
-                                            Long currentValue = firestoreMap.get(key);
-
-                                            if(currentValue != null) {
-                                                long newValue = Math.max(0, currentValue - subtractValue);
-                                                newMap.put("visitedCells." + key, newValue);
-                                            }
-                                        }
-
-                                        FirebaseFirestore.getInstance().collection("users")
-                                                .document(uid)
-                                                .update(newMap);
-                                    });
-
+                            removeCellsFromFirebase(mAuth, cells);
 
                             SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
                             if(prefs.contains("StravaLatestImportDate")) {

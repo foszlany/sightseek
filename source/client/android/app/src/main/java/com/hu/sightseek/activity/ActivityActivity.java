@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekFirebaseUtils.removeCellsFromFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
@@ -160,42 +161,20 @@ public class ActivityActivity extends AppCompatActivity {
                     .setPositiveButton("Yes", (d, which) -> {
                         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                        if(mAuth.getCurrentUser() == null && activity.getStravaId() != -1) {
-                            Toast.makeText(this, "Imported activities cannot be deleted while offline.", Toast.LENGTH_LONG).show();
-                            return;
+                        if(mAuth.getCurrentUser() == null) {
+                            if(activity.getStravaId() != -1) {
+                                Toast.makeText(this, "Imported activities cannot be deleted while offline.", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                        }
+                        else {
+                            HashMap<String, Integer> cells = getVisitedCells(PolyUtil.decode(polylineString));
+                            removeCellsFromFirebase(mAuth, cells);
                         }
 
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
                         dao2.deleteActivity(activityId);
                         dao2.close();
-
-                        if(mAuth.getCurrentUser() != null) {
-                            HashMap<String, Integer> cells = getVisitedCells(PolyUtil.decode(polylineString));
-
-                            String uid = mAuth.getUid();
-                            FirebaseFirestore.getInstance().collection("users")
-                                    .document(uid)
-                                    .get()
-                                    .addOnSuccessListener(documentSnapshot -> {
-                                        HashMap<String, Long> firestoreMap = (HashMap<String, Long>) documentSnapshot.get("visitedCells");
-                                        HashMap<String, Object> newMap = new HashMap<>();
-
-                                        for(HashMap.Entry<String, Integer> entry : cells.entrySet()) {
-                                            String key = entry.getKey();
-                                            long subtractValue = entry.getValue();
-                                            Long currentValue = firestoreMap.get(key);
-
-                                            if(currentValue != null) {
-                                                long newValue = Math.max(0, currentValue - subtractValue);
-                                                newMap.put("visitedCells." + key, newValue);
-                                            }
-                                        }
-
-                                        FirebaseFirestore.getInstance().collection("users")
-                                                .document(uid)
-                                                .update(newMap);
-                                    });
-                        }
 
                         Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);
