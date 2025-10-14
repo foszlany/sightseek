@@ -74,9 +74,16 @@ public final class SightseekStatisticsUtils {
                     .get(Source.SERVER)
                     .addOnCompleteListener(task -> {
                         double visited = 0.0;
+
                         if(task.isSuccessful() && task.getResult().exists()) {
                             Map<String, Object> data = task.getResult().getData();
-                            visited = (data != null) ? data.size() : 0.0;
+                            if(data != null && data.containsKey("visitedCells")) {
+                                Object visitedCellsObj = data.get("visitedCells");
+                                if(visitedCellsObj instanceof Map) {
+                                    Map<?, ?> visitedCellsMap = (Map<?, ?>) visitedCellsObj;
+                                    visited = visitedCellsMap.size();
+                                }
+                            }
                         }
                         values.put("visited_cells", visited);
 
