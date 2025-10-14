@@ -167,4 +167,6 @@
     <string name="strava_startimport">Start importing</string>
     <string name="strava_importmissing">Import missing</string>
     <string name="strava_importlatest">Import Latest</string>
+    <string name="strava_unlink">Unlink account</string>
+    <string name="strava_unlinkwarn">You may only have one account linked.</string>
 </resources>

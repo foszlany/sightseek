@@ -20,7 +20,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ConsoleAdapter;
@@ -37,9 +43,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
@@ -53,13 +63,13 @@ import okhttp3.RequestBody;
 
 public class StravaImportActivity extends AppCompatActivity {
     private final int ACTIVITIES_PER_PAGE = 6;
-
     private RecyclerView consoleRecyclerView;
     private ConsoleAdapter consoleAdapter;
 
     private SharedPreferences prefs;
     private ArrayList<Activity> activities;
     private HashSet<Long> stravaIds;
+    Map<String, Integer> visitedCells;
     private String importDate;
     private String tempImportDate;
     private String accessToken;
@@ -74,7 +84,7 @@ public class StravaImportActivity extends AppCompatActivity {
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
-        // Check if user is logged in
+        // Check if user is logged in = FirebaseAuth.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null) {
             runOnUiThread(() -> {
@@ -101,6 +111,7 @@ public class StravaImportActivity extends AppCompatActivity {
         prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         activities = new ArrayList<>();
         stravaIds = new HashSet<>();
+        visitedCells = new HashMap<>();
 
         consoleRecyclerView = findViewById(R.id.strava_console);
         consoleAdapter = new ConsoleAdapter();
@@ -321,14 +332,29 @@ public class StravaImportActivity extends AppCompatActivity {
                                 Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId);
                                 activities.add(a);
 
+                                List<LatLng> pointList = PolyUtil.decode(polyline);
+                                for(LatLng p : pointList) {
+                                    String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.latitude, p.longitude), 3);
+
+                                    Integer count = visitedCells.get(hash);
+                                    if(count == null) {
+                                        count = 0;
+                                    }
+                                    visitedCells.put(hash, count + 1);
+                                }
+
+                                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                                FirebaseFirestore.getInstance().collection("users")
+                                        .document(uid)
+                                        .set(Collections.singletonMap("visitedCells", visitedCells), SetOptions.merge());
+
                                 logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
 
                                 if(i + 1 == jsonActivities.length()) {
                                     tempImportDate = startDate;
                                     logIntoConsole("\n");
                                 }
-
-                                // TODO: update cells
                             }
 
                             importLatest(page + 1, mode);
