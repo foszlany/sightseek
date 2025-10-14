@@ -8,8 +8,7 @@
 
     <LinearLayout
         android:id="@+id/statistics_generalcontainer"
-        android:background="@drawable/generic_rounded_background"
-        android:backgroundTint="@color/dark_gray"
+        android:background="@drawable/detailed_statistics_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -129,13 +128,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="8dp"
-        android:background="@drawable/generic_rounded_background"
-        android:backgroundTint="@color/dark_gray"
+        android:background="@drawable/detailed_statistics_background"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/statistics_generalcontainer">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp"
+            android:text="@string/statistics_percategory"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
 
         <LinearLayout
             android:layout_width="match_parent"
