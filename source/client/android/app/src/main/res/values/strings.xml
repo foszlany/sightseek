@@ -166,10 +166,11 @@
     <string name="strava_import">Import activities from Strava</string>
     <string name="strava_startimport">Start importing</string>
     <string name="strava_importmissing">Import missing</string>
-    <string name="strava_importlatest">Import Latest</string>
+    <string name="strava_importlatest">Import latest</string>
     <string name="profile_unlink">Unlink Strava account</string>
     <string name="strava_unlinkwarn">You may only have one account linked.</string>
     <string name="statistics_percategory">Per category</string>
     <string name="profile_accountmanagement">Account management</string>
     <string name="profile_strava">Strava</string>
+    <string name="profile_profile">Your profile</string>
 </resources>

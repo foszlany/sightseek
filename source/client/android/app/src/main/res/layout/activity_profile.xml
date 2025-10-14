@@ -25,11 +25,18 @@
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@+id/profile_topmenu"
-        tools:context=".activity.ProfileActivity"
-        tools:layout_editor_absoluteX="178dp">
+        tools:context=".activity.ProfileActivity">
 
         <TextView
-            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="12dp"
+            android:text="@string/profile_profile"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="34sp" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -44,7 +51,6 @@
             android:background="@color/hint" />
 
         <TextView
-            android:id="@+id/textView7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/strava_unlinkwarn"
