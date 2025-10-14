@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
@@ -32,6 +33,7 @@ import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.maps.android.PolyUtil;
@@ -217,22 +219,18 @@ public class SaveActivity extends AppCompatActivity {
 
                 if(fireStoreDb != null) {
                     // Calculate geohashes
-                    Map<String, Integer> visitedCells = new HashMap<>();
-                    for(LatLng p : pointList) {
-                        String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.latitude, p.longitude), 3);
-
-                        Integer count = visitedCells.get(hash);
-                        if(count == null) {
-                            count = 0;
-                        }
-                        visitedCells.put(hash, count + 1);
-                    }
+                    HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
 
                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+                    Map<String, Object> updates = new HashMap<>();
+                    for(Map.Entry<String, Integer> entry : visitedCells.entrySet()) {
+                        updates.put("visitedCells." + entry.getKey(), FieldValue.increment(entry.getValue()));
+                    }
+
                     fireStoreDb.collection("users")
                             .document(uid)
-                            .set(Collections.singletonMap("visitedCells", visitedCells), SetOptions.merge());
+                            .update(updates);
                 }
 
                 Intent intent = new Intent(this, ActivityActivity.class);

@@ -25,6 +25,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.BoundingBox;
@@ -39,6 +41,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,6 +75,22 @@ public final class SightseekGenericUtils {
         }
 
         return new BoundingBox(maxLat, maxLon, minLat, minLon);
+    }
+
+    public static HashMap<String, Integer> getVisitedCells(List<LatLng> pointList) {
+        HashMap<String, Integer> visitedCells = new HashMap<>();
+
+        for(LatLng p : pointList) {
+            String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.latitude, p.longitude), 3);
+
+            Integer count = visitedCells.get(hash);
+            if(count == null) {
+                count = 0;
+            }
+            visitedCells.put(hash, count + 1);
+        }
+
+        return visitedCells;
     }
 
     public static void setupRouteLine(Polyline route, boolean isFaint) {

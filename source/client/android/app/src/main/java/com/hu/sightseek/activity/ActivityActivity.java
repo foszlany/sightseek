@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
@@ -22,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
@@ -34,6 +37,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -154,6 +158,35 @@ public class ActivityActivity extends AppCompatActivity {
                     .setPositiveButton("Yes", (d, which) -> {
                         dao.deleteActivity(activityId);
                         dao.close();
+
+                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                        if(mAuth.getCurrentUser() != null) {
+                            HashMap<String, Integer> cells = getVisitedCells(PolyUtil.decode(polylineString));
+
+                            String uid = mAuth.getUid();
+                            FirebaseFirestore.getInstance().collection("users")
+                                    .document(uid)
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot -> {
+                                        HashMap<String, Long> firestoreMap = (HashMap<String, Long>) documentSnapshot.get("visitedCells");
+                                        HashMap<String, Object> newMap = new HashMap<>();
+
+                                        for(HashMap.Entry<String, Integer> entry : cells.entrySet()) {
+                                            String key = entry.getKey();
+                                            long subtractValue = entry.getValue();
+                                            Long currentValue = firestoreMap.get(key);
+
+                                            if(currentValue != null) {
+                                                long newValue = Math.max(0, currentValue - subtractValue);
+                                                newMap.put("visitedCells." + key, newValue);
+                                            }
+                                        }
+
+                                        FirebaseFirestore.getInstance().collection("users")
+                                                .document(uid)
+                                                .update(newMap);
+                                    });
+                        }
 
                         Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);

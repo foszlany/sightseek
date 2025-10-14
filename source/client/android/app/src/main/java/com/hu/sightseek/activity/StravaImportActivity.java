@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,10 +21,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.firebase.geofire.GeoFireUtils;
-import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.maps.android.PolyUtil;
@@ -62,7 +62,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class StravaImportActivity extends AppCompatActivity {
-    private final int ACTIVITIES_PER_PAGE = 6;
+    private final int ACTIVITIES_PER_PAGE = 12;
     private RecyclerView consoleRecyclerView;
     private ConsoleAdapter consoleAdapter;
 
@@ -70,7 +70,7 @@ public class StravaImportActivity extends AppCompatActivity {
     private SharedPreferences prefs;
     private ArrayList<Activity> activities;
     private HashSet<Long> stravaIds;
-    Map<String, Integer> visitedCells;
+    HashMap<String, Integer> visitedCells;
     private String importDate;
     private String tempImportDate;
     private String accessToken;
@@ -85,7 +85,7 @@ public class StravaImportActivity extends AppCompatActivity {
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
-        // Check if user is logged in = FirebaseAuth.getInstance();
+        // Check if user is logged in
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null) {
             runOnUiThread(() -> {
@@ -168,7 +168,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
                                 // Last import date to prevent duplicate activities
                                 if(!prefs.contains("StravaLatestImportDate")) {
-                                    importDate = json.getJSONObject("athlete").getString("created_at");
+                                    importDate = json.getJSONObject("athlete").getString("created_at").replace("Z", "");
                                     prefs.edit().putString("StravaLatestImportDate", importDate).apply();
                                 }
                                 else {
@@ -298,9 +298,14 @@ public class StravaImportActivity extends AppCompatActivity {
                                 dao.close();
 
                                 String uid = mAuth.getUid();
+                                Map<String, Object> updates = new HashMap<>();
+                                for(Map.Entry<String, Integer> entry : visitedCells.entrySet()) {
+                                    updates.put("visitedCells." + entry.getKey(), FieldValue.increment(entry.getValue()));
+                                }
+
                                 FirebaseFirestore.getInstance().collection("users")
                                         .document(uid)
-                                        .set(Collections.singletonMap("visitedCells", visitedCells), SetOptions.merge());
+                                        .update(updates);
 
                                 if("after".equals(mode)) {
                                     prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();
@@ -337,15 +342,19 @@ public class StravaImportActivity extends AppCompatActivity {
                                 activities.add(a);
 
                                 List<LatLng> pointList = PolyUtil.decode(polyline);
-                                for(LatLng p : pointList) {
-                                    String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.latitude, p.longitude), 3);
+                                HashMap<String, Integer> newCells = getVisitedCells(pointList);
 
-                                    Integer count = visitedCells.get(hash);
+                                for(HashMap.Entry<String, Integer> entry : newCells.entrySet()) {
+                                    String key = entry.getKey();
+                                    int newCount = entry.getValue();
+
+                                    Integer count = visitedCells.get(key);
                                     if(count == null) {
                                         count = 0;
                                     }
-                                    visitedCells.put(hash, count + 1);
+                                    visitedCells.put(key, count + newCount);
                                 }
+
 
                                 logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
 

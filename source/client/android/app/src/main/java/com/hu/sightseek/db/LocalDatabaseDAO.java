@@ -167,11 +167,12 @@ public class LocalDatabaseDAO {
             String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
             double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
             double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
+            long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
 
             cursor.close();
             db.close();
 
-            return new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, -1);
+            return new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId);
         }
         else {
             cursor.close();
@@ -210,8 +211,9 @@ public class LocalDatabaseDAO {
                 String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
                 double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
                 double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
+                long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
 
-                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, -1));
+                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId));
             } while(cursor.moveToNext());
         }
 
@@ -273,6 +275,33 @@ public class LocalDatabaseDAO {
         db.close();
 
         return polylines;
+    }
+
+    public ArrayList<LatLng> getAllImportedPoints() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ArrayList<LatLng> points = new ArrayList<>();
+
+        String sql =
+                "SELECT " + LocalDatabaseImpl.ACTIVITIES_POLYLINE +
+                " FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE +
+                " WHERE " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1";
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                String polylineString = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
+                List<LatLng> latLngPoints;
+
+                latLngPoints = PolyUtil.decode(polylineString);
+                points.addAll(latLngPoints);
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return points;
     }
 
     public ArrayList<Polyline> getAllPolylines(int tolerance) {

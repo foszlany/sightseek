@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
+import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,12 +22,20 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class ProfileActivity extends AppCompatActivity {
     @Override
@@ -48,6 +57,10 @@ public class ProfileActivity extends AppCompatActivity {
             });
             return;
         }
+
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+        dao.printAllActivities();
+        dao.close();
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.profile_topmenu);
@@ -86,16 +99,48 @@ public class ProfileActivity extends AppCompatActivity {
                     .setTitle("Confirmation")
                     .setMessage("Are you sure you want to unlink your account? This will delete all activities that were imported!")
                     .setPositiveButton("Yes", (d, which) -> {
-                        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                        dao.deleteImportedActivities();
-                        dao.close();
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
+                            ArrayList<LatLng> points = dao2.getAllImportedPoints();
+                            dao2.deleteImportedActivities();
+                            dao2.close();
 
-                        SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-                        if(prefs.contains("StravaLatestImportDate")) {
-                            prefs.edit().remove("StravaLatestImportDate").apply();
-                        }
+                            HashMap<String, Integer> cells = getVisitedCells(points);
 
-                        Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
+                            String uid = mAuth.getUid();
+                            FirebaseFirestore.getInstance().collection("users")
+                                    .document(uid)
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot -> {
+                                        HashMap<String, Long> firestoreMap = (HashMap<String, Long>) documentSnapshot.get("visitedCells");
+                                        HashMap<String, Object> newMap = new HashMap<>();
+
+                                        for(HashMap.Entry<String, Integer> entry : cells.entrySet()) {
+                                            String key = entry.getKey();
+                                            long subtractValue = entry.getValue();
+                                            Long currentValue = firestoreMap.get(key);
+
+                                            if(currentValue != null) {
+                                                long newValue = Math.max(0, currentValue - subtractValue);
+                                                newMap.put("visitedCells." + key, newValue);
+                                            }
+                                        }
+
+                                        FirebaseFirestore.getInstance().collection("users")
+                                                .document(uid)
+                                                .update(newMap);
+                                    });
+
+
+                            SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+                            if(prefs.contains("StravaLatestImportDate")) {
+                                prefs.edit().remove("StravaLatestImportDate").apply();
+                            }
+
+                            runOnUiThread(() -> {
+                                Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
+                            });
+                        });
                     })
                     .setNegativeButton("No", (d, which) -> d.dismiss())
                     .setCancelable(true)
