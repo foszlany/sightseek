@@ -65,6 +65,15 @@
                     android:background="@drawable/detailed_button"
                     android:contentDescription="@string/statistics_detailedbtndesc"/>
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/statistics_loading"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="200dp"
+                app:srcCompat="@drawable/baseline_change_circle_24"
+                android:contentDescription="@string/idea_loading"/>
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

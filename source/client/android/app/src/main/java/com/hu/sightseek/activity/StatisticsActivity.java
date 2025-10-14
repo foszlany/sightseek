@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
@@ -10,6 +11,7 @@ import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -23,11 +25,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
@@ -43,6 +47,8 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 
 public class StatisticsActivity extends AppCompatActivity {
+    private ImageView loadingImage;
+
     // TODO: REFACTOR THESE INTO ONE BIG HASHMAP
     private double totalDistance;
     private double totalDays;
@@ -93,6 +99,9 @@ public class StatisticsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+
+        loadingImage = findViewById(R.id.statistics_loading);
+        loadingImage.setVisibility(GONE);
 
         // Variables
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
@@ -312,8 +321,13 @@ public class StatisticsActivity extends AppCompatActivity {
             setCategoryStatistics(otherStatistics);
         });
 
+        // Get values
         Executors.newSingleThreadExecutor().execute(() -> {
             if(detailedGenericStatistics.isEmpty()) {
+                loadingImage.setVisibility(VISIBLE);
+                Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
+                loadingImage.startAnimation(rotate);
+
                 getDetailedGenericStatistics(this).addOnSuccessListener(stats -> {
                     detailedGenericStatistics = stats;
 
@@ -362,6 +376,9 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setDetailedGenericValues(View detailedView) {
+        loadingImage.clearAnimation();
+        loadingImage.setVisibility(GONE);
+
         setDetailedGenericStatistics();
 
         Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
