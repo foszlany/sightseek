@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class LocalDatabaseDAO {
     private final LocalDatabaseImpl dbHelper;
@@ -184,7 +183,7 @@ public class LocalDatabaseDAO {
 
     public void deleteActivity(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, "id = ?", new String[]{String.valueOf(id)});
+        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 
@@ -204,7 +203,7 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
                 int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
                 String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
@@ -318,6 +317,12 @@ public class LocalDatabaseDAO {
         db.close();
 
         return polylines;
+    }
+
+    public void deleteImportedActivities() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1", null);
+        db.close();
     }
 
     public void printAllActivities() {

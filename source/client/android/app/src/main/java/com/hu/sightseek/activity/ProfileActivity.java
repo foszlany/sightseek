@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.preference.PreferenceManager;
@@ -20,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.hu.sightseek.R;
+import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
 
@@ -72,6 +74,28 @@ public class ProfileActivity extends AppCompatActivity {
 
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
+        });
+
+        // Unlink Strava
+        Button unlinkButton = findViewById(R.id.profile_unlinkbtn);
+        unlinkButton.setOnClickListener(v -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Confirmation")
+                    .setMessage("Are you sure you want to unlink your account? This will delete all activities that were imported!")
+                    .setPositiveButton("Yes", (d, which) -> {
+                        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+                        dao.deleteImportedActivities();
+                        dao.close();
+
+                        Intent intent = new Intent(this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", (d, which) -> d.dismiss())
+                    .setCancelable(true)
+                    .create();
+
+            dialog.show();
         });
 
         // Logout

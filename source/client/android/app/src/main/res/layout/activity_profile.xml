@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/main_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.ProfileActivity">
@@ -18,6 +19,32 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <Button
+        android:id="@+id/profile_unlinkbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/generic_rounded_background"
+        android:text="@string/profile_unlink"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:backgroundTint="@color/dark_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_strava" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/strava_unlinkwarn"
+        android:textColor="@color/hint_light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_unlinkbtn" />
+
+    <Button
         android:id="@+id/profile_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,19 +56,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_strava" />
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
     <Button
         android:id="@+id/profile_strava"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="172dp"
+        android:layout_marginTop="124dp"
         android:background="@drawable/generic_rounded_background"
         android:text="@string/profile_strava"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:backgroundTint="@color/strava"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_topmenu" />
 
