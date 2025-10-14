@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 
@@ -297,15 +298,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 dao.addActivities(activities);
                                 dao.close();
 
-                                String uid = mAuth.getUid();
-                                Map<String, Object> updates = new HashMap<>();
-                                for(Map.Entry<String, Integer> entry : visitedCells.entrySet()) {
-                                    updates.put("visitedCells." + entry.getKey(), FieldValue.increment(entry.getValue()));
-                                }
-
-                                FirebaseFirestore.getInstance().collection("users")
-                                        .document(uid)
-                                        .update(updates);
+                                updateCellsInFirebase(mAuth, visitedCells);
 
                                 if("after".equals(mode)) {
                                     prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();

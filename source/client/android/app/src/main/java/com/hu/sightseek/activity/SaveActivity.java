@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
@@ -29,13 +30,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.firebase.geofire.GeoFireUtils;
-import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
@@ -48,16 +45,13 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SaveActivity extends AppCompatActivity {
-    private FirebaseFirestore fireStoreDb;
     private String title;
     private TravelCategory categoryIndex;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -71,8 +65,6 @@ public class SaveActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
-
-        fireStoreDb = (FirebaseAuth.getInstance().getCurrentUser() != null) ? FirebaseFirestore.getInstance() : null;
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.save_topmenu);
@@ -217,20 +209,10 @@ public class SaveActivity extends AppCompatActivity {
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                 long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1);
 
-                if(fireStoreDb != null) {
-                    // Calculate geohashes
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                if(mAuth.getCurrentUser() != null) {
                     HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
-
-                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-                    Map<String, Object> updates = new HashMap<>();
-                    for(Map.Entry<String, Integer> entry : visitedCells.entrySet()) {
-                        updates.put("visitedCells." + entry.getKey(), FieldValue.increment(entry.getValue()));
-                    }
-
-                    fireStoreDb.collection("users")
-                            .document(uid)
-                            .update(updates);
+                    updateCellsInFirebase(mAuth, visitedCells);
                 }
 
                 Intent intent = new Intent(this, ActivityActivity.class);
