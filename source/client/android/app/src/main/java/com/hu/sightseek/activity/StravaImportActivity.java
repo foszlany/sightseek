@@ -24,9 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
@@ -50,7 +49,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
@@ -157,7 +155,7 @@ public class StravaImportActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) {
                     if(!response.isSuccessful() || response.body() == null) {
-                        onFailReturnToProfile();
+                        onFailReturnToProfile("Failed to reach Strava. Please try again later.");
                     }
                     else {
                         runOnUiThread(() -> {
@@ -165,9 +163,29 @@ public class StravaImportActivity extends AppCompatActivity {
                                 String responseBody = response.body().string();
                                 JSONObject json = new JSONObject(responseBody);
 
+                                String uid = Objects.requireNonNull(mAuth.getUid());
+                                DocumentReference userDocument = FirebaseFirestore.getInstance()
+                                        .collection("users")
+                                        .document(uid);
+
+                                // Check if stravaid matches stored one
+                                long stravaId = json.getJSONObject("athlete").getLong("id");
+                                userDocument.get().addOnSuccessListener(documentSnapshot -> {
+                                    if(!documentSnapshot.contains("strava_id")) {
+                                        userDocument.update("strava_id", stravaId);
+                                    }
+                                    else {
+                                        documentSnapshot.getLong("strava_id");
+                                        Long storedStravaId = documentSnapshot.getLong("strava_id");
+                                        if(storedStravaId != null && storedStravaId != stravaId) {
+                                            onFailReturnToProfile("You have a different account linked!");
+                                        }
+                                    }
+                                });
+
                                 accessToken = json.getString("access_token");
 
-                                // Last import date to prevent duplicate activities
+                                // Last import date for faster queries
                                 if(!prefs.contains("StravaLatestImportDate")) {
                                     importDate = json.getJSONObject("athlete").getString("created_at").replace("Z", "");
                                     prefs.edit().putString("StravaLatestImportDate", importDate).apply();
@@ -177,7 +195,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 }
                             }
                             catch(JSONException | IOException e) {
-                                onFailReturnToProfile();
+                                onFailReturnToProfile("Failed to reach Strava. Please try again later.");
                             }
                         });
                     }
@@ -185,7 +203,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
-                    onFailReturnToProfile();
+                    onFailReturnToProfile("Failed to reach Strava. Please try again later.");
                 }
             });
         }
@@ -195,9 +213,9 @@ public class StravaImportActivity extends AppCompatActivity {
         }
     }
 
-    private void onFailReturnToProfile() {
+    private void onFailReturnToProfile(String reason) {
         runOnUiThread(() ->
-                Toast.makeText(StravaImportActivity.this, "Failed to reach Strava. Please try again later.", Toast.LENGTH_LONG).show()
+                Toast.makeText(StravaImportActivity.this, reason, Toast.LENGTH_LONG).show()
         );
 
         finish();
@@ -291,8 +309,8 @@ public class StravaImportActivity extends AppCompatActivity {
                                     return;
                                 }
 
-                                logIntoConsole("Nothing else was found!\n");
-                                logIntoConsole("Saving to database...");
+                                logIntoConsole("Nothing else was found!\n" +
+                                               "Saving to database...");
 
                                 LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
                                 dao.addActivities(activities);
@@ -368,7 +386,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
-                onFailReturnToProfile();
+                onFailReturnToProfile("Failed to reach Strava. Please try again later.");
             }
         });
     }

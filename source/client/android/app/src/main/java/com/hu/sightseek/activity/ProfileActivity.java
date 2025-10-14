@@ -59,10 +59,6 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-        dao.printAllActivities();
-        dao.close();
-
         // Add Menu
         Toolbar toolbar = findViewById(R.id.profile_topmenu);
         setSupportActionBar(toolbar);
