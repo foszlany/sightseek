@@ -32,7 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -374,20 +373,50 @@ public class StatisticsActivity extends AppCompatActivity {
                             });
                     }
 
-                    // Chart
-                    setupMonthlyDistanceChart();
-
                     runOnUiThread(() -> {
-                        setDetailedGenericValues(detailedView);
+                        setAllDetailedStatisticsValues(detailedView);
                     });
                 });
             }
             else {
                 runOnUiThread(() -> {
-                    setDetailedGenericValues(detailedView);
+                    setAllDetailedStatisticsValues(detailedView);
                 });
             }
         });
+    }
+
+    private void setAllDetailedStatisticsValues(View detailedView) {
+        setDetailedGenericStatistics();
+        setupMonthlyDistanceChart();
+        switch(mainCategory) {
+            case LOCOMOTOR:
+            case INVALID:
+                setCategoryStatistics(locoStatistics);
+                break;
+
+            case MICROMOBILITY:
+                setCategoryStatistics(microStatistics);
+                break;
+
+            case OTHER:
+                setCategoryStatistics(otherStatistics);
+        }
+
+        loadingImage.clearAnimation();
+        loadingImage.setVisibility(GONE);
+
+        Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
+
+        View generalContainerView = findViewById(R.id.statistics_generalcontainer);
+        View perCategoryContainerView = findViewById(R.id.statistics_percategorycontainer);
+        View perMonthDistanceContainerView = findViewById(R.id.statistics_permonthdistancecontainer);
+
+        generalContainerView.startAnimation(slideToRightAnim);
+        perCategoryContainerView.startAnimation(slideToRightAnim);
+        perMonthDistanceContainerView.startAnimation(slideToRightAnim);
+
+        detailedView.setVisibility(VISIBLE);
     }
 
     private void setupMonthlyDistanceChart() {
@@ -417,7 +446,7 @@ public class StatisticsActivity extends AppCompatActivity {
         barData.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return value + " km";
+                return Math.round(value) + " km";
             }
         });
 
@@ -439,26 +468,6 @@ public class StatisticsActivity extends AppCompatActivity {
         yAxisRight.setDrawLabels(false);
 
         chart.invalidate();
-    }
-
-    private void setDetailedGenericValues(View detailedView) {
-        loadingImage.clearAnimation();
-        loadingImage.setVisibility(GONE);
-
-        setDetailedGenericStatistics();
-
-        Animation slideToRightAnim = AnimationUtils.loadAnimation(this, R.anim.fade_slide_toright);
-
-        View generalContainerView = findViewById(R.id.statistics_generalcontainer);
-        View perCategoryContainerView = findViewById(R.id.statistics_percategorycontainer);
-        View perMonthDistanceContainerView = findViewById(R.id.statistics_permonthdistancecontainer);
-
-        generalContainerView.startAnimation(slideToRightAnim);
-        perCategoryContainerView.startAnimation(slideToRightAnim);
-        perMonthDistanceContainerView.startAnimation(slideToRightAnim);
-
-
-        detailedView.setVisibility(VISIBLE);
     }
 
     private void setDetailedGenericStatistics() {
