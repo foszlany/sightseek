@@ -179,6 +179,11 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         isCardView = true;
 
+        if(loadingImage != null) {
+            loadingImage.clearAnimation();
+            loadingImage.setVisibility(GONE);
+        }
+
         // Inflate view
         ViewGroup container = findViewById(R.id.statistics_container);
         View detailedView = container.findViewById(R.id.statistics_detailedcontainer);
@@ -387,6 +392,10 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setAllDetailedStatisticsValues(View detailedView) {
+        if(isCardView) {
+            return;
+        }
+
         setDetailedGenericStatistics();
         setupMonthlyDistanceChart();
         switch(mainCategory) {
@@ -420,6 +429,10 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupMonthlyDistanceChart() {
+        if(isCardView) {
+            return;
+        }
+
         if(monthlyTotalDistance.isEmpty()) {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
             monthlyTotalDistance = dao.getMonthlyTotalDistance();
@@ -471,6 +484,10 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setDetailedGenericStatistics() {
+        if(isCardView) {
+            return;
+        }
+
         TextView totalActivitiesTextView = findViewById(R.id.statistics_generalcard_activitiescreated);
         totalActivitiesTextView.setText(
                 getString(R.string.statistics_generalcard_activitiescreated, activityCount)
@@ -541,6 +558,10 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setCategoryStatistics(HashMap<String, Serializable> values) {
+        if(isCardView) {
+            return;
+        }
+
         Double valueHolder;
 
         TextView totalActivitiesTextView = findViewById(R.id.statistics_percategory_activitiescreated);
