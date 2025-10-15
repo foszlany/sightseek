@@ -39,7 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder> implements Filterable {
-    private static final int w = 500, h = 500;
+    private static final int w = 400, h = 400;
 
     private final ArrayList<Activity> activityListFull;
     private ArrayList<Activity> activityListFilteredByCategory;
@@ -112,13 +112,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         Bitmap cache = imageCache.get(activity.getId());
         if(cache == null) {
             List<LatLng> points = PolyUtil.decode(activity.getPolyline());
-            try {
-                cache = renderMapImage(points);
-            }
-            catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
+            cache = renderMapImage(points);
             imageCache.put(activity.getId(), cache);
         }
         holder.map.setImageBitmap(cache);
@@ -158,7 +152,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         }
     }
 
-    private Bitmap renderMapImage(List<LatLng> points) throws InterruptedException {
+    private Bitmap renderMapImage(List<LatLng> points) {
         // Polyline
         Polyline line = new Polyline();
         for(LatLng p : points) {
@@ -172,16 +166,16 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
 
         // Render
-        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(bmp);
         mapView.draw(canvas);
 
         // Clean up
-        mapView.onPause();
         mapView.getOverlayManager().remove(line);
 
         return bmp;
     }
+
 
     public void updateActivities(List<Activity> newActivities) {
         this.activityListFull.clear();
