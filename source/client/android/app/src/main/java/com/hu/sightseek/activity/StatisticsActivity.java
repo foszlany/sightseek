@@ -447,6 +447,13 @@ public class StatisticsActivity extends AppCompatActivity {
         chart.getLegend().setEnabled(false);
         chart.setExtraBottomOffset(10);
 
+        chart.setDoubleTapToZoomEnabled(false);
+        chart.setHighlightPerTapEnabled(false);
+        chart.setHighlightPerDragEnabled(false);
+        chart.setTouchEnabled(false);
+        chart.setDragEnabled(false);
+        chart.setScaleEnabled(false);
+
         int index = 0;
         List<BarEntry> distance = new ArrayList<>();
         List<String> months = new ArrayList<>();
