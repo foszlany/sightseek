@@ -117,6 +117,33 @@ public class LocalDatabaseDAO {
         return res;
     }
 
+    public HashMap<Integer, Double> getMonthlyTotalDistance() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        HashMap<Integer, Double> data = new HashMap<>();
+        for(int i = 0; i < 12; i++) {
+            data.put(i, 0d);
+        }
+
+        String sql =
+                "SELECT strftime('%m', " + LocalDatabaseImpl.ACTIVITIES_STARTTIME + ") AS month, " +
+                "SUM (" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + ") AS total_distance " +
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE +
+                " GROUP BY month" +
+                " ORDER BY month ASC";
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        while(cursor.moveToNext()) {
+            int month = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow("month")));
+            double distance = cursor.getDouble(cursor.getColumnIndexOrThrow("total_distance"));
+
+            data.put(month, distance);
+        }
+        cursor.close();
+
+        return data;
+    }
+
     public TravelCategory getMainTravelCategory() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
