@@ -344,7 +344,7 @@ public class StatisticsActivity extends AppCompatActivity {
                     Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
                     loadingImage.startAnimation(rotate);
                 });
-                
+
                 getDetailedGenericStatistics(this).addOnSuccessListener(stats -> {
                     detailedGenericStatistics = stats;
 
@@ -604,9 +604,16 @@ public class StatisticsActivity extends AppCompatActivity {
         );
 
         TextView approxCaloriesBurntTextView = findViewById(R.id.statistics_percategory_approximatecaloriesburnt);
-        approxCaloriesBurntTextView.setText(
-                getString(R.string.statistics_percategory_approximatecaloriesburnt, (Double)values.get("approx_calories_low"), (Double)values.get("approx_calories_high"))
-        );
+        if((Double)values.get("approx_calories_high") < 0.5) {
+            approxCaloriesBurntTextView.setText(
+                    getString(R.string.statistics_percategory_approximatecaloriesnone)
+            );
+        }
+        else {
+            approxCaloriesBurntTextView.setText(
+                    getString(R.string.statistics_percategory_approximatecaloriesburnt, (Double)values.get("approx_calories_low"), (Double)values.get("approx_calories_high"))
+            );
+        }
     }
 
     private void swapActiveButton(Button from, Button to) {
