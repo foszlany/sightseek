@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         activities = new ArrayList<>();
         activities = dao.getAllActivities();
-        
+
         dao.close();
 
         adapter = new ActivityAdapter(this, activities);

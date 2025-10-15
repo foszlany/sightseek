@@ -120,7 +120,7 @@ public class LocalDatabaseDAO {
     public HashMap<Integer, Double> getMonthlyTotalDistance() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         HashMap<Integer, Double> data = new HashMap<>();
-        for(int i = 0; i < 12; i++) {
+        for(int i = 1; i <= 12; i++) {
             data.put(i, 0d);
         }
 
@@ -135,7 +135,7 @@ public class LocalDatabaseDAO {
 
         while(cursor.moveToNext()) {
             int month = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow("month")));
-            double distance = cursor.getDouble(cursor.getColumnIndexOrThrow("total_distance"));
+            double distance = cursor.getDouble(cursor.getColumnIndexOrThrow("total_distance")) / 1000.0;
 
             data.put(month, distance);
         }

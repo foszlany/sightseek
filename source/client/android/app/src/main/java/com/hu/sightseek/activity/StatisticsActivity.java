@@ -31,16 +31,27 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-
 import org.osmdroid.config.Configuration;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
 
@@ -62,6 +73,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private HashMap<String, Serializable> microStatistics;
     private HashMap<String, Serializable> otherStatistics;
     private HashMap<String, Serializable> detailedGenericStatistics;
+    private HashMap<Integer, Double> monthlyTotalDistance;
     private Button currentActiveButton;
 
     @Override
@@ -108,6 +120,7 @@ public class StatisticsActivity extends AppCompatActivity {
         locoStatistics = new HashMap<>();
         microStatistics = new HashMap<>();
         otherStatistics = new HashMap<>();
+        monthlyTotalDistance = new HashMap<>();
 
         baseStatistics = dao.getBaseStatistics(TravelCategory.INVALID);
         mainCategory = dao.getMainTravelCategory();
@@ -329,6 +342,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 getDetailedGenericStatistics(this).addOnSuccessListener(stats -> {
                     detailedGenericStatistics = stats;
 
+                    // Get initial category specific statistics
                     switch(mainCategory) {
                         case LOCOMOTOR:
                         case INVALID:
@@ -360,6 +374,9 @@ public class StatisticsActivity extends AppCompatActivity {
                             });
                     }
 
+                    // Chart
+                    setupMonthlyDistanceChart();
+
                     runOnUiThread(() -> {
                         setDetailedGenericValues(detailedView);
                     });
@@ -373,6 +390,57 @@ public class StatisticsActivity extends AppCompatActivity {
         });
     }
 
+    private void setupMonthlyDistanceChart() {
+        if(monthlyTotalDistance.isEmpty()) {
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+            monthlyTotalDistance = dao.getMonthlyTotalDistance();
+            dao.close();
+        }
+
+        BarChart chart = findViewById(R.id.statistics_permonthdistance_chart);
+        chart.getAxisRight().setAxisMinimum(1f);
+        chart.getDescription().setEnabled(false);
+        chart.getLegend().setEnabled(false);
+        chart.setExtraBottomOffset(10);
+
+        int index = 0;
+        List<BarEntry> distance = new ArrayList<>();
+        List<String> months = new ArrayList<>();
+        for(Map.Entry<Integer, Double> entry : monthlyTotalDistance.entrySet()) {
+            distance.add(new BarEntry(index, entry.getValue().floatValue()));
+            months.add(Integer.toString(entry.getKey()));
+            index++;
+        }
+
+        BarDataSet dataSet = new BarDataSet(distance, "null");
+        BarData barData = new BarData(dataSet);
+        barData.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return value + " km";
+            }
+        });
+
+        chart.setData(barData);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(months));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(12, false);
+        xAxis.setCenterAxisLabels(false);
+        xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1f);
+
+        YAxis yAxisLeft = chart.getAxisLeft();
+        yAxisLeft.setDrawGridLines(false);
+        yAxisLeft.setAxisMinimum(0);
+
+        YAxis yAxisRight = chart.getAxisRight();
+        yAxisRight.setDrawLabels(false);
+
+        chart.invalidate();
+    }
+
     private void setDetailedGenericValues(View detailedView) {
         loadingImage.clearAnimation();
         loadingImage.setVisibility(GONE);
@@ -383,9 +451,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
         View generalContainerView = findViewById(R.id.statistics_generalcontainer);
         View perCategoryContainerView = findViewById(R.id.statistics_percategorycontainer);
+        View perMonthDistanceContainerView = findViewById(R.id.statistics_permonthdistancecontainer);
 
         generalContainerView.startAnimation(slideToRightAnim);
         perCategoryContainerView.startAnimation(slideToRightAnim);
+        perMonthDistanceContainerView.startAnimation(slideToRightAnim);
+
 
         detailedView.setVisibility(VISIBLE);
     }
@@ -432,7 +503,6 @@ public class StatisticsActivity extends AppCompatActivity {
                     getString(R.string.statistics_generalcard_visitedcells, visitedCells)
             );
         }
-
 
         TextView longestDistanceTextView = findViewById(R.id.statistics_generalcard_longestdistance);
         longestDistanceTextView.setText(

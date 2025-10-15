@@ -173,4 +173,5 @@
     <string name="profile_accountmanagement">Account management</string>
     <string name="profile_strava">Strava</string>
     <string name="profile_profile">Your profile</string>
+    <string name="statistics_permonthdistance_title">Distance per month</string>
 </resources>

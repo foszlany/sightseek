@@ -20,6 +20,45 @@ import java.util.Map;
 public final class SightseekStatisticsUtils {
     private SightseekStatisticsUtils() {}
 
+    public static Task<HashMap<String, Serializable>> getDetailedGenericStatistics(Context ctx) {
+        TaskCompletionSource<HashMap<String, Serializable>> source = new TaskCompletionSource<>();
+        HashMap<String, Serializable> values = new HashMap<>();
+
+        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+            FirebaseFirestore fireStoreDb = FirebaseFirestore.getInstance();
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+            fireStoreDb.collection("users")
+                    .document(uid)
+                    .get(Source.SERVER)
+                    .addOnCompleteListener(task -> {
+                        double visited = 0.0;
+
+                        if(task.isSuccessful() && task.getResult().exists()) {
+                            Map<String, Object> data = task.getResult().getData();
+                            if(data != null && data.containsKey("visitedCells")) {
+                                Object visitedCellsObj = data.get("visitedCells");
+                                if(visitedCellsObj instanceof Map) {
+                                    Map<?, ?> visitedCellsMap = (Map<?, ?>) visitedCellsObj;
+                                    visited = visitedCellsMap.size();
+                                }
+                            }
+                        }
+                        values.put("visited_cells", visited);
+
+                        fillLocalStats(ctx, values);
+                        source.setResult(values);
+                    });
+        }
+        else {
+            values.put("visited_cells", -1.0);
+            fillLocalStats(ctx, values);
+            source.setResult(values);
+        }
+
+        return source.getTask();
+    }
+
     public static HashMap<String, Serializable> getCategorySpecificStatistics(Context ctx, TravelCategory category) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
         HashMap<String, Serializable> values = dao.getBaseStatistics(category);
@@ -59,45 +98,6 @@ public final class SightseekStatisticsUtils {
         values.put("approx_calories_high", approxCaloriesHigh);
 
         return values;
-    }
-
-    public static Task<HashMap<String, Serializable>> getDetailedGenericStatistics(Context ctx) {
-        TaskCompletionSource<HashMap<String, Serializable>> source = new TaskCompletionSource<>();
-        HashMap<String, Serializable> values = new HashMap<>();
-
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-            FirebaseFirestore fireStoreDb = FirebaseFirestore.getInstance();
-            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-            fireStoreDb.collection("users")
-                    .document(uid)
-                    .get(Source.SERVER)
-                    .addOnCompleteListener(task -> {
-                        double visited = 0.0;
-
-                        if(task.isSuccessful() && task.getResult().exists()) {
-                            Map<String, Object> data = task.getResult().getData();
-                            if(data != null && data.containsKey("visitedCells")) {
-                                Object visitedCellsObj = data.get("visitedCells");
-                                if(visitedCellsObj instanceof Map) {
-                                    Map<?, ?> visitedCellsMap = (Map<?, ?>) visitedCellsObj;
-                                    visited = visitedCellsMap.size();
-                                }
-                            }
-                        }
-                        values.put("visited_cells", visited);
-
-                        fillLocalStats(ctx, values);
-                        source.setResult(values);
-                    });
-        }
-        else {
-            values.put("visited_cells", -1.0);
-            fillLocalStats(ctx, values);
-            source.setResult(values);
-        }
-
-        return source.getTask();
     }
 
     private static void fillLocalStats(Context ctx, HashMap<String, Serializable> values) {
