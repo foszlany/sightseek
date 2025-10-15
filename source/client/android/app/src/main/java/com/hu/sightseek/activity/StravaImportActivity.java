@@ -177,7 +177,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                     else {
                                         documentSnapshot.getLong("stravaId");
                                         Long storedStravaId = documentSnapshot.getLong("stravaId");
-                                        if(storedStravaId != null && storedStravaId != stravaId) {
+                                        if(storedStravaId != null && storedStravaId != stravaId && storedStravaId > -1) {
                                             onFailReturnToProfile("You have a different account linked!");
                                         }
                                     }
