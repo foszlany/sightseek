@@ -339,10 +339,12 @@ public class StatisticsActivity extends AppCompatActivity {
         // Get values
         Executors.newSingleThreadExecutor().execute(() -> {
             if(detailedGenericStatistics.isEmpty()) {
-                loadingImage.setVisibility(VISIBLE);
-                Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
-                loadingImage.startAnimation(rotate);
-
+                runOnUiThread(() -> {
+                    loadingImage.setVisibility(VISIBLE);
+                    Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
+                    loadingImage.startAnimation(rotate);
+                });
+                
                 getDetailedGenericStatistics(this).addOnSuccessListener(stats -> {
                     detailedGenericStatistics = stats;
 
