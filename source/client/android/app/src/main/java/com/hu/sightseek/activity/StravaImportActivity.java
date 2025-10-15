@@ -177,7 +177,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                     else {
                                         documentSnapshot.getLong("stravaId");
                                         Long storedStravaId = documentSnapshot.getLong("stravaId");
-                                        if(storedStravaId != null && storedStravaId != stravaId && storedStravaId > -1) {
+                                        if(storedStravaId != null && storedStravaId != stravaId && storedStravaId > 0) {
                                             onFailReturnToProfile("You have a different account linked!");
                                         }
                                     }
@@ -345,7 +345,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
                                 TravelCategory category = getCategoryFromStravaType(jsonActivity.getString("sport_type"));
                                 String polyline = jsonActivity.getJSONObject("map").getString("summary_polyline");
-                                String startDate = jsonActivity.getString("start_date").replace("Z", "");
+                                String startDate = jsonActivity.getString("start_date_local").replace("Z", "");
                                 int elapsedTime = jsonActivity.getInt("moving_time");
                                 int distance = jsonActivity.getInt("distance");
 
