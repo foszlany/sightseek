@@ -47,6 +47,7 @@ import org.osmdroid.config.Configuration;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -456,10 +457,9 @@ public class StatisticsActivity extends AppCompatActivity {
 
         int index = 0;
         List<BarEntry> distance = new ArrayList<>();
-        List<String> months = new ArrayList<>();
+        List<String> months = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
         for(Map.Entry<Integer, Double> entry : monthlyTotalDistance.entrySet()) {
             distance.add(new BarEntry(index, entry.getValue().floatValue()));
-            months.add(Integer.toString(entry.getKey()));
             index++;
         }
 
