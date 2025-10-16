@@ -188,6 +188,12 @@ public class IdeaActivity extends AppCompatActivity {
             return;
         }
 
+        Glide.with(imageView)
+                .load(R.drawable.loading)
+                .placeholder(R.drawable.loading)
+                .error(R.drawable.loading)
+                .into(imageView);
+
         referencePoint = new LatLng(0, 0);
 
         // Get values
