@@ -30,4 +30,5 @@
     <color name="gold">#E98C25</color>
     <color name="silver">#8E8E8E</color>
     <color name="bronze">#87673E</color>
+    <color name="faint_blue">#5F5F75</color>
 </resources>

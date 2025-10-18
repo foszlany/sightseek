@@ -7,7 +7,7 @@
     android:background="@drawable/generic_rounded_background"
     android:orientation="horizontal"
     android:layout_marginHorizontal="6dp"
-    android:layout_marginTop="10dp"
+    android:layout_marginTop="6dp"
     android:paddingHorizontal="8dp"
     android:paddingVertical="16dp">
 

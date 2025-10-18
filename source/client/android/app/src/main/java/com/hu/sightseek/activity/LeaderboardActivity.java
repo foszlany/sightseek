@@ -1,13 +1,15 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -140,6 +141,12 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                 cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
                 recyclerView.setAdapter(cellAdapter);
+
+                View myEntryView = findViewById(R.id.leaderboard_myentry);
+                myEntryView.setVisibility(VISIBLE);
+
+                View separator = findViewById(R.id.leaderboard_separator);
+                separator.setVisibility(VISIBLE);
             });
 
         }
