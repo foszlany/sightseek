@@ -169,7 +169,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                         .collection("users")
                                         .document(uid);
 
-                                // Check if stravaid matches stored one
+                                // Check if stravaid matches stored one TODO: ADD TO SEPERATE TABLE AND CHECK
                                 long stravaId = json.getJSONObject("athlete").getLong("id");
                                 userDocument.get().addOnSuccessListener(documentSnapshot -> {
                                     if(!documentSnapshot.contains("stravaId") || documentSnapshot.getLong("stravaId") == -1) {

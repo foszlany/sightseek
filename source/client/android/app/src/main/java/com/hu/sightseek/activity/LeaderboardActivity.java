@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.LeaderboardCellEntryAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
@@ -88,24 +92,32 @@ public class LeaderboardActivity extends AppCompatActivity {
         if(cellAdapter == null) {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            cellEntries.add(new LeaderboardEntry("asd", 424));
-            cellEntries.add(new LeaderboardEntry("asd", 55));
-            cellEntries.add(new LeaderboardEntry("asd", 2));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
-            cellEntries.add(new LeaderboardEntry("asd", 1));
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("leaderboard_cells")
+                    .orderBy("cellsVisited", Query.Direction.DESCENDING)
+                    .limit(100)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            for(QueryDocumentSnapshot document : task.getResult()) {
+                                String username = document.getString("username");
+                                Long cellsVisitedHolder = document.getLong("cellsVisited");
+                                long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
 
-
-
-            cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
+                                cellEntries.add(new LeaderboardEntry(username, cellsVisited));
+                                cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
+                                recyclerView.setAdapter(cellAdapter);
+                            }
+                        }
+                        else {
+                            Toast.makeText(this, "Couldn't reach servers, please try again later.", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    });
         }
-
-        recyclerView.setAdapter(cellAdapter);
+        else {
+            recyclerView.setAdapter(cellAdapter);
+        }
     }
 
     // Create top menubar
