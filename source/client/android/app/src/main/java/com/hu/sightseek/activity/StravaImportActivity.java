@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,7 +60,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class StravaImportActivity extends AppCompatActivity {
-    private final int ACTIVITIES_PER_PAGE = 12;
+    private final int ACTIVITIES_PER_PAGE = 200;
     private RecyclerView consoleRecyclerView;
     private ConsoleAdapter consoleAdapter;
 
@@ -73,6 +72,7 @@ public class StravaImportActivity extends AppCompatActivity {
     private String importDate;
     private String tempImportDate;
     private String accessToken;
+    public boolean isImporting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +112,7 @@ public class StravaImportActivity extends AppCompatActivity {
         activities = new ArrayList<>();
         stravaIds = new HashSet<>();
         visitedCells = new HashMap<>();
+        isImporting = false;
 
         consoleRecyclerView = findViewById(R.id.strava_console);
         consoleAdapter = new ConsoleAdapter();
@@ -257,12 +258,22 @@ public class StravaImportActivity extends AppCompatActivity {
 
         Button importLatestButton = findViewById(R.id.strava_importlatestbtn);
         importLatestButton.setOnClickListener(v -> {
+            if(isImporting) {
+                return;
+            }
+            isImporting = true;
+
             consoleAdapter.clearLogs();
             importLatest(1, "after");
         });
 
         Button importMissingButton = findViewById(R.id.strava_importmissingbtn);
         importMissingButton.setOnClickListener(v -> {
+            if(isImporting) {
+                return;
+            }
+            isImporting = true;
+
             consoleAdapter.clearLogs();
             importLatest(1, "before");
         });
@@ -290,9 +301,11 @@ public class StravaImportActivity extends AppCompatActivity {
             public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) {
                 if(response.code() == 429) {
                     logIntoConsole("The API has reached its rate limit. Please try again later.");
+                    isImporting = false;
                 }
                 if(!response.isSuccessful() || response.body() == null) {
                     logIntoConsole("An unknown error has occurred. Please try again later.");
+                    isImporting = false;
                 }
                 else {
                     runOnUiThread(() -> {
@@ -306,6 +319,9 @@ public class StravaImportActivity extends AppCompatActivity {
                                     consoleAdapter.clearLogs();
                                     logIntoConsole("Nothing new was found.\n" +
                                                    "Use \"Import missing\" if you wish to restore deleted activities.\n");
+
+                                    isImporting = false;
+
                                     return;
                                 }
 
@@ -325,6 +341,8 @@ public class StravaImportActivity extends AppCompatActivity {
 
                                 logIntoConsole("Importing has been completed.\n" +
                                                 activities.size() + " activities were fetched.");
+
+                                isImporting = false;
 
                                 return;
                             }
@@ -366,7 +384,6 @@ public class StravaImportActivity extends AppCompatActivity {
                                     visitedCells.put(key, count + newCount);
                                 }
 
-
                                 logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
 
                                 if(i + 1 == jsonActivities.length()) {
@@ -379,6 +396,7 @@ public class StravaImportActivity extends AppCompatActivity {
                         }
                         catch(JSONException | IOException e) {
                             logIntoConsole("An unknown error has occurred. Nothing was saved. Please try again later.");
+                            isImporting = false;
                         }
                     });
                 }
@@ -387,6 +405,7 @@ public class StravaImportActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
                 onFailReturnToProfile("Failed to reach Strava. Please try again later.");
+                isImporting = false;
             }
         });
     }
