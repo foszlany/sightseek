@@ -89,6 +89,18 @@ public class LeaderboardActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
             cellEntries.add(new LeaderboardEntry("asd", 424));
+            cellEntries.add(new LeaderboardEntry("asd", 55));
+            cellEntries.add(new LeaderboardEntry("asd", 2));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+            cellEntries.add(new LeaderboardEntry("asd", 1));
+
+
 
             cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
         }

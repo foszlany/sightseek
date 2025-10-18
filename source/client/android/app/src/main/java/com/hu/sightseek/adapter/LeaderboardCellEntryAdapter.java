@@ -32,6 +32,23 @@ public class LeaderboardCellEntryAdapter extends RecyclerView.Adapter<Leaderboar
 
     @Override
     public void onBindViewHolder(@NonNull LeaderboardCellEntryViewHolder holder, int position) {
+        if(position == 0) {
+            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
+            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.gold, null));
+        }
+        else if(position == 1) {
+            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
+            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.silver, null));
+        }
+        else if(position == 2) {
+            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
+            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.bronze, null));
+        }
+        else if(position % 2 == 0) {
+            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
+            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.dark_gray, null));
+        }
+
         LeaderboardEntry entry = entryList.get(position);
 
         // Values

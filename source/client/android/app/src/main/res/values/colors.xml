@@ -28,4 +28,8 @@
     <color name="strava">#FC5200</color>
     <color name="light_purple">#9734FF</color>
     <color name="green">#00FF14</color>
+    <color name="gold">#E98C25</color>
+    <color name="silver">#8E8E8E</color>
+    <color name="bronze">#87673E</color>
+
 </resources>
