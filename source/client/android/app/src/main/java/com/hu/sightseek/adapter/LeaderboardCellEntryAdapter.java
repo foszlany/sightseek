@@ -1,12 +1,15 @@
 package com.hu.sightseek.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hu.sightseek.R;
@@ -15,8 +18,8 @@ import com.hu.sightseek.model.LeaderboardEntry;
 import java.util.ArrayList;
 
 public class LeaderboardCellEntryAdapter extends RecyclerView.Adapter<LeaderboardCellEntryAdapter.LeaderboardCellEntryViewHolder> {
-    private final ArrayList<LeaderboardEntry> entryList;
     private final Context context;
+    private final ArrayList<LeaderboardEntry> entryList;
 
     public LeaderboardCellEntryAdapter(Context context, ArrayList<LeaderboardEntry> entries) {
         this.context = context;
@@ -32,22 +35,24 @@ public class LeaderboardCellEntryAdapter extends RecyclerView.Adapter<Leaderboar
 
     @Override
     public void onBindViewHolder(@NonNull LeaderboardCellEntryViewHolder holder, int position) {
+        View v = holder.itemView.findViewById(R.id.leaderboard_myentry);
+        Drawable background = v.getBackground();
+        Drawable wrapped = DrawableCompat.wrap(background.mutate());
+
         if(position == 0) {
-            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
-            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.gold, null));
+            DrawableCompat.setTint(wrapped, ContextCompat.getColor(v.getContext(), R.color.gold));
         }
         else if(position == 1) {
-            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
-            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.silver, null));
+            DrawableCompat.setTint(wrapped, ContextCompat.getColor(v.getContext(), R.color.silver));
         }
         else if(position == 2) {
-            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
-            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.bronze, null));
+            DrawableCompat.setTint(wrapped, ContextCompat.getColor(v.getContext(), R.color.bronze));
         }
-        else if(position % 2 == 0) {
-            View v = holder.itemView.findViewById(R.id.leaderboard_entry);
-            v.setBackgroundColor(holder.itemView.getResources().getColor(R.color.dark_gray, null));
+        else {
+            DrawableCompat.setTint(wrapped, ContextCompat.getColor(v.getContext(), R.color.dark_gray));
         }
+
+        v.setBackground(wrapped);
 
         LeaderboardEntry entry = entryList.get(position);
 

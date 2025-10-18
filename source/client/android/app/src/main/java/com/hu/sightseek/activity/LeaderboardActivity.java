@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,14 +15,18 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.LeaderboardCellEntryAdapter;
-import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.LeaderboardEntry;
 
 import org.osmdroid.config.Configuration;
@@ -31,6 +36,7 @@ import java.util.ArrayList;
 public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardCellEntryAdapter cellAdapter;
     private ArrayList<LeaderboardEntry> cellEntries;
+    private LeaderboardEntry myCellEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,27 +99,49 @@ public class LeaderboardActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("leaderboard_cells")
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            String currentUid = auth.getCurrentUser().getUid();
+
+            Task<QuerySnapshot> leaderboardTask = db.collection("leaderboard_cells")
                     .orderBy("cellsVisited", Query.Direction.DESCENDING)
                     .limit(100)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
-                            for(QueryDocumentSnapshot document : task.getResult()) {
-                                String username = document.getString("username");
-                                Long cellsVisitedHolder = document.getLong("cellsVisited");
-                                long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
+                    .get();
 
-                                cellEntries.add(new LeaderboardEntry(username, cellsVisited));
-                                cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
-                                recyclerView.setAdapter(cellAdapter);
-                            }
-                        }
-                        else {
-                            Toast.makeText(this, "Couldn't reach servers, please try again later.", Toast.LENGTH_LONG).show();
-                            finish();
-                        }
-                    });
+            Task<DocumentSnapshot> userTask = db.collection("leaderboard_cells")
+                    .document(currentUid)
+                    .get();
+
+            Tasks.whenAllSuccess(leaderboardTask, userTask).addOnSuccessListener(results -> {
+                QuerySnapshot leaderboardSnapshot = (QuerySnapshot) results.get(0);
+                DocumentSnapshot userSnapshot = (DocumentSnapshot) results.get(1);
+
+                for(QueryDocumentSnapshot document : leaderboardSnapshot) {
+                    String username = document.getString("username");
+                    Long cellsVisitedHolder = document.getLong("cellsVisited");
+                    long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
+                    cellEntries.add(new LeaderboardEntry(username, cellsVisited));
+                }
+
+                if(userSnapshot.exists()) {
+                    String username = userSnapshot.getString("username");
+                    Long cellsVisitedHolder = userSnapshot.getLong("cellsVisited");
+                    long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
+                    myCellEntry = new LeaderboardEntry(username, cellsVisited);
+
+                    TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                    myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, 0));
+
+                    TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                    myNameTextView.setText(myCellEntry.getUsername());
+
+                    TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                    myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myCellEntry.getValue()));
+                }
+
+                cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
+                recyclerView.setAdapter(cellAdapter);
+            });
+
         }
         else {
             recyclerView.setAdapter(cellAdapter);
