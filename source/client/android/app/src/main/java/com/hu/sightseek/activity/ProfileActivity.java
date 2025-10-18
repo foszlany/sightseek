@@ -1,6 +1,6 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.SightseekFirebaseUtils.removeCellsFromFirebase;
+import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
 
@@ -27,7 +27,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
@@ -36,7 +35,6 @@ import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
@@ -105,7 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
                             dao2.close();
 
                             HashMap<String, Integer> cells = getVisitedCells(points);
-                            removeCellsFromFirebase(mAuth, cells);
+                            updateCellsInFirebase(mAuth, cells, true);
 
                             SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
                             if(prefs.contains("StravaLatestImportDate")) {

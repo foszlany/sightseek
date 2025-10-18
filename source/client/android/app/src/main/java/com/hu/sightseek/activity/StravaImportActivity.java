@@ -331,7 +331,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 dao.addActivities(activities);
                                 dao.close();
 
-                                updateCellsInFirebase(mAuth, visitedCells);
+                                updateCellsInFirebase(mAuth, visitedCells, false);
 
                                 if("after".equals(mode)) {
                                     prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();

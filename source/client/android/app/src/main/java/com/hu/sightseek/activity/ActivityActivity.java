@@ -1,6 +1,5 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.SightseekFirebaseUtils.removeCellsFromFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
@@ -26,11 +25,11 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
+import com.hu.sightseek.utils.SightseekFirebaseUtils;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
@@ -169,7 +168,7 @@ public class ActivityActivity extends AppCompatActivity {
                         }
                         else {
                             HashMap<String, Integer> cells = getVisitedCells(PolyUtil.decode(polylineString));
-                            removeCellsFromFirebase(mAuth, cells);
+                            SightseekFirebaseUtils.updateCellsInFirebase(mAuth, cells, true);
                         }
 
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);

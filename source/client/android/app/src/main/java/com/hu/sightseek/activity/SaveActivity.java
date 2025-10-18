@@ -32,7 +32,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
@@ -212,7 +211,7 @@ public class SaveActivity extends AppCompatActivity {
                 FirebaseAuth mAuth = FirebaseAuth.getInstance();
                 if(mAuth.getCurrentUser() != null) {
                     HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
-                    updateCellsInFirebase(mAuth, visitedCells);
+                    updateCellsInFirebase(mAuth, visitedCells, false);
                 }
 
                 Intent intent = new Intent(this, ActivityActivity.class);
