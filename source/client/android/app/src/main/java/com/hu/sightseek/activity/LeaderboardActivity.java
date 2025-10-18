@@ -10,14 +10,24 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
+import com.hu.sightseek.adapter.LeaderboardCellEntryAdapter;
+import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.model.LeaderboardEntry;
 
 import org.osmdroid.config.Configuration;
 
+import java.util.ArrayList;
+
 public class LeaderboardActivity extends AppCompatActivity {
+    private LeaderboardCellEntryAdapter cellAdapter;
+    private ArrayList<LeaderboardEntry> cellEntries;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +47,8 @@ public class LeaderboardActivity extends AppCompatActivity {
             });
             return;
         }
+
+        cellEntries = new ArrayList<>();
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.leaderboard_topmenu);
@@ -66,6 +78,22 @@ public class LeaderboardActivity extends AppCompatActivity {
 
             return true;
         });
+
+        initCellLeaderboard();
+    }
+
+    private void initCellLeaderboard() {
+        RecyclerView recyclerView = findViewById(R.id.leaderboard_entries);
+
+        if(cellAdapter == null) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            cellEntries.add(new LeaderboardEntry("asd", 424));
+
+            cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
+        }
+
+        recyclerView.setAdapter(cellAdapter);
     }
 
     // Create top menubar

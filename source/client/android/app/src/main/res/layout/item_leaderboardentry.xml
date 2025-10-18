@@ -20,14 +20,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/main_distancevalue" />
+        android:text="@string/example_sampletext" />
 
     <TextView
-        android:id="@+id/leaderboard_entry_distance"
+        android:id="@+id/leaderboard_entry_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:paddingEnd="20dp"
         android:textAlignment="textEnd"
-        android:text="#%1$d"/>
+        android:text="@string/main_distancevalue" />
 </LinearLayout>
