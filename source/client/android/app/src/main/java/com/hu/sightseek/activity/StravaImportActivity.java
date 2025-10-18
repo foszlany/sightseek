@@ -257,7 +257,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
         Button importLatestButton = findViewById(R.id.strava_importlatestbtn);
         importLatestButton.setOnClickListener(v -> {
-            if(isImporting) {
+            if(isImporting || importDate == null) {
                 return;
             }
             isImporting = true;
@@ -268,7 +268,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
         Button importMissingButton = findViewById(R.id.strava_importmissingbtn);
         importMissingButton.setOnClickListener(v -> {
-            if(isImporting) {
+            if(isImporting || importDate == null) {
                 return;
             }
             isImporting = true;
