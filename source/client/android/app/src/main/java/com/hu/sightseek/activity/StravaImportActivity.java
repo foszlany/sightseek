@@ -172,11 +172,10 @@ public class StravaImportActivity extends AppCompatActivity {
                                 // Check if stravaid matches stored one
                                 long stravaId = json.getJSONObject("athlete").getLong("id");
                                 userDocument.get().addOnSuccessListener(documentSnapshot -> {
-                                    if(!documentSnapshot.contains("stravaId")) {
+                                    if(!documentSnapshot.contains("stravaId") || documentSnapshot.getLong("stravaId") == -1) {
                                         userDocument.update("stravaId", stravaId);
                                     }
                                     else {
-                                        documentSnapshot.getLong("stravaId");
                                         Long storedStravaId = documentSnapshot.getLong("stravaId");
                                         if(storedStravaId != null && storedStravaId != stravaId && storedStravaId > 0) {
                                             onFailReturnToProfile("You have a different account linked!");
