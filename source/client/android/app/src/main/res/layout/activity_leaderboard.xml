@@ -18,14 +18,39 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/leaderboard_title"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/leaderboard_topmenu" />
+
+    <TextView
+        android:id="@+id/leaderboard_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/leaderboard_cellsdescription"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/leaderboard_entries"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintBottom_toTopOf="@+id/leaderboard_myentry"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leaderboard_topmenu" />
+        app:layout_constraintTop_toBottomOf="@+id/leaderboard_description" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/leaderboard_bottommenu"
@@ -97,6 +122,4 @@
             android:textColor="@color/white"
             android:textSize="18sp"/>
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

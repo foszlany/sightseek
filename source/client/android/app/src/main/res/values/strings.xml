@@ -177,4 +177,6 @@
     <string name="statistics_permonthdistance_title">Distance per month</string>
     <string name="leaderboard_entry_placing">#%1$d</string>
     <string name="leaderboard_entry_cellvalue">%1$d</string>
+    <string name="leaderboard_title">Leaderboard</string>
+    <string name="leaderboard_cellsdescription">Cells visited</string>
 </resources>

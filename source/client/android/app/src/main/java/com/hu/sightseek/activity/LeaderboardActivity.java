@@ -35,6 +35,7 @@ import org.osmdroid.config.Configuration;
 import java.util.ArrayList;
 
 public class LeaderboardActivity extends AppCompatActivity {
+    private boolean isGridView;
     private LeaderboardCellEntryAdapter cellAdapter;
     private ArrayList<LeaderboardEntry> cellEntries;
     private LeaderboardEntry myCellEntry;
@@ -60,6 +61,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
 
         cellEntries = new ArrayList<>();
+        isGridView = false;
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.leaderboard_topmenu);
@@ -81,10 +83,10 @@ public class LeaderboardActivity extends AppCompatActivity {
             int id = item.getItemId();
 
             if(id == R.id.bottommenu_leaderboard_grid) {
-                // TODO
+                initCellLeaderboard();
             }
             else if(id == R.id.bottommenu_leaderboard_distance) {
-                // TODO
+                initRegionalLeaderboard();
             }
 
             return true;
@@ -94,6 +96,11 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void initCellLeaderboard() {
+        if(isGridView) {
+            return;
+        }
+        isGridView = true;
+
         RecyclerView recyclerView = findViewById(R.id.leaderboard_entries);
 
         if(cellAdapter == null) {
@@ -130,7 +137,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                     myCellEntry = new LeaderboardEntry(username, cellsVisited);
 
                     TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                    myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, 0));
+                    myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, 0)); // TODO
 
                     TextView myNameTextView = findViewById(R.id.leaderboard_myname);
                     myNameTextView.setText(myCellEntry.getUsername());
@@ -148,11 +155,20 @@ public class LeaderboardActivity extends AppCompatActivity {
                 View separator = findViewById(R.id.leaderboard_separator);
                 separator.setVisibility(VISIBLE);
             });
-
         }
         else {
             recyclerView.setAdapter(cellAdapter);
         }
+
+        TextView descriptionTextView = findViewById(R.id.leaderboard_description);
+        descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
+    }
+
+    private void initRegionalLeaderboard() {
+        if(!isGridView) {
+            return;
+        }
+        isGridView = false;
     }
 
     // Create top menubar
