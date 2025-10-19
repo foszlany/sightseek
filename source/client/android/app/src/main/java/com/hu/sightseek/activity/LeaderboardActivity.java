@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,6 +41,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardCellEntryAdapter cellAdapter;
     private ArrayList<LeaderboardEntry> cellEntries;
     private LeaderboardEntry myCellEntry;
+    private ImageButton narrowSearchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         cellEntries = new ArrayList<>();
         isGridView = false;
+        narrowSearchButton = findViewById(R.id.leaderboard_filterbtn);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.leaderboard_topmenu);
@@ -162,6 +166,8 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         TextView descriptionTextView = findViewById(R.id.leaderboard_description);
         descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
+
+        narrowSearchButton.setVisibility(GONE);
     }
 
     private void initRegionalLeaderboard() {
@@ -169,6 +175,8 @@ public class LeaderboardActivity extends AppCompatActivity {
             return;
         }
         isGridView = false;
+
+        narrowSearchButton.setVisibility(VISIBLE);
     }
 
     // Create top menubar
