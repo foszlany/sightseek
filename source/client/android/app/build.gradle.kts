@@ -37,12 +37,20 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         viewBinding = true
+    }
+
+    sourceSets {
+        getByName("main") {
+            java.srcDirs("src/main/java")
+        }
     }
 }
 
@@ -57,6 +65,9 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
     implementation(libs.geofire.android.common)
+
+    // GIS libraries
+    implementation(libs.jts.core.v1180)
 
     // Firebase
     implementation(platform(libs.firebase.bom))

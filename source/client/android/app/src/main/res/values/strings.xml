@@ -179,4 +179,8 @@
     <string name="leaderboard_entry_cellvalue">%1$d</string>
     <string name="leaderboard_title">Leaderboard</string>
     <string name="leaderboard_cellsdescription">Cells visited</string>
+    <string name="leaderboard_narrowsearch_continent">Continent</string>
+    <string name="leaderboard_narrowsearch_country">Country</string>
+    <string name="leaderboard_narrowsearch_region">Region</string>
+    <string name="leaderboard_narrowsearch_subregion">Subregion</string>
 </resources>
