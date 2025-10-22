@@ -183,4 +183,5 @@
     <string name="leaderboard_narrowsearch_country">Country</string>
     <string name="leaderboard_narrowsearch_region">Region</string>
     <string name="leaderboard_narrowsearch_subregion">Subregion</string>
+    <string name="save_imgdesc">This image serves as a simple background featuring pins on a map.</string>
 </resources>
