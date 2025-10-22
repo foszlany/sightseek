@@ -5,21 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/main_bg"
+    android:elevation="5dp"
+    android:background="@drawable/generic_rounded_background_border"
     android:padding="16dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="26sp"
         android:text="@string/leaderboard_narrowsearch_continent"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="10dp"/>
 
     <Spinner
         android:id="@+id/leaderboard_narrowsearch_continentspinner"
-        android:layout_width="200dp"
+        android:layout_width="250dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"/>
 
@@ -27,14 +28,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="26sp"
         android:text="@string/leaderboard_narrowsearch_country"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginTop="20dp"/>
 
     <Spinner
         android:id="@+id/leaderboard_narrowsearch_countryspinner"
-        android:layout_width="200dp"
+        android:layout_width="250dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"/>
 
@@ -42,14 +43,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="26sp"
         android:text="@string/leaderboard_narrowsearch_region"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginTop="20dp"/>
 
     <Spinner
         android:id="@+id/leaderboard_narrowsearch_regionspinner"
-        android:layout_width="200dp"
+        android:layout_width="250dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"/>
 
@@ -58,13 +59,13 @@
         android:layout_height="wrap_content"
         android:text="@string/leaderboard_narrowsearch_subregion"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="26sp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginTop="20dp" />
 
     <Spinner
         android:id="@+id/leaderboard_narrowsearch_subregionspinner"
-        android:layout_width="200dp"
+        android:layout_width="250dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"/>
 
@@ -78,5 +79,5 @@
         android:textColor="@color/white"
         android:textSize="21sp"
         android:text="@string/idea_search"
-        android:layout_marginTop="33dp" />
+        android:layout_marginTop="22dp" />
 </LinearLayout>

@@ -450,7 +450,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         });
     }
 
-    // TODO: REFACTOR TO COPY ALL FILES AT ONCE
+    // TODO: REFACTOR TO COPY ALL FILES AT ONCE (Which files are needed?)
     private boolean copyAssetToInternalStorage(Context context, String assetPath, String outputName) {
         try {
             File outFile = new File(context.getFilesDir(), outputName);
