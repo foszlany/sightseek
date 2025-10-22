@@ -13,9 +13,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -63,6 +66,8 @@ public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardEntry myCellEntry;
     private ImageButton narrowSearchButton;
 
+    private ImageView loadingImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +90,10 @@ public class LeaderboardActivity extends AppCompatActivity {
         cellEntries = new ArrayList<>();
         isGridView = false;
         narrowSearchButton = findViewById(R.id.leaderboard_filterbtn);
+
+        loadingImage = findViewById(R.id.leaderboard_loading);
+        Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
+        loadingImage.startAnimation(rotate);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.leaderboard_topmenu);
@@ -179,6 +188,9 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         View separator = findViewById(R.id.leaderboard_separator);
                         separator.setVisibility(VISIBLE);
+
+                        loadingImage.clearAnimation();
+                        loadingImage.setVisibility(GONE);
                     });
                 });
             });
@@ -434,7 +446,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         subRegionAdapter.notifyDataSetChanged();
                     }
-                    catch (Exception e) {
+                    catch(Exception e) {
                         throw new RuntimeException(e);
                     }
 
