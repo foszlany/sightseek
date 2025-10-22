@@ -39,11 +39,6 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.LeaderboardCellEntryAdapter;
 import com.hu.sightseek.model.LeaderboardEntry;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Polygon;
 import org.osmdroid.config.Configuration;
 
 import java.io.File;
@@ -52,11 +47,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
 
-import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
 public class LeaderboardActivity extends AppCompatActivity {
@@ -82,10 +76,8 @@ public class LeaderboardActivity extends AppCompatActivity {
         // Check if user is logged in
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null) {
-            runOnUiThread(() -> {
-                startActivity(new Intent(this, BannerActivity.class));
-                finish();
-            });
+            startActivity(new Intent(this, BannerActivity.class));
+            finish();
             return;
         }
 
@@ -137,54 +129,58 @@ public class LeaderboardActivity extends AppCompatActivity {
         if(cellAdapter == null) {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            String currentUid = auth.getCurrentUser().getUid();
+            Executors.newSingleThreadExecutor().execute(() -> {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                String currentUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
 
-            Task<QuerySnapshot> leaderboardTask = db.collection("leaderboard_cells")
-                    .orderBy("cellsVisited", Query.Direction.DESCENDING)
-                    .limit(100)
-                    .get();
+                Task<QuerySnapshot> leaderboardTask = db.collection("leaderboard_cells")
+                        .orderBy("cellsVisited", Query.Direction.DESCENDING)
+                        .limit(100)
+                        .get();
 
-            Task<DocumentSnapshot> userTask = db.collection("leaderboard_cells")
-                    .document(currentUid)
-                    .get();
+                Task<DocumentSnapshot> userTask = db.collection("leaderboard_cells")
+                        .document(currentUid)
+                        .get();
 
-            Tasks.whenAllSuccess(leaderboardTask, userTask).addOnSuccessListener(results -> {
-                QuerySnapshot leaderboardSnapshot = (QuerySnapshot) results.get(0);
-                DocumentSnapshot userSnapshot = (DocumentSnapshot) results.get(1);
+                Tasks.whenAllSuccess(leaderboardTask, userTask).addOnSuccessListener(results -> {
+                    QuerySnapshot leaderboardSnapshot = (QuerySnapshot) results.get(0);
+                    DocumentSnapshot userSnapshot = (DocumentSnapshot) results.get(1);
 
-                for(QueryDocumentSnapshot document : leaderboardSnapshot) {
-                    String username = document.getString("username");
-                    Long cellsVisitedHolder = document.getLong("cellsVisited");
-                    long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
-                    cellEntries.add(new LeaderboardEntry(username, cellsVisited));
-                }
+                    for(QueryDocumentSnapshot document : leaderboardSnapshot) {
+                        String username = document.getString("username");
+                        Long cellsVisitedHolder = document.getLong("cellsVisited");
+                        long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
+                        cellEntries.add(new LeaderboardEntry(username, cellsVisited));
+                    }
 
-                if(userSnapshot.exists()) {
-                    String username = userSnapshot.getString("username");
-                    Long cellsVisitedHolder = userSnapshot.getLong("cellsVisited");
-                    long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
-                    myCellEntry = new LeaderboardEntry(username, cellsVisited);
+                    runOnUiThread(() -> {
+                        if(userSnapshot.exists()) {
+                            String username = userSnapshot.getString("username");
+                            Long cellsVisitedHolder = userSnapshot.getLong("cellsVisited");
+                            long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
+                            myCellEntry = new LeaderboardEntry(username, cellsVisited);
 
-                    TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                    myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, 0)); // TODO
+                            TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                            myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, 0)); // TODO
 
-                    TextView myNameTextView = findViewById(R.id.leaderboard_myname);
-                    myNameTextView.setText(myCellEntry.getUsername());
+                            TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                            myNameTextView.setText(myCellEntry.getUsername());
 
-                    TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
-                    myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myCellEntry.getValue()));
-                }
+                            TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                            myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myCellEntry.getValue()));
+                        }
 
-                cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
-                recyclerView.setAdapter(cellAdapter);
+                        cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
+                        recyclerView.setAdapter(cellAdapter);
 
-                View myEntryView = findViewById(R.id.leaderboard_myentry);
-                myEntryView.setVisibility(VISIBLE);
+                        View myEntryView = findViewById(R.id.leaderboard_myentry);
+                        myEntryView.setVisibility(VISIBLE);
 
-                View separator = findViewById(R.id.leaderboard_separator);
-                separator.setVisibility(VISIBLE);
+                        View separator = findViewById(R.id.leaderboard_separator);
+                        separator.setVisibility(VISIBLE);
+                    });
+                });
             });
         }
         else {
@@ -210,47 +206,47 @@ public class LeaderboardActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        // continent
-        ArrayList<String> continentOptions = new ArrayList<>();
-        continentOptions.add("None");
-        ArrayList<String> continentFiles = new ArrayList<>();
-
-        // [ISO 3166]_country
-        ArrayList<String> countryOptions = new ArrayList<>();
-        countryOptions.add("None");
-        ArrayList<String> countryCodeOptions = new ArrayList<>();
-
-        // [ISO 3166]_largeregion
-        // .dbf file has two columns: first has the regions, second has subregions if they exist (one-to-many)
-        LinkedHashSet<String> regionOptions = new LinkedHashSet<>();
-        regionOptions.add("None");
-
-        // [ISO 3166]_smallregion
-        ArrayList<String> subRegionOptions = new ArrayList<>();
-        subRegionOptions.add("None");
-
-        // Query continents
-        try {
-            copyAssetToInternalStorage(this, "shapefiles/global.shp", "global.shp");
-            copyAssetToInternalStorage(this, "shapefiles/global.dbf", "global.dbf");
-            copyAssetToInternalStorage(this, "shapefiles/global.shx", "global.shx");
-
-            ShapeFile shapeFile = new ShapeFile(folderPath, "global");
-            shapeFile.READ();
-
-            for(int i = 0; i < shapeFile.getSHP_shapeCount(); i++) {
-                continentOptions.add((shapeFile.getDBF_record(i)[0]).trim());
-                continentFiles.add((shapeFile.getDBF_record(i)[1]).trim());
-            }
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-
         narrowSearchButton.setOnClickListener(v -> {
             View popupView = LayoutInflater.from(this).inflate(R.layout.filter_region, null);
             PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
             popupWindow.showAsDropDown(v);
+
+            // continent
+            ArrayList<String> continentOptions = new ArrayList<>();
+            continentOptions.add("None");
+            ArrayList<String> continentFiles = new ArrayList<>();
+
+            // [ISO 3166]_country
+            ArrayList<String> countryOptions = new ArrayList<>();
+            countryOptions.add("None");
+            ArrayList<String> countryCodeOptions = new ArrayList<>();
+
+            // [ISO 3166]_largeregion
+            // .dbf file has two columns: first has the regions, second has subregions if they exist (one-to-many)
+            LinkedHashSet<String> regionOptions = new LinkedHashSet<>();
+            regionOptions.add("None");
+
+            // [ISO 3166]_smallregion
+            ArrayList<String> subRegionOptions = new ArrayList<>();
+            subRegionOptions.add("None");
+
+            // Query continents
+            try {
+                copyAssetToInternalStorage(this, "shapefiles/global.shp", "global.shp");
+                copyAssetToInternalStorage(this, "shapefiles/global.dbf", "global.dbf");
+                copyAssetToInternalStorage(this, "shapefiles/global.shx", "global.shx");
+
+                ShapeFile shapeFile = new ShapeFile(folderPath, "global");
+                shapeFile.READ();
+
+                for(int i = 0; i < shapeFile.getSHP_shapeCount(); i++) {
+                    continentOptions.add((shapeFile.getDBF_record(i)[0]).trim());
+                    continentFiles.add((shapeFile.getDBF_record(i)[1]).trim());
+                }
+            }
+            catch(Exception e) {
+                throw new RuntimeException(e);
+            }
 
             // Continent
             Spinner continentSpinner = popupView.findViewById(R.id.leaderboard_narrowsearch_continentspinner);
