@@ -66,6 +66,9 @@ public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardEntry myCellEntry;
     private ImageButton narrowSearchButton;
 
+    private Animation fadeIn;
+    private Animation rotate;
+
     private ImageView loadingImage;
 
     @Override
@@ -91,8 +94,10 @@ public class LeaderboardActivity extends AppCompatActivity {
         isGridView = false;
         narrowSearchButton = findViewById(R.id.leaderboard_filterbtn);
 
+        fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
+
         loadingImage = findViewById(R.id.leaderboard_loading);
-        Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
         loadingImage.startAnimation(rotate);
 
         // Add Menu
@@ -181,12 +186,15 @@ public class LeaderboardActivity extends AppCompatActivity {
                         }
 
                         cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
+                        recyclerView.startAnimation(fadeIn);
                         recyclerView.setAdapter(cellAdapter);
 
                         View myEntryView = findViewById(R.id.leaderboard_myentry);
+                        myEntryView.startAnimation(fadeIn);
                         myEntryView.setVisibility(VISIBLE);
 
                         View separator = findViewById(R.id.leaderboard_separator);
+                        separator.startAnimation(fadeIn);
                         separator.setVisibility(VISIBLE);
 
                         loadingImage.clearAnimation();
