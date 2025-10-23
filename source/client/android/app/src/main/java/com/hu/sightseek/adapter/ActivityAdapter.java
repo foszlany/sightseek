@@ -37,8 +37,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder> implements Filterable {
     private static final int w = 400, h = 400;
@@ -60,7 +62,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         this.activityListFiltered = new ArrayList<>(activityList);
         this.searchQuery = "";
         this.imageCache = new HashMap<>();
-        this.executor = Executors.newSingleThreadExecutor();
+
+        this.executor = new ThreadPoolExecutor(
+                1,
+                1,
+                0, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(6),
+                new ThreadPoolExecutor.DiscardOldestPolicy()
+        );
 
         // Map
         mapView = new MapView(context);
@@ -115,25 +124,23 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         // Setup map previews
         holder.map.setImageResource(R.drawable.loading);
 
-        executor.execute(() -> {
-            Bitmap cache = imageCache.get(activity.getId());
-            if(cache == null) {
-                holder.itemView.post(() -> {
-                    holder.map.setImageResource(R.drawable.loading);
-                });
+        int id = activity.getId();
+        holder.map.setTag(id);
 
+        executor.execute(() -> {
+            Bitmap cache = imageCache.get(id);
+            if(cache == null) {
                 List<LatLng> points = PolyUtil.decode(activity.getPolyline());
                 cache = renderMapImage(points);
-                imageCache.put(activity.getId(), cache);
+                imageCache.put(id, cache);
+            }
 
-                Bitmap finalCache = cache;
-                holder.itemView.post(() -> {
-                    holder.map.setImageBitmap(finalCache);
-                });
-            }
-            else {
-                holder.map.setImageBitmap(cache);
-            }
+            holder.itemView.post(() -> {
+                int currentTag = (int)holder.map.getTag();
+                if(id == currentTag) {
+                    holder.map.setImageBitmap(imageCache.get(id));
+                }
+            });
         });
 
         // Intent to the activity's page
