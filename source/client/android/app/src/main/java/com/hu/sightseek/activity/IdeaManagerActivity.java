@@ -1,5 +1,7 @@
 package com.hu.sightseek.activity;
 
+import static com.hu.sightseek.utils.SightseekGenericUtils.hideKeyboard;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -98,6 +100,7 @@ public class IdeaManagerActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                hideKeyboard(IdeaManagerActivity.this);
                 adapter.getFilter().filter(query);
                 return true;
             }
