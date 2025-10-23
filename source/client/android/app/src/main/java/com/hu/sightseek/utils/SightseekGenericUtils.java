@@ -3,6 +3,7 @@ package com.hu.sightseek.utils;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -282,5 +284,13 @@ public final class SightseekGenericUtils {
     private static int getHeatmapColor(float intensity) {
         float hue = (1f - intensity) * 240f;
         return Color.HSVToColor(new float[]{hue, 1f, 1f});
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        View view = activity.getCurrentFocus();
+        if(view != null) {
+            InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

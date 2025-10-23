@@ -1,8 +1,10 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
 import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
+import static com.hu.sightseek.utils.SightseekGenericUtils.hideKeyboard;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,14 +20,21 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.R;
@@ -51,7 +60,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Check if user is logged in
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() == null) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user == null) {
             runOnUiThread(() -> {
                 startActivity(new Intent(this, BannerActivity.class));
                 finish();
@@ -71,6 +81,86 @@ public class ProfileActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        });
+
+        // Change password
+        Button passwordButton = findViewById(R.id.profile_changepasswordbtn);
+        passwordButton.setOnClickListener(v -> {
+            hideKeyboard(ProfileActivity.this);
+
+            EditText currentPasswordEditText = findViewById(R.id.profile_oldpassword);
+            String currentPassword = currentPasswordEditText.getText().toString();
+
+            EditText newPassword1EditText = findViewById(R.id.profile_newpassword1);
+            String newPassword1 = newPassword1EditText.getText().toString();
+
+            EditText newPassword2EditText = findViewById(R.id.profile_newpassword2);
+            String newPassword2 = newPassword2EditText.getText().toString();
+
+            TextView errorTextView = findViewById(R.id.profile_passworderror);
+            Animation shakeAnim = AnimationUtils.loadAnimation(this, R.anim.invalid_input_shake);
+            errorTextView.setTextColor(getColor(R.color.red));
+            errorTextView.setVisibility(VISIBLE);
+
+            // Password verifications
+            if(currentPassword.isBlank()) {
+                errorTextView.setText(R.string.profile_error_password_oldempty);
+                currentPasswordEditText.startAnimation(shakeAnim);
+                return;
+            }
+            if(currentPassword.length() < 8) {
+                errorTextView.setText(R.string.profile_error_password_oldempty);
+                currentPasswordEditText.startAnimation(shakeAnim);
+                return;
+            }
+            if(newPassword1.isBlank()) {
+                errorTextView.setText(R.string.register_error_password_1empty);
+                newPassword1EditText.startAnimation(shakeAnim);
+                return;
+            }
+            else if(newPassword1.length() < 8) {
+                errorTextView.setText(R.string.register_error_password_1short);
+                newPassword1EditText.startAnimation(shakeAnim);
+                return;
+            }
+            else if(newPassword2.isBlank()) {
+                errorTextView.setText(R.string.register_error_password_2empty);
+                newPassword1EditText.startAnimation(shakeAnim);
+                return;
+            }
+            else if(newPassword2.length() < 8) {
+                errorTextView.setText(R.string.register_error_password_2short);
+                newPassword2EditText.startAnimation(shakeAnim);
+                return;
+            }
+            else if(!newPassword1.equals(newPassword2)) {
+                errorTextView.setText(R.string.register_error_password_doesntmatch);
+                newPassword1EditText.startAnimation(shakeAnim);
+                newPassword2EditText.startAnimation(shakeAnim);
+                return;
+            }
+
+            AuthCredential credentials = EmailAuthProvider.getCredential(Objects.requireNonNull(user.getEmail()), currentPassword);
+
+            user.reauthenticate(credentials)
+                    .addOnCompleteListener(reauthTask -> {
+                        if(reauthTask.isSuccessful()) {
+                            user.updatePassword(newPassword1)
+                                    .addOnCompleteListener(passwordChangeTask -> {
+                                        if(passwordChangeTask.isSuccessful()) {
+                                            errorTextView.setTextColor(getColor(R.color.green));
+                                            errorTextView.setText(R.string.profile_passwordchangesuccess);
+                                        }
+                                        else {
+                                            errorTextView.setText(R.string.register_error_unknown);
+                                        }
+                                    });
+                        }
+                        else {
+                            errorTextView.setText(R.string.profile_error_password_incorrectcurrent);
+                            currentPasswordEditText.startAnimation(shakeAnim);
+                        }
+                    });
         });
 
         // Strava

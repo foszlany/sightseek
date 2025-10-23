@@ -18,17 +18,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:paddingBottom="35dp"
+        app:layout_constraintTop_toBottomOf="@+id/profile_topmenu">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/main_bg"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="24dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -38,6 +40,88 @@
                 android:layout_gravity="center"
                 android:textColor="@color/white"
                 android:textSize="34sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/profile_password"
+                android:textColor="@color/white"
+                android:textSize="28sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                android:background="@color/hint" />
+
+            <EditText
+                android:id="@+id/profile_oldpassword"
+                android:layout_width="320dp"
+                android:layout_height="48dp"
+                android:autofillHints="password"
+                android:background="@drawable/edittext_wbg"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:hint="@string/profile_passwordcurrent"
+                android:inputType="textPassword"
+                android:maxLength="32"
+                android:padding="11dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/hint" />
+
+            <EditText
+                android:id="@+id/profile_newpassword1"
+                android:layout_width="320dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+
+                android:autofillHints="password"
+                android:background="@drawable/edittext_wbg"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:hint="@string/profile_password1hint"
+                android:inputType="textPassword"
+                android:maxLength="32"
+                android:padding="11dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/hint" />
+
+            <EditText
+                android:id="@+id/profile_newpassword2"
+                android:layout_width="320dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:autofillHints="password"
+                android:background="@drawable/edittext_wbg"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:hint="@string/profile_password2hint"
+                android:inputType="textPassword"
+                android:maxLength="32"
+                android:padding="11dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/hint" />
+
+            <Button
+                android:id="@+id/profile_changepasswordbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/generic_rounded_background"
+                android:text="@string/profile_change"
+                android:textColor="@color/white"
+                android:layout_marginVertical="12dp"
+                android:textSize="16sp"
+                app:backgroundTint="@color/desaturated_blue"/>
+
+            <TextView
+                android:id="@+id/profile_passworderror"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/red"
+                android:textSize="16sp"/>
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -82,6 +166,7 @@
                 android:textSize="16sp"
                 app:backgroundTint="@color/dark_gray" />
 
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -104,6 +189,28 @@
                 android:text="@string/profile_logout"
                 android:textColor="@color/white"
                 app:backgroundTint="@color/dark_gray" />
+
+            <!---
+            <Button
+                android:id="@+id/profile_deleteactivivitiesbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="62dp"
+                android:background="@drawable/generic_rounded_background"
+                android:text="@string/profile_deleteallactivities"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/delete_red"/>
+
+            <Button
+                android:id="@+id/profile_deleteaccountbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/generic_rounded_background"
+                android:text="@string/profile_deleteaccount"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/red"/>
+               -->
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,4 +32,5 @@
     <color name="silver">#8E8E8E</color>
     <color name="bronze">#87673E</color>
     <color name="faint_blue">#5F5F75</color>
+    <color name="desaturated_blue">#508CA6</color>
 </resources>

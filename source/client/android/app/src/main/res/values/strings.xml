@@ -184,4 +184,15 @@
     <string name="leaderboard_narrowsearch_region">Region</string>
     <string name="leaderboard_narrowsearch_subregion">Subregion</string>
     <string name="save_imgdesc">This image serves as a simple background featuring pins on a map.</string>
+    <string name="profile_password">Change password</string>
+    <string name="profile_change">Change</string>
+    <string name="profile_passwordchangesuccess">Your password was successfully changed.</string>
+    <string name="profile_passwordcurrent">Current password</string>
+    <string name="profile_password1hint">New password (8–32 characters)</string>
+    <string name="profile_password2hint">Confirm new password</string>
+    <string name="profile_error_password_oldempty">Current password cannot be empty!</string>
+    <string name="profile_error_password_oldshort">Current password is too short!</string>
+    <string name="profile_error_password_incorrectcurrent">Incorrect current password.</string>
+    <string name="profile_deleteallactivities">Delete all my activities</string>
+    <string name="profile_deleteaccount">Delete my account</string>
 </resources>
