@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder> implements Filterable {
     private static final int w = 400, h = 400;
@@ -49,6 +51,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     private final Context context;
     private final Map<Integer, Bitmap> imageCache;
     private final MapView mapView;
+    private final Executor executor;
 
     public ActivityAdapter(Context context, ArrayList<Activity> activityList) {
         this.context = context;
@@ -57,6 +60,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         this.activityListFiltered = new ArrayList<>(activityList);
         this.searchQuery = "";
         this.imageCache = new HashMap<>();
+        this.executor = Executors.newSingleThreadExecutor();
 
         // Map
         mapView = new MapView(context);
@@ -109,13 +113,28 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         holder.elapsedTime.setText(elapsedTimeStr);
 
         // Setup map previews
-        Bitmap cache = imageCache.get(activity.getId());
-        if(cache == null) {
-            List<LatLng> points = PolyUtil.decode(activity.getPolyline());
-            cache = renderMapImage(points);
-            imageCache.put(activity.getId(), cache);
-        }
-        holder.map.setImageBitmap(cache);
+        holder.map.setImageResource(R.drawable.loading);
+
+        executor.execute(() -> {
+            Bitmap cache = imageCache.get(activity.getId());
+            if(cache == null) {
+                holder.itemView.post(() -> {
+                    holder.map.setImageResource(R.drawable.loading);
+                });
+
+                List<LatLng> points = PolyUtil.decode(activity.getPolyline());
+                cache = renderMapImage(points);
+                imageCache.put(activity.getId(), cache);
+
+                Bitmap finalCache = cache;
+                holder.itemView.post(() -> {
+                    holder.map.setImageBitmap(finalCache);
+                });
+            }
+            else {
+                holder.map.setImageBitmap(cache);
+            }
+        });
 
         // Intent to the activity's page
         holder.card.setOnClickListener(v -> {
@@ -153,17 +172,36 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     }
 
     private Bitmap renderMapImage(List<LatLng> points) {
+        // Zoom
+        BoundingBox box = getBoundingBox(points);
+        mapView.zoomToBoundingBox(box.increaseByScale(1.3f), false);
+
         // Polyline
         Polyline line = new Polyline();
         for(LatLng p : points) {
             line.addPoint(new GeoPoint(p.latitude, p.longitude));
         }
+
         setupRouteLine(line, false);
         mapView.getOverlayManager().add(line);
 
-        // Zoom
-        BoundingBox box = getBoundingBox(points);
-        mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
+        // Continuously update tile states until all tiles load in or timeout
+        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+        for(int i = 0; i < 10; i++) {
+            // Force draw
+            Bitmap temp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            Canvas tempCanvas = new Canvas(temp);
+            mapView.draw(tempCanvas);
+
+            if(tilesOverlay.getTileStates().getNotFound() == 0) {
+                break;
+            }
+
+            try {
+                Thread.sleep(5);
+            }
+            catch(InterruptedException ignored) {}
+        }
 
         // Render
         Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.RGB_565);
@@ -175,7 +213,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
         return bmp;
     }
-
 
     public void updateActivities(List<Activity> newActivities) {
         this.activityListFull.clear();
