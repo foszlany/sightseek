@@ -58,7 +58,6 @@ import java.util.concurrent.Executors;
 public class StatisticsActivity extends AppCompatActivity {
     private ImageView loadingImage;
 
-    // TODO: REFACTOR THESE INTO ONE BIG HASHMAP
     private double totalDistance;
     private double totalDays;
     private TravelCategory mainCategory;
@@ -68,7 +67,6 @@ public class StatisticsActivity extends AppCompatActivity {
     private double activityCount;
     private double importedCount;
     private boolean isCardView;
-    private HashMap<String, Serializable> baseStatistics;
     private HashMap<String, Serializable> locoStatistics;
     private HashMap<String, Serializable> microStatistics;
     private HashMap<String, Serializable> otherStatistics;
@@ -122,7 +120,7 @@ public class StatisticsActivity extends AppCompatActivity {
         otherStatistics = new HashMap<>();
         monthlyTotalDistance = new HashMap<>();
 
-        baseStatistics = dao.getBaseStatistics(TravelCategory.INVALID);
+        HashMap<String, Serializable> baseStatistics = dao.getBaseStatistics(TravelCategory.INVALID);
         mainCategory = dao.getMainTravelCategory();
 
         dao.close();
@@ -143,22 +141,22 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Double valueHolder;
 
-        valueHolder = (Double)baseStatistics.get("total_distance");
+        valueHolder = (Double) baseStatistics.get("total_distance");
         totalDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = (Double)baseStatistics.get("total_time");
+        valueHolder = (Double) baseStatistics.get("total_time");
         totalDays = (valueHolder != null) ? (valueHolder / 86400.0) : 0.0;
 
-        valueHolder = (Double)baseStatistics.get("longest_distance");
+        valueHolder = (Double) baseStatistics.get("longest_distance");
         longestDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = (Double)baseStatistics.get("longest_time");
+        valueHolder = (Double) baseStatistics.get("longest_time");
         longestTime = (valueHolder != null) ? valueHolder : 0.0;
 
-        valueHolder = (Double)baseStatistics.get("activity_count");
+        valueHolder = (Double) baseStatistics.get("activity_count");
         activityCount = (valueHolder != null) ? valueHolder : 0.0;
 
-        valueHolder = (Double)baseStatistics.get("imported_count");
+        valueHolder = (Double) baseStatistics.get("imported_count");
         importedCount = (valueHolder != null) ? valueHolder : 0.0;
 
         initCardView();
@@ -611,7 +609,9 @@ public class StatisticsActivity extends AppCompatActivity {
         );
 
         TextView approxCaloriesBurntTextView = findViewById(R.id.statistics_percategory_approximatecaloriesburnt);
-        if((Double)values.get("approx_calories_high") < 0.5) {
+        valueHolder = (Double)values.get("approx_calories_high");
+        double caloriesHigh = valueHolder == null ? 0 : valueHolder;
+        if(caloriesHigh < 0.5) {
             approxCaloriesBurntTextView.setText(
                     getString(R.string.statistics_percategory_approximatecaloriesnone)
             );
