@@ -33,6 +33,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -148,11 +150,13 @@ public class LeaderboardActivity extends AppCompatActivity {
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 String currentUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
 
+                // Top 100
                 Task<QuerySnapshot> leaderboardTask = db.collection("leaderboard_cells")
                         .orderBy("cellsVisited", Query.Direction.DESCENDING)
                         .limit(100)
                         .get();
 
+                // Username & cells visited
                 Task<DocumentSnapshot> userTask = db.collection("leaderboard_cells")
                         .document(currentUid)
                         .get();
@@ -163,43 +167,65 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                     for(QueryDocumentSnapshot document : leaderboardSnapshot) {
                         String username = document.getString("username");
+
                         Long cellsVisitedHolder = document.getLong("cellsVisited");
                         long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
                         cellEntries.add(new LeaderboardEntry(username, cellsVisited));
                     }
 
-                    runOnUiThread(() -> {
-                        if(userSnapshot.exists()) {
-                            String username = userSnapshot.getString("username");
-                            Long cellsVisitedHolder = userSnapshot.getLong("cellsVisited");
-                            long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
-                            myCellEntry = new LeaderboardEntry(username, cellsVisited);
+                    cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
 
-                            TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                            myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, 0)); // TODO
+                    if(userSnapshot.exists()) {
+                        runOnUiThread(() -> {
+                            Long userCellsVisitedHolder = userSnapshot.getLong("cellsVisited");
+                            long userCellsVisited = userCellsVisitedHolder == null ? 0 : userCellsVisitedHolder;
 
-                            TextView myNameTextView = findViewById(R.id.leaderboard_myname);
-                            myNameTextView.setText(myCellEntry.getUsername());
+                            // User placing
+                            AggregateQuery countQuery = db.collection("leaderboard_cells")
+                                    .whereGreaterThan("cellsVisited", userCellsVisited)
+                                    .count();
 
-                            TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
-                            myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myCellEntry.getValue()));
-                        }
+                                    countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
+                                        long placing = snapshot.getCount() + 1;
 
+                                        runOnUiThread(() -> {
+                                            TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                                            myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
+
+                                            String username = userSnapshot.getString("username");
+                                            myCellEntry = new LeaderboardEntry(username, userCellsVisited);
+
+                                            TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                                            myNameTextView.setText(myCellEntry.getUsername());
+
+                                            TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                                            myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myCellEntry.getValue()));
+
+                                            View myEntryView = findViewById(R.id.leaderboard_myentry);
+                                            myEntryView.startAnimation(fadeIn);
+                                            myEntryView.setVisibility(VISIBLE);
+
+                                            View separator = findViewById(R.id.leaderboard_separator);
+                                            separator.startAnimation(fadeIn);
+                                            separator.setVisibility(VISIBLE);
+
+                                            recyclerView.startAnimation(fadeIn);
+                                            recyclerView.setAdapter(cellAdapter);
+
+                                            loadingImage.clearAnimation();
+                                            loadingImage.setVisibility(GONE);
+                                        });
+                                    });
+                        });
+                    }
+                    else {
                         cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
                         recyclerView.startAnimation(fadeIn);
                         recyclerView.setAdapter(cellAdapter);
 
-                        View myEntryView = findViewById(R.id.leaderboard_myentry);
-                        myEntryView.startAnimation(fadeIn);
-                        myEntryView.setVisibility(VISIBLE);
-
-                        View separator = findViewById(R.id.leaderboard_separator);
-                        separator.startAnimation(fadeIn);
-                        separator.setVisibility(VISIBLE);
-
                         loadingImage.clearAnimation();
                         loadingImage.setVisibility(GONE);
-                    });
+                    }
                 });
             });
         }
