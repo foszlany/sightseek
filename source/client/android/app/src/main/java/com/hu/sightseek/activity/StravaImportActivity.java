@@ -2,7 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
 
 import android.content.Context;
 import android.content.Intent;

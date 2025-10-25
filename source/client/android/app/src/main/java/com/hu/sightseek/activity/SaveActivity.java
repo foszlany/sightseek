@@ -1,10 +1,13 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.SightseekVectorizationUtils.vectorize;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -36,6 +40,7 @@ import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
@@ -44,16 +49,23 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class SaveActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
+    private ArrayList<Polyline> vectorizedPolylines;
+
     private String title;
     private TravelCategory categoryIndex;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService daoExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService vectorExecutor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +103,8 @@ public class SaveActivity extends AppCompatActivity {
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
         categoryIndex = TravelCategory.LOCOMOTOR;
+
+        mAuth = FirebaseAuth.getInstance();
 
         // Spinner
         Spinner spinner = findViewById(R.id.save_category);
@@ -171,6 +185,29 @@ public class SaveActivity extends AppCompatActivity {
         setupRouteLine(polyline, false);
         mapView.getOverlayManager().add(polyline);
 
+        // Get vectorized dataset
+        if(mAuth.getCurrentUser() != null) {
+            Future<ArrayList<Polyline>> future = vectorExecutor.submit(() -> vectorize(this, polyline));
+            new Thread(() -> {
+                try {
+                    TextView loadingText = findViewById(R.id.save_loadingtext);
+                    runOnUiThread(() -> loadingText.setVisibility(VISIBLE));
+
+                    vectorizedPolylines = future.get();
+
+                    runOnUiThread(() -> loadingText.setVisibility(GONE));
+
+                    for(Polyline p : vectorizedPolylines) {
+                        mapView.getOverlays().add(p);
+                    }
+                    mapView.invalidate();
+                }
+                catch(ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        }
+
         // Calculate bounding box
         BoundingBox box = getBoundingBox(pointList);
 
@@ -198,17 +235,31 @@ public class SaveActivity extends AppCompatActivity {
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
+            if(mAuth.getCurrentUser() != null && vectorizedPolylines == null) {
+                Toast.makeText(this, "Please wait for vectorization to finish!", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             EditText titleEditText = findViewById(R.id.save_edittext_title);
             title = titleEditText.getText().toString();
             if(title.isBlank()) {
                 title = "Untitled activity";
             }
 
-            executor.execute(() -> {
-                LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, ""); // TODO
+            daoExecutor.execute(() -> {
+                StringBuilder vectorizedDataString = new StringBuilder();
+                for(int i = 0; i < vectorizedPolylines.size(); i++) {
+                    List<GeoPoint> geoPoints = vectorizedPolylines.get(i).getActualPoints();
 
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                    vectorizedDataString.append(SightseekSpatialUtils.encode(geoPoints));
+                    if(i != vectorizedPolylines.size() - 1) {
+                        vectorizedDataString.append(";");
+                    }
+                }
+                
+                LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataString.toString());
+
                 if(mAuth.getCurrentUser() != null) {
                     HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
                     updateCellsInFirebase(mAuth, visitedCells, false);

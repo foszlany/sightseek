@@ -3,7 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.hideKeyboard;
 
 import android.content.Context;

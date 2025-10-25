@@ -1,6 +1,6 @@
 package com.hu.sightseek.adapter;
 
-import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 
 import android.content.Context;

@@ -79,14 +79,25 @@
             android:minHeight="48dp"
             android:layout_marginHorizontal="40dp"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp"
             android:background="@drawable/edittext_outline" />
+
+        <TextView
+            android:id="@+id/save_loadingtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:text="@string/save_creatingvectordata"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:layout_marginBottom="4dp"
+            android:textSize="16sp"/>
 
         <org.osmdroid.views.MapView
             android:id="@+id/save_map"
             android:layout_width="320dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 

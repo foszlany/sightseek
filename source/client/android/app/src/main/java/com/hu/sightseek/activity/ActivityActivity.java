@@ -1,11 +1,10 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getVisitedCells;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
-import static com.hu.sightseek.utils.SightseekSpatialUtils.vectorize;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -42,7 +41,6 @@ import org.osmdroid.views.overlay.TilesOverlay;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Executors;
 
 public class ActivityActivity extends AppCompatActivity {
     private Activity activity;
@@ -137,11 +135,6 @@ public class ActivityActivity extends AppCompatActivity {
         for(LatLng point : pointList) {
             polyline.addPoint(new GeoPoint(point.latitude, point.longitude));
         }
-
-        // TODO TEMP
-        Executors.newSingleThreadExecutor().execute(() -> {
-            vectorize(this, polyline, mapView);
-        });
 
         setupRouteLine(polyline, false);
         mapView.getOverlayManager().add(polyline);

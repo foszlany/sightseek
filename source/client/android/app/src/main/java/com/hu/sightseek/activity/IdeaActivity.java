@@ -40,7 +40,7 @@ import com.hu.sightseek.fragment.SelectLocationFragment;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
-import com.hu.sightseek.utils.SightseekGenericUtils;
+import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -255,7 +255,7 @@ public class IdeaActivity extends AppCompatActivity {
                     allPoints.addAll(points);
                 }
 
-                BoundingBox boundingBox = SightseekGenericUtils.getBoundingBox(allPoints).increaseByScale(1.2f);
+                BoundingBox boundingBox = SightseekSpatialUtils.getBoundingBox(allPoints).increaseByScale(1.2f);
                 double lat = boundingBox.getLatSouth() + Math.random() * (boundingBox.getLatNorth() - boundingBox.getLatSouth());
                 double lon = boundingBox.getLonWest() + Math.random() * (boundingBox.getLonEast() - boundingBox.getLonWest());
                 boundingBoxPoint = new LatLng(lat, lon);
