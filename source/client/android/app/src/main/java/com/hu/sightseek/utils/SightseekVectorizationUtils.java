@@ -45,6 +45,11 @@ public final class SightseekVectorizationUtils {
 
         // Calculate countries
         Set<String> countryCodes = getTouchedCountries(lineString, activity);
+        if(countryCodes.isEmpty()) {
+            System.out.println("No countries have been detected, halting.");
+            return vectorizedPolylines;
+        }
+
         System.out.println("Countries have been detected");
 
         // Route polygon
@@ -52,12 +57,11 @@ public final class SightseekVectorizationUtils {
         System.out.println("Route polygon has been created");
 
         // Filtered roads
-        MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, routePolygon.getEnvelopeInternal());
+        MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
         System.out.println("Road polylines have been created");
 
         // Calculate intersection
         Geometry vectorizedData = roadPolylines.intersection(routePolygon);
-
         System.out.println("Intersection calculation done");
 
         // Create polyline(s)
@@ -144,37 +148,40 @@ public final class SightseekVectorizationUtils {
         }
     }
 
-    private static MultiLineString getRoadPolylines(Activity activity, GeometryFactory geometryFactory, Envelope filterEnvelope) {
-        copyShapefileToInternalStorage(activity, "hu_roads");
+    private static MultiLineString getRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes, Envelope filterEnvelope) {
+        ArrayList<LineString> lineStringList = new ArrayList<>();
 
-        try {
-            ShapeFile roadsShapeFile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "hu_roads");
-            roadsShapeFile.READ();
+        for(String code : countryCodes) {
+            copyShapefileToInternalStorage(activity, code + "_roads");
 
-            ArrayList<LineString> lineStringList = new ArrayList<>();
+            try {
+                ShapeFile roadsShapeFile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), code + "_roads");
+                roadsShapeFile.READ();
 
-            for(int i = 0; i < roadsShapeFile.getSHP_shapeCount(); i++) {
-                ShpPolyLine shape = roadsShapeFile.getSHP_shape(i);
-                double[][] points = shape.getPoints();
-                Coordinate[] coordinates = new Coordinate[points.length];
+                for(int i = 0; i < roadsShapeFile.getSHP_shapeCount(); i++) {
+                    ShpPolyLine shape = roadsShapeFile.getSHP_shape(i);
+                    double[][] points = shape.getPoints();
+                    Coordinate[] coordinates = new Coordinate[points.length];
 
-                for(int j = 0; j < points.length; j++) {
-                    coordinates[j] = new Coordinate(points[j][0], points[j][1]);
-                }
+                    for(int j = 0; j < points.length; j++) {
+                        coordinates[j] = new Coordinate(points[j][0], points[j][1]);
+                    }
 
-                LineString segment = geometryFactory.createLineString(coordinates);
+                    LineString segment = geometryFactory.createLineString(coordinates);
 
-                if(segment.getEnvelopeInternal().intersects(filterEnvelope)) {
-                    lineStringList.add(segment);
+                    if(segment.getEnvelopeInternal().intersects(filterEnvelope)) {
+                        lineStringList.add(segment);
+                    }
                 }
             }
+            catch(Exception e) {
+                throw new RuntimeException("Error reading shapefile for country code: " + code, e);
+            }
+        }
 
-            return new MultiLineString(lineStringList.toArray(new LineString[0]), geometryFactory);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
+        return new MultiLineString(lineStringList.toArray(new LineString[0]), geometryFactory);
     }
+
 
     private static Polyline convertLineStringToPolyline(LineString lineString) {
         Coordinate[] coords = lineString.getCoordinates();
