@@ -195,5 +195,7 @@
     <string name="profile_error_password_incorrectcurrent">Incorrect current password.</string>
     <string name="profile_deleteallactivities">Delete all my activities</string>
     <string name="profile_deleteaccount">Delete my account</string>
-    <string name="save_creatingvectordata">Creating vectorized data, please wait...</string>
+    <string name="save_creatingvectordata">Creating vectorized data, please wait…</string>
+    <string name="activity_showprocesseddata">Show processed data</string>
+    <string name="activity_hideprocesseddata">Hide processed data</string>
 </resources>

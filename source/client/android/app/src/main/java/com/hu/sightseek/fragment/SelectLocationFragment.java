@@ -47,6 +47,7 @@ public class SelectLocationFragment extends DialogFragment {
 
         // Map
         mapView = view.findViewById(R.id.locationselectpopup_map);
+        mapView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         setupZoomSettings(mapView, 11.0);
 
         // Marker

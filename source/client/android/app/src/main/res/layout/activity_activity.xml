@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="32dp"
+                android:layout_marginVertical="24dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 
@@ -160,9 +160,21 @@
                 android:layout_width="360dp"
                 android:layout_height="360dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/activity_vectortogglebtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/generic_rounded_background"
+                android:text="@string/activity_showprocesseddata"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                app:backgroundTint="@color/light_purple" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

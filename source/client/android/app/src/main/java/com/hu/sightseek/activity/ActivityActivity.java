@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
@@ -8,12 +9,15 @@ import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,15 +38,20 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ActivityActivity extends AppCompatActivity {
     private Activity activity;
+    FolderOverlay vectorizedDataGroup;
+    boolean isVectorizedDataVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +69,8 @@ public class ActivityActivity extends AppCompatActivity {
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+
+        isVectorizedDataVisible = false;
 
         // Home button
         toolbar.setNavigationIcon(R.drawable.baseline_home_24);
@@ -120,6 +131,7 @@ public class ActivityActivity extends AppCompatActivity {
         MapView mapView = findViewById(R.id.activity_map);
         mapView.setBackgroundColor(Color.TRANSPARENT);
         mapView.setUseDataConnection(true);
+        mapView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         setupZoomSettings(mapView, 14.0);
 
@@ -184,6 +196,52 @@ public class ActivityActivity extends AppCompatActivity {
 
             dialog.show();
         });
+
+        // Processed data button
+        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Button processedDataButton = findViewById(R.id.activity_vectortogglebtn);
+            processedDataButton.setVisibility(VISIBLE);
+
+            processedDataButton.setOnClickListener(v -> {
+                isVectorizedDataVisible = !isVectorizedDataVisible;
+
+                if(vectorizedDataGroup == null) {
+                    vectorizedDataGroup = new FolderOverlay();
+
+                    Paint paint = new Paint();
+                    paint.setColor(Color.parseColor("#FF0000"));
+                    paint.setStrokeWidth(4.0f);
+                    paint.setAntiAlias(false);
+
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        String vectorizedDataString = activity.getVectorizedData();
+                        String[] vectorizedDataArray = vectorizedDataString.split(";");
+
+                        for(String encodedRoute : vectorizedDataArray) {
+                            List<GeoPoint> geoPoints = SightseekSpatialUtils.decode(encodedRoute);
+
+                            Polyline p = new Polyline();
+                            p.setPoints(geoPoints);
+
+                            p.setGeodesic(false);
+                            p.getOutlinePaint().set(paint);
+
+                            vectorizedDataGroup.add(p);
+                        }
+
+                        mapView.getOverlays().add(0, vectorizedDataGroup);
+
+                        runOnUiThread(() -> {
+                            mapView.invalidate();
+                        });
+                    });
+                }
+                else {
+                    vectorizedDataGroup.setEnabled(isVectorizedDataVisible);
+                    mapView.invalidate();
+                }
+            });
+        }
 
         ImageButton screenshotButton = findViewById(R.id.activity_screenshotbtn);
         screenshotButton.setOnClickListener(v -> createScreenshot(this, findViewById(R.id.activity_layoutcontainer), activity.getName().replace(" ", "_"), findViewById(R.id.activity_btns)));

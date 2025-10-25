@@ -194,7 +194,6 @@ public class RecordActivity extends AppCompatActivity {
         mapView = findViewById(R.id.record_map);
         mapView.setBackgroundColor(Color.TRANSPARENT);
         mapView.setUseDataConnection(true);
-        mapView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
         tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
