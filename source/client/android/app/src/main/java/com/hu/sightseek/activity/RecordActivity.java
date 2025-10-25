@@ -33,6 +33,7 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -193,6 +194,7 @@ public class RecordActivity extends AppCompatActivity {
         mapView = findViewById(R.id.record_map);
         mapView.setBackgroundColor(Color.TRANSPARENT);
         mapView.setUseDataConnection(true);
+        mapView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
         tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
@@ -549,7 +551,7 @@ public class RecordActivity extends AppCompatActivity {
                     // Import polylines if necessary
                     if(polylineGroup.getItems().isEmpty()) {
                         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                        ArrayList<Polyline> polylines = dao.getAllPolylines(6);
+                        ArrayList<Polyline> polylines = dao.getAllPolylines(8);
                         dao.close();
 
                         for(Polyline p : polylines) {
@@ -561,7 +563,6 @@ public class RecordActivity extends AppCompatActivity {
                     }
 
                     polylineGroup.setEnabled(true);
-                    mapView.invalidate();
                 });
 
                 animateButton(polylineButton, true, R.color.darker_light_blue);

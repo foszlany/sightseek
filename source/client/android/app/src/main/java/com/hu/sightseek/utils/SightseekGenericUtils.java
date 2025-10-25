@@ -50,21 +50,25 @@ public final class SightseekGenericUtils {
 
     private SightseekGenericUtils() {}
 
-    public static void setupRouteLine(Polyline route, boolean isFaint) {
-        if(isFaint) {
+    public static void setupRouteLine(Polyline route, boolean isLight) {
+        if(isLight) {
             route.getOutlinePaint().setColor(Color.parseColor("#40A7FF"));
             route.getOutlinePaint().setStrokeWidth(7.0f);
+            route.setGeodesic(false);
+
+            Paint paint = route.getOutlinePaint();
+            paint.setAntiAlias(false);
         }
         else {
             route.getOutlinePaint().setColor(Color.BLUE);
             route.getOutlinePaint().setStrokeWidth(9.0f);
-        }
 
-        // Smoothen
-        Paint paint = route.getOutlinePaint();
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setPathEffect(new CornerPathEffect(30f));
+            // Smoothen
+            Paint paint = route.getOutlinePaint();
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setStrokeJoin(Paint.Join.ROUND);
+            paint.setPathEffect(new CornerPathEffect(30f));
+        }
     }
 
     public static void setupZoomSettings(MapView mapView, double zoom) {
