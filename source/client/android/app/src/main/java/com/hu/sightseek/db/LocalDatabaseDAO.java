@@ -33,7 +33,7 @@ public class LocalDatabaseDAO {
     }
 
     /* ############### ACTIVITIES ############### */
-    public long addActivity(String name, int category, String polyline, String startTime, double elapsedTime, double distance, long stravaid) {
+    public long addActivity(String name, int category, String polyline, String startTime, double elapsedTime, double distance, long stravaid, String vectorizedData) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -44,6 +44,7 @@ public class LocalDatabaseDAO {
         values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, elapsedTime);
         values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, distance);
         values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, stravaid);
+        values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, vectorizedData);
 
         long id = db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
         db.close();
@@ -63,6 +64,7 @@ public class LocalDatabaseDAO {
             values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedtime());
             values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, activity.getDistance());
             values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
+            values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
 
             db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
         }
@@ -195,11 +197,12 @@ public class LocalDatabaseDAO {
             double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
             double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
             long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
+            String vectorizedData = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
             cursor.close();
             db.close();
 
-            return new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId);
+            return new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId, vectorizedData);
         }
         else {
             cursor.close();
@@ -239,8 +242,9 @@ public class LocalDatabaseDAO {
                 double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
                 double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
                 long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
+                String vectorizedData = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
-                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId));
+                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
             } while(cursor.moveToNext());
         }
 

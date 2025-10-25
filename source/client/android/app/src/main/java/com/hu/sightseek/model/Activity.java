@@ -11,8 +11,9 @@ public class Activity {
     private double elapsedtime;
     private double distance;
     private long stravaId;
+    private String vectorizedData;
 
-    public Activity(int id, String name, int category, String polyline, String starttime, double elapsedtime, double distance, long stravaId) {
+    public Activity(int id, String name, int category, String polyline, String starttime, double elapsedtime, double distance, long stravaId, String vectorizedData) {
         this.id = id;
         this.name = name;
         this.category = TravelCategory.values()[category];
@@ -21,6 +22,7 @@ public class Activity {
         this.elapsedtime = elapsedtime;
         this.distance = distance;
         this.stravaId = stravaId;
+        this.vectorizedData = vectorizedData;
     }
 
     public int getId() {
@@ -87,6 +89,10 @@ public class Activity {
         this.stravaId = stravaId;
     }
 
+    public String getVectorizedData() { return vectorizedData; }
+
+    public void setVectorizedData(String vectorizedData) { this.vectorizedData = vectorizedData; }
+
     @Override
     public String toString() {
         return "Activity{" +
@@ -98,6 +104,7 @@ public class Activity {
                 ", elapsedtime=" + elapsedtime +
                 ", distance=" + distance +
                 ", stravaId=" + stravaId +
+                ", vectorizedData='" + vectorizedData + '\'' +
                 '}';
     }
 }

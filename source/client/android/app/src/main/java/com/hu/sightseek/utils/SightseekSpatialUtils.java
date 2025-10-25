@@ -155,7 +155,7 @@ public final class SightseekSpatialUtils {
             Coordinate[] coords = line.getCoordinates();
 
             ArrayList<GeoPoint> geoPoints = new ArrayList<>();
-            for (Coordinate coord : coords) {
+            for(Coordinate coord : coords) {
                 double lat = coord.y;
                 double lon = coord.x;
                 geoPoints.add(new GeoPoint(lat, lon));

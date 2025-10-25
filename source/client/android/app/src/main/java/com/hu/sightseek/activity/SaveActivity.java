@@ -206,7 +206,7 @@ public class SaveActivity extends AppCompatActivity {
 
             executor.execute(() -> {
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1);
+                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, ""); // TODO
 
                 FirebaseAuth mAuth = FirebaseAuth.getInstance();
                 if(mAuth.getCurrentUser() != null) {

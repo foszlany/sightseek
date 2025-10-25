@@ -366,7 +366,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 int elapsedTime = jsonActivity.getInt("moving_time");
                                 int distance = jsonActivity.getInt("distance");
 
-                                Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId);
+                                Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId, ""); // TODO
                                 activities.add(a);
 
                                 List<LatLng> pointList = PolyUtil.decode(polyline);
