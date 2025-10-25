@@ -96,7 +96,7 @@ public class SaveActivity extends AppCompatActivity {
             return;
         }
 
-        String polylineString = "b}hxBoi|~IdhAlvXeUaan@q}Ghea@";
+        String polylineString = extras.getString("polyline");
         String startTime = extras.getString("starttime");
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
