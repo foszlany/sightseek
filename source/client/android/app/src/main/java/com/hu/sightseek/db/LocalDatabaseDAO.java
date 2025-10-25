@@ -11,6 +11,7 @@ import com.hu.sightseek.enums.SavedAttractionStatus;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
+import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
@@ -308,9 +309,9 @@ public class LocalDatabaseDAO {
         return polylines;
     }
 
-    public ArrayList<LatLng> getAllImportedPoints() {
+    public ArrayList<GeoPoint> getAllImportedPoints() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<LatLng> points = new ArrayList<>();
+        ArrayList<GeoPoint> points = new ArrayList<>();
 
         String sql =
                 "SELECT " + LocalDatabaseImpl.ACTIVITIES_POLYLINE +
@@ -322,10 +323,10 @@ public class LocalDatabaseDAO {
         if(cursor.moveToFirst()) {
             do {
                 String polylineString = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
-                List<LatLng> latLngPoints;
+                List<GeoPoint> geoPoints;
 
-                latLngPoints = PolyUtil.decode(polylineString);
-                points.addAll(latLngPoints);
+                geoPoints = SightseekSpatialUtils.decode(polylineString);
+                points.addAll(geoPoints);
             } while(cursor.moveToNext());
         }
 

@@ -21,9 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.activity.ActivityActivity;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
+import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
@@ -130,7 +132,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         executor.execute(() -> {
             Bitmap cache = imageCache.get(id);
             if(cache == null) {
-                List<LatLng> points = PolyUtil.decode(activity.getPolyline());
+                List<GeoPoint> points = SightseekSpatialUtils.decode(activity.getPolyline());
                 cache = renderMapImage(points);
                 imageCache.put(id, cache);
             }
@@ -178,15 +180,15 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         }
     }
 
-    private Bitmap renderMapImage(List<LatLng> points) {
+    private Bitmap renderMapImage(List<GeoPoint> points) {
         // Zoom
         BoundingBox box = getBoundingBox(points);
         mapView.zoomToBoundingBox(box.increaseByScale(1.3f), false);
 
         // Polyline
         Polyline line = new Polyline();
-        for(LatLng p : points) {
-            line.addPoint(new GeoPoint(p.latitude, p.longitude));
+        for(GeoPoint point : points) {
+            line.addPoint(point);
         }
 
         setupRouteLine(line, false);

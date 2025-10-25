@@ -23,13 +23,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.utils.SightseekFirebaseUtils;
+import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
@@ -130,10 +129,10 @@ public class ActivityActivity extends AppCompatActivity {
 
         // Setup polyline
         String polylineString = activity.getPolyline();
-        List<LatLng> pointList = PolyUtil.decode(polylineString);
+        List<GeoPoint> pointList = SightseekSpatialUtils.decode(polylineString);
         Polyline polyline = new Polyline();
-        for(LatLng point : pointList) {
-            polyline.addPoint(new GeoPoint(point.latitude, point.longitude));
+        for(GeoPoint point : pointList) {
+            polyline.addPoint(point);
         }
 
         setupRouteLine(polyline, false);
@@ -167,7 +166,7 @@ public class ActivityActivity extends AppCompatActivity {
                             }
                         }
                         else {
-                            HashMap<String, Integer> cells = getVisitedCells(PolyUtil.decode(polylineString));
+                            HashMap<String, Integer> cells = getVisitedCells(SightseekSpatialUtils.decode(polylineString));
                             SightseekFirebaseUtils.updateCellsInFirebase(mAuth, cells, true);
                         }
 

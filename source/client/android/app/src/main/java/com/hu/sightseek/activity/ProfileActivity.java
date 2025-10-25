@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,6 +40,7 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -188,7 +188,7 @@ public class ProfileActivity extends AppCompatActivity {
                     .setPositiveButton("Yes", (d, which) -> {
                         Executors.newSingleThreadExecutor().execute(() -> {
                             LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
-                            ArrayList<LatLng> points = dao2.getAllImportedPoints();
+                            ArrayList<GeoPoint> points = dao2.getAllImportedPoints();
                             dao2.deleteImportedActivities();
                             dao2.close();
 

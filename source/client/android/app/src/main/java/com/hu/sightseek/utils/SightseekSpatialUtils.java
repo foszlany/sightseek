@@ -4,22 +4,22 @@ import androidx.annotation.NonNull;
 
 import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class SightseekSpatialUtils {
     private SightseekSpatialUtils() {}
 
-    public static HashMap<String, Integer> getVisitedCells(List<LatLng> pointList) {
+    public static HashMap<String, Integer> getVisitedCells(List<GeoPoint> pointList) {
         HashMap<String, Integer> visitedCells = new HashMap<>();
 
-        for(LatLng p : pointList) {
-            String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.latitude, p.longitude), 3);
+        for(GeoPoint p : pointList) {
+            String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.getLatitude(), p.getLongitude()), 3);
 
             Integer count = visitedCells.get(hash);
             if(count == null) {
@@ -32,24 +32,24 @@ public class SightseekSpatialUtils {
     }
 
     @NonNull
-    public static BoundingBox getBoundingBox(List<LatLng> pointList) {
+    public static BoundingBox getBoundingBox(List<GeoPoint> pointList) {
         double minLat = Double.MAX_VALUE;
         double maxLat = -Double.MAX_VALUE;
         double minLon = Double.MAX_VALUE;
         double maxLon = -Double.MAX_VALUE;
 
-        for(LatLng p : pointList) {
-            if(p.latitude < minLat) {
-                minLat = p.latitude;
+        for(GeoPoint p : pointList) {
+            if(p.getLatitude() < minLat) {
+                minLat = p.getLatitude();
             }
-            if(p.latitude > maxLat) {
-                maxLat = p.latitude;
+            if(p.getLatitude() > maxLat) {
+                maxLat = p.getLatitude();
             }
-            if(p.longitude < minLon) {
-                minLon = p.longitude;
+            if(p.getLongitude() < minLon) {
+                minLon = p.getLongitude();
             }
-            if(p.longitude > maxLon) {
-                maxLon = p.longitude;
+            if(p.getLongitude() > maxLon) {
+                maxLon = p.getLongitude();
             }
         }
 
@@ -85,5 +85,40 @@ public class SightseekSpatialUtils {
             v >>= 5;
         }
         result.append(Character.toChars((int) (v + 63)));
+    }
+    public static List<GeoPoint> decode(final String encodedPath) {
+        int len = encodedPath.length();
+
+        // For speed we preallocate to an upper bound on the final length, then
+        // truncate the array before returning.
+        final List<GeoPoint> path = new ArrayList<>();
+        int index = 0;
+        int lat = 0;
+        int lng = 0;
+
+        while (index < len) {
+            int result = 1;
+            int shift = 0;
+            int b;
+            do {
+                b = encodedPath.charAt(index++) - 63 - 1;
+                result += b << shift;
+                shift += 5;
+            } while (b >= 0x1f);
+            lat += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+
+            result = 1;
+            shift = 0;
+            do {
+                b = encodedPath.charAt(index++) - 63 - 1;
+                result += b << shift;
+                shift += 5;
+            } while (b >= 0x1f);
+            lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+
+            path.add(new GeoPoint(lat * 1e-5, lng * 1e-5));
+        }
+
+        return path;
     }
 }

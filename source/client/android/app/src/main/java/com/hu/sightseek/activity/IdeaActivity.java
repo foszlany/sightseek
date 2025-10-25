@@ -247,10 +247,10 @@ public class IdeaActivity extends AppCompatActivity {
             if(referenceIndex != R.id.idea_radio_luckybtn) {
                 data = null;
 
-                ArrayList<LatLng> allPoints = new ArrayList<>();
+                ArrayList<GeoPoint> allPoints = new ArrayList<>();
 
                 for(int i = 0; i < activities.size(); i++) {
-                    ArrayList<LatLng> points = new ArrayList<>(PolyUtil.decode(activities.get(i).getPolyline()));
+                    ArrayList<GeoPoint> points = new ArrayList<>(SightseekSpatialUtils.decode(activities.get(i).getPolyline()));
 
                     allPoints.addAll(points);
                 }

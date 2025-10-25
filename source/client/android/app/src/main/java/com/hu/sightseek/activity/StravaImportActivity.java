@@ -22,22 +22,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ConsoleAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.model.Activity;
+import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -369,7 +369,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId, ""); // TODO
                                 activities.add(a);
 
-                                List<LatLng> pointList = PolyUtil.decode(polyline);
+                                List<GeoPoint> pointList = SightseekSpatialUtils.decode(polyline);
                                 HashMap<String, Integer> newCells = getVisitedCells(pointList);
 
                                 for(HashMap.Entry<String, Integer> entry : newCells.entrySet()) {
