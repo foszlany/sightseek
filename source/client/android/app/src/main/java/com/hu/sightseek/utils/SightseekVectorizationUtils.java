@@ -9,6 +9,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.buffer.BufferOp;
@@ -21,9 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolyLine;
+import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
 public final class SightseekVectorizationUtils {
@@ -33,25 +37,30 @@ public final class SightseekVectorizationUtils {
         ArrayList<Polyline> vectorizedPolylines = new ArrayList<>();
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        System.out.println("\nCreating vectorized data...");
+        System.out.println("#### Creating vectorized data ####");
 
-        // TODO: DETECT COUNTRIES
+        // LineString
+        LineString lineString = createLineStringFromPolyline(route, geometryFactory);
+        System.out.println("Polyline was converted to LineString");
 
+        // Calculate countries
+        Set<String> countryCodes = getTouchedCountries(lineString, activity);
+        System.out.println("Countries have been detected");
 
         // Route polygon
-        Polygon routePolygon = createPolygonFromPolyline(route, geometryFactory, 0.0002);
-        System.out.println("Route polygon has been created.");
+        Polygon routePolygon = createPolygonFromLineString(lineString, 0.0002);
+        System.out.println("Route polygon has been created");
 
         // Filtered roads
         MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, routePolygon.getEnvelopeInternal());
-        System.out.println("Road polylines have been created.");
+        System.out.println("Road polylines have been created");
 
         // Calculate intersection
         Geometry vectorizedData = roadPolylines.intersection(routePolygon);
 
-        System.out.println("Intersection calculation done.");
+        System.out.println("Intersection calculation done");
 
-        // Create polylines
+        // Create polyline(s)
         if(vectorizedData instanceof LineString) {
             Polyline polyline = convertLineStringToPolyline((LineString) vectorizedData);
 
@@ -65,12 +74,56 @@ public final class SightseekVectorizationUtils {
             System.out.println(vectorizedData.getClass());
         }
 
-        System.out.println("Calculation done.");
+        System.out.println("#### Calculation done ####");
 
         return vectorizedPolylines;
     }
 
-    private static Polygon createPolygonFromPolyline(Polyline route, GeometryFactory geometryFactory, double tolerance) {
+    private static Set<String> getTouchedCountries(LineString route, Activity activity) {
+        Set<String> touchedCountries = new HashSet<>();
+
+        copyShapefileToInternalStorage(activity, "countries");
+
+        try {
+            ShapeFile countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
+            countryShapefile.READ();
+
+            GeometryFactory geometryFactory = new GeometryFactory();
+
+            // Check for each country
+            for(int i = 0; i < countryShapefile.getSHP_shapeCount(); i++) {
+                ShpPolygon shape = countryShapefile.getSHP_shape(i);
+                String isoCode = countryShapefile.getDBF_record(i)[0].trim(); // TODO: SWAP COL WITH NAME SOMEHOW?
+
+                // Convert to Coordinate
+                ArrayList<Coordinate> shapeCoords = new ArrayList<>();
+                double[][] shapePoints = shape.getPoints();
+                for(int j = 0; j < shape.getNumberOfPoints(); j++) {
+                    shapeCoords.add(new Coordinate(shapePoints[j][0], shapePoints[j][1]));
+                }
+
+                // Close multipolygons
+                if(!shapeCoords.get(0).equals2D(shapeCoords.get(shapeCoords.size() - 1))) {
+                    shapeCoords.add(new Coordinate(shapeCoords.get(0)));
+                }
+
+                // Create country polygon
+                LinearRing shell = geometryFactory.createLinearRing(shapeCoords.toArray(new Coordinate[0]));
+                Polygon countryPolygon = geometryFactory.createPolygon(shell);
+
+                if(route.intersects(countryPolygon)) {
+                    touchedCountries.add(isoCode);
+                }
+            }
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return touchedCountries;
+    }
+
+    private static LineString createLineStringFromPolyline(Polyline route, GeometryFactory geometryFactory) {
         List<GeoPoint> points = route.getActualPoints();
         Coordinate[] coordinates = new Coordinate[points.size()];
 
@@ -78,9 +131,11 @@ public final class SightseekVectorizationUtils {
             coordinates[i] = new Coordinate(points.get(i).getLongitude(), points.get(i).getLatitude());
         }
 
-        LineString line = geometryFactory.createLineString(coordinates);
+        return geometryFactory.createLineString(coordinates);
+    }
 
-        Geometry buffered = BufferOp.bufferOp(line, tolerance);
+    private static Polygon createPolygonFromLineString(LineString route, double tolerance) {
+        Geometry buffered = BufferOp.bufferOp(route, tolerance);
         if(buffered instanceof Polygon) {
             return (Polygon) buffered;
         }
@@ -116,7 +171,7 @@ public final class SightseekVectorizationUtils {
 
             return new MultiLineString(lineStringList.toArray(new LineString[0]), geometryFactory);
         }
-        catch (Exception e) {
+        catch(Exception e) {
             throw new RuntimeException(e);
         }
     }
