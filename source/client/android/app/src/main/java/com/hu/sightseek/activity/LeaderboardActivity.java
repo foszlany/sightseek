@@ -3,6 +3,8 @@ package com.hu.sightseek.activity;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import static com.hu.sightseek.utils.SightseekSpatialUtils.copyShapefileToInternalStorage;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,6 +47,7 @@ import com.hu.sightseek.adapter.LeaderboardCellEntryAdapter;
 import com.hu.sightseek.model.LeaderboardEntry;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -278,9 +281,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
             // Query continents
             try {
-                copyAssetToInternalStorage(this, "shapefiles/global.shp", "global.shp");
-                copyAssetToInternalStorage(this, "shapefiles/global.dbf", "global.dbf");
-                copyAssetToInternalStorage(this, "shapefiles/global.shx", "global.shx");
+                copyShapefileToInternalStorage(this, "global");
 
                 ShapeFile shapeFile = new ShapeFile(folderPath, "global");
                 shapeFile.READ();
@@ -361,9 +362,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                     }
 
                     String continent = continentFiles.get(position - 1);
-                    copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + continent + ".shp", continent + ".shp");
-                    copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + continent + ".dbf", continent + ".dbf");
-                    copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + continent + ".shx", continent + ".shx");
+                    copyShapefileToInternalStorage(LeaderboardActivity.this, continent);
 
                     try {
                         ShapeFile shapeFile = new ShapeFile(folderPath, continent);
@@ -406,13 +405,10 @@ public class LeaderboardActivity extends AppCompatActivity {
                     countryCode = countryCodeOptions.get(position - 1);
 
                     // Allow for non-existent region-data
-                    boolean success = copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + countryCode + "_largeregion.shp", countryCode + "_largeregion.shp");
+                    boolean success = copyShapefileToInternalStorage(LeaderboardActivity.this, countryCode + "_largeregion");
                     if(!success) {
                         return;
                     }
-
-                    copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + countryCode + "_largeregion.dbf", countryCode + "_largeregion.dbf");
-                    copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + countryCode + "_largeregion.shx", countryCode + "_largeregion.shx");
 
                     try {
                         ShapeFile shapeFile = new ShapeFile(folderPath, countryCode + "_largeregion");
@@ -453,13 +449,10 @@ public class LeaderboardActivity extends AppCompatActivity {
                     }
 
                     // Allow for non-existent region-data
-                    boolean success = copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + countryCode + "_smallregion.shp", countryCode + "_smallregion.shp");
+                    boolean success = copyShapefileToInternalStorage(LeaderboardActivity.this, countryCode + "_smallregion");
                     if(!success) {
                         return;
                     }
-
-                    copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + countryCode + "_smallregion.dbf", countryCode + "_smallregion.dbf");
-                    copyAssetToInternalStorage(LeaderboardActivity.this, "shapefiles/" + countryCode + "_smallregion.shx", countryCode + "_smallregion.shx");
 
                     ArrayList<String> regionOptionsList = new ArrayList<>(regionOptions);
 
@@ -492,31 +485,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         });
     }
 
-    // TODO: REFACTOR TO COPY ALL FILES AT ONCE (Which files are needed?)
-    private boolean copyAssetToInternalStorage(Context context, String assetPath, String outputName) {
-        try {
-            File outFile = new File(context.getFilesDir(), outputName);
-            //if(outFile.exists()) { TODO remove when done
-            //    return true;
-            //}
-
-            try(InputStream in = context.getAssets().open(assetPath);
-                OutputStream out = new FileOutputStream(outFile)) {
-                byte[] buffer = new byte[1024];
-                int read;
-
-                while((read = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, read);
-                }
-            }
-
-            return true;
-        }
-        catch(IOException e) {
-            return false;
-        }
-    }
-
     // Create top menubar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -545,5 +513,11 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static GeoPoint mercatorToWgs84(double x, double y) {
+        double lon = Math.toDegrees(x / 6378137.0);
+        double lat = Math.toDegrees(Math.atan(Math.exp(y / 6378137.0)) * 2 - Math.PI / 2);
+        return new GeoPoint(lat, lon);
     }
 }
