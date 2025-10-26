@@ -344,7 +344,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                             polylines.add(polyline);
                                         }
 
-                                        ArrayList<String> result = batchVectorize(StravaImportActivity.this, polylines);
+                                        ArrayList<String> result = batchVectorize(StravaImportActivity.this, polylines, msg -> logIntoConsole(msg));
                                         for(int i = 0; i < activities.size(); i++) {
                                             activities.get(i).setVectorizedData(result.get(i));
                                         }

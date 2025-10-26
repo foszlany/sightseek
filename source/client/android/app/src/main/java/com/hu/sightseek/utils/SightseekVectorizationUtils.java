@@ -2,9 +2,8 @@ package com.hu.sightseek.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 
-import com.hu.sightseek.activity.StravaImportActivity;
+import com.hu.sightseek.interfaces.Logger;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -32,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolyLine;
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
@@ -41,11 +41,12 @@ public final class SightseekVectorizationUtils {
     private SightseekVectorizationUtils() {}
 
     // TODO: Handle exceptions
-    public static ArrayList<String> batchVectorize(Activity activity, ArrayList<Polyline> routes) {
+    public static ArrayList<String> batchVectorize(Activity activity, ArrayList<Polyline> routes, Logger logger) {
         ArrayList<String> results = new ArrayList<>();
         Set<String> countryCodes = new HashSet<>();
         GeometryFactory geometryFactory = new GeometryFactory();
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        AtomicInteger count = new AtomicInteger();
 
         // Convert to LineString and detect countries
         List<Future<RouteData>> routeDataFutures = new ArrayList<>();
@@ -137,12 +138,16 @@ public final class SightseekVectorizationUtils {
                     }
                 }
 
-                // TODO: LOG!!!
+                if(logger != null) {
+                    activity.runOnUiThread(() -> {
+                        logger.log("Vectorized [" + (count.incrementAndGet()) + "/" + routes.size() + "]");
+                    });
+                }
 
                 results.add(vectorizedDataString.toString());
             }
             catch(Exception e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         }
 
@@ -370,7 +375,6 @@ public final class SightseekVectorizationUtils {
                 geoPoints.add(new GeoPoint(lat, lon));
             }
 
-            // TODO: TEMPORARY
             Polyline polyline = new Polyline();
             polyline.setPoints(geoPoints);
 
