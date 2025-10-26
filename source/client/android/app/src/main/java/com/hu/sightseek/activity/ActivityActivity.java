@@ -8,6 +8,7 @@ import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
@@ -45,12 +47,12 @@ import org.osmdroid.views.overlay.TilesOverlay;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ActivityActivity extends AppCompatActivity {
+    private Button processedDataButton;
     private Activity activity;
-    FolderOverlay vectorizedDataGroup;
+    private FolderOverlay vectorizedDataGroup;
     boolean isVectorizedDataVisible;
 
     @Override
@@ -71,6 +73,7 @@ public class ActivityActivity extends AppCompatActivity {
         }
 
         isVectorizedDataVisible = false;
+        processedDataButton = findViewById(R.id.activity_vectortogglebtn);
 
         // Home button
         toolbar.setNavigationIcon(R.drawable.baseline_home_24);
@@ -199,7 +202,6 @@ public class ActivityActivity extends AppCompatActivity {
 
         // Processed data button
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Button processedDataButton = findViewById(R.id.activity_vectortogglebtn);
             processedDataButton.setVisibility(VISIBLE);
 
             processedDataButton.setOnClickListener(v -> {
@@ -233,12 +235,15 @@ public class ActivityActivity extends AppCompatActivity {
 
                         runOnUiThread(() -> {
                             mapView.invalidate();
+                            updateProcessedDataButton(isVectorizedDataVisible);
                         });
                     });
                 }
                 else {
                     vectorizedDataGroup.setEnabled(isVectorizedDataVisible);
                     mapView.invalidate();
+
+                    updateProcessedDataButton(isVectorizedDataVisible);
                 }
             });
         }
@@ -246,6 +251,14 @@ public class ActivityActivity extends AppCompatActivity {
         ImageButton screenshotButton = findViewById(R.id.activity_screenshotbtn);
         screenshotButton.setOnClickListener(v -> createScreenshot(this, findViewById(R.id.activity_layoutcontainer), activity.getName().replace(" ", "_"), findViewById(R.id.activity_btns)));
     }
+
+    private void updateProcessedDataButton(boolean enable) {
+        processedDataButton.setText(enable ? R.string.activity_hideprocesseddata : R.string.activity_showprocesseddata);
+
+        int tintColor = ContextCompat.getColor(this, enable ? R.color.red : R.color.light_purple);
+        processedDataButton.setBackgroundTintList(ColorStateList.valueOf(tintColor));
+    }
+
 
     // Create top menubar
     @Override
