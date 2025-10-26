@@ -53,10 +53,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -325,7 +323,6 @@ public class StravaImportActivity extends AppCompatActivity {
                                     logIntoConsole("Nothing new was found.\n" +
                                                    "Use \"Import missing\" if you wish to restore deleted activities.\n");
 
-
                                     return;
                                 }
 
@@ -372,9 +369,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                             isImporting = false;
                                         });
                                     }
-                                    catch(Exception e) {
-                                        e.printStackTrace();
-                                    }
+                                    catch(Exception ignored) {}
                                 });
 
                                 return;
@@ -420,7 +415,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
 
                                 if(i + 1 == jsonActivities.length()) {
-                                    logIntoConsole("\n");
+                                    logIntoConsole("");
                                     tempImportDate = startDate;
                                 }
                             }
