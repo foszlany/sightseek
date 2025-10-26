@@ -97,7 +97,7 @@ public final class SightseekVectorizationUtils {
             // Check for each country
             for(int i = 0; i < countryShapefile.getSHP_shapeCount(); i++) {
                 ShpPolygon shape = countryShapefile.getSHP_shape(i);
-                String isoCode = countryShapefile.getDBF_record(i)[0].trim(); // TODO: SWAP COL WITH NAME SOMEHOW?
+                String isoCode = countryShapefile.getDBF_record(i)[1].trim();
 
                 // Convert to Coordinate
                 ArrayList<Coordinate> shapeCoords = new ArrayList<>();
