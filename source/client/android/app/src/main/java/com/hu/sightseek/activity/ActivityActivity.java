@@ -7,6 +7,7 @@ import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +57,7 @@ public class ActivityActivity extends AppCompatActivity {
     private FolderOverlay vectorizedDataGroup;
     boolean isVectorizedDataVisible;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -248,8 +251,18 @@ public class ActivityActivity extends AppCompatActivity {
             });
         }
 
+        // Screenshot button
         ImageButton screenshotButton = findViewById(R.id.activity_screenshotbtn);
-        screenshotButton.setOnClickListener(v -> createScreenshot(this, findViewById(R.id.activity_layoutcontainer), activity.getName().replace(" ", "_"), findViewById(R.id.activity_btns)));
+        screenshotButton.setOnClickListener(v ->
+                createScreenshot(this, findViewById(R.id.activity_layoutcontainer), activity.getName().replace(" ", "_"), findViewById(R.id.activity_btns))
+        );
+
+        // Prevent unzoomable map
+        ScrollView scrollView = findViewById(R.id.activity_scrollview);
+        mapView.setOnTouchListener((v, event) -> {
+            scrollView.requestDisallowInterceptTouchEvent(true);
+            return false;
+        });
     }
 
     private void updateProcessedDataButton(boolean enable) {
@@ -258,7 +271,6 @@ public class ActivityActivity extends AppCompatActivity {
         int tintColor = ContextCompat.getColor(this, enable ? R.color.red : R.color.light_purple);
         processedDataButton.setBackgroundTintList(ColorStateList.valueOf(tintColor));
     }
-
 
     // Create top menubar
     @Override
