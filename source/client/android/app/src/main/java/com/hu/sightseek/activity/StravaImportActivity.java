@@ -2,7 +2,9 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
+import static com.hu.sightseek.utils.SightseekSpatialUtils.decode;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
+import static com.hu.sightseek.utils.SightseekVectorizationUtils.batchVectorize;
 
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -50,7 +53,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -319,29 +325,57 @@ public class StravaImportActivity extends AppCompatActivity {
                                     logIntoConsole("Nothing new was found.\n" +
                                                    "Use \"Import missing\" if you wish to restore deleted activities.\n");
 
-                                    isImporting = false;
 
                                     return;
                                 }
 
                                 logIntoConsole("Nothing else was found!\n\n" +
-                                               "Saving to database...");
+                                               "Vectorizing... (this might take a while)");
 
-                                LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
-                                dao.addActivities(activities);
-                                dao.close();
+                                ArrayList<Polyline> polylines = new ArrayList<>();
 
-                                updateCellsInFirebase(mAuth, visitedCells, false);
+                                ExecutorService executor = Executors.newSingleThreadExecutor();
+                                executor.execute(() -> {
+                                    try {
+                                        for(Activity activity : activities) {
+                                            List<GeoPoint> points = SightseekSpatialUtils.decode(activity.getPolyline());
+                                            Polyline polyline = new Polyline();
+                                            polyline.setPoints(points);
+                                            polylines.add(polyline);
+                                        }
 
-                                if("after".equals(mode)) {
-                                    prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();
-                                    importDate = tempImportDate;
-                                }
+                                        ArrayList<String> result = batchVectorize(StravaImportActivity.this, polylines);
+                                        for(int i = 0; i < activities.size(); i++) {
+                                            activities.get(i).setVectorizedData(result.get(i));
+                                        }
 
-                                logIntoConsole("Importing has been completed.\n" +
-                                                activities.size() + " activities were fetched.");
+                                        runOnUiThread(() -> {
+                                            isImporting = false;
 
-                                isImporting = false;
+                                            logIntoConsole("Vectorization has been completed!\n\n");
+                                            logIntoConsole("Saving to database...");
+
+                                            LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
+                                            dao.addActivities(activities);
+                                            dao.close();
+
+                                            updateCellsInFirebase(mAuth, visitedCells, false);
+
+                                            if("after".equals(mode)) {
+                                                prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();
+                                                importDate = tempImportDate;
+                                            }
+
+                                            logIntoConsole("Importing has been completed.\n" +
+                                                    activities.size() + " activities were fetched.");
+
+                                            isImporting = false;
+                                        });
+                                    }
+                                    catch(Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
 
                                 return;
                             }
@@ -366,10 +400,10 @@ public class StravaImportActivity extends AppCompatActivity {
                                 int elapsedTime = jsonActivity.getInt("moving_time");
                                 int distance = jsonActivity.getInt("distance");
 
-                                Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId, ""); // TODO
+                                Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId, "");
                                 activities.add(a);
 
-                                List<GeoPoint> pointList = SightseekSpatialUtils.decode(polyline);
+                                List<GeoPoint> pointList = decode(polyline);
                                 HashMap<String, Integer> newCells = getVisitedCells(pointList);
 
                                 for(HashMap.Entry<String, Integer> entry : newCells.entrySet()) {
@@ -386,8 +420,8 @@ public class StravaImportActivity extends AppCompatActivity {
                                 logIntoConsole("Fetched " + name + " (" + (i + 1) + "/" + jsonActivities.length() + ")");
 
                                 if(i + 1 == jsonActivities.length()) {
-                                    tempImportDate = startDate;
                                     logIntoConsole("\n");
+                                    tempImportDate = startDate;
                                 }
                             }
 

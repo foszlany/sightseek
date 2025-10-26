@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 
+import com.hu.sightseek.activity.StravaImportActivity;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -22,9 +24,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolyLine;
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
@@ -33,36 +40,153 @@ import diewald_shapeFile.shapeFile.ShapeFile;
 public final class SightseekVectorizationUtils {
     private SightseekVectorizationUtils() {}
 
+    // TODO: Handle exceptions
+    public static ArrayList<String> batchVectorize(Activity activity, ArrayList<Polyline> routes) {
+        ArrayList<String> results = new ArrayList<>();
+        Set<String> countryCodes = new HashSet<>();
+        GeometryFactory geometryFactory = new GeometryFactory();
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        // Convert to LineString and detect countries
+        List<Future<RouteData>> routeDataFutures = new ArrayList<>();
+        for(int i = 0; i < routes.size(); i++) {
+            final int position = i;
+            final Polyline route = routes.get(i);
+
+            routeDataFutures.add(executor.submit(() -> {
+                LineString lineString = createLineStringFromPolyline(route, geometryFactory);
+
+                ShapeFile countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
+                countryShapefile.READ();
+
+                Set<String> routeCountryCodes = (getTouchedCountries(lineString, activity, countryShapefile));
+                countryCodes.addAll(routeCountryCodes);
+
+                return new RouteData(position, route, lineString, routeCountryCodes);
+            }));
+        }
+
+        // Wait for routes
+        List<RouteData> routeDataset = new ArrayList<>();
+        for(Future<RouteData> future : routeDataFutures) {
+            try {
+                routeDataset.add(future.get());
+            }
+            catch(Exception ignored) {}
+        }
+
+        // Get roads separately
+        Map<String, List<LineString>> roadPolylinesPerCountry = getPerCountryRoadPolylines(activity, geometryFactory, countryCodes);
+
+        // Process
+        List<Future<ArrayList<Polyline>>> vectorFutures = new ArrayList<>();
+        for(RouteData routeData : routeDataset) {
+            vectorFutures.add(executor.submit(() -> {
+                // Convert route to polygon
+                Polygon routePolygon = createPolygonFromLineString(routeData.lineString, 0.0002);
+
+                // Filter segments
+                List<LineString> filteredRoads = new ArrayList<>();
+                Envelope envelope = routeData.lineString.getEnvelopeInternal();
+
+                for(String code : routeData.countryCodes) {
+                    List<LineString> segments = roadPolylinesPerCountry.get(code);
+                    if(segments == null) {
+                        continue;
+                    }
+
+                    for(LineString segment : segments) {
+                        if(segment.getEnvelopeInternal().intersects(envelope)) {
+                            filteredRoads.add(segment);
+                        }
+                    }
+                }
+
+                MultiLineString roadPolylines = geometryFactory.createMultiLineString(filteredRoads.toArray(new LineString[0]));
+
+                // Calculate intersection
+                Geometry vectorizedData = roadPolylines.intersection(routePolygon);
+
+                ArrayList<Polyline> vectorized = new ArrayList<>();
+                if(vectorizedData instanceof LineString) {
+                    vectorized.add(convertLineStringToPolyline((LineString) vectorizedData));
+                }
+                else if(vectorizedData instanceof MultiLineString) {
+                    vectorized.addAll(convertMultiLineStringToPolyline((MultiLineString) vectorizedData));
+                }
+                else { // TODO ?
+                    System.out.println(vectorizedData.getClass());
+                }
+
+                return vectorized;
+            }));
+        }
+
+        // Create polyline string
+        for(Future<ArrayList<Polyline>> future : vectorFutures) {
+            try {
+                ArrayList<Polyline> polylines = future.get();
+
+                StringBuilder vectorizedDataString = new StringBuilder();
+                for(int i = 0; i < polylines.size(); i++) {
+                    List<GeoPoint> geoPoints = polylines.get(i).getActualPoints();
+
+                    vectorizedDataString.append(SightseekSpatialUtils.encode(geoPoints));
+                    if(i != polylines.size() - 1) {
+                        vectorizedDataString.append(";");
+                    }
+                }
+
+                // TODO: LOG!!!
+
+                results.add(vectorizedDataString.toString());
+            }
+            catch(Exception e) {
+                throw new RuntimeException();
+            }
+        }
+
+        executor.shutdown();
+        return results;
+    }
+    private static class RouteData {
+        int position;
+        Polyline route;
+        LineString lineString;
+        Set<String> countryCodes;
+        Envelope envelope;
+
+        RouteData(int position, Polyline route, LineString lineString, Set<String> countryCodes) {
+            this.position = position;
+            this.route = route;
+            this.lineString = lineString;
+            this.countryCodes = countryCodes;
+            this.envelope = lineString.getEnvelopeInternal();
+        }
+    }
+
     public static ArrayList<Polyline> vectorize(Activity activity, Polyline route) {
         ArrayList<Polyline> vectorizedPolylines = new ArrayList<>();
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        System.out.println("#### Creating vectorized data ####");
-
         // LineString
         LineString lineString = createLineStringFromPolyline(route, geometryFactory);
-        System.out.println("Polyline was converted to LineString");
 
         // Calculate countries
-        Set<String> countryCodes = getTouchedCountries(lineString, activity);
+        Set<String> countryCodes = getTouchedCountries(lineString, activity, null);
         if(countryCodes.isEmpty()) {
             System.out.println("No countries have been detected, halting.");
             return vectorizedPolylines;
         }
 
-        System.out.println("Countries have been detected");
-
         // Route polygon
         Polygon routePolygon = createPolygonFromLineString(lineString, 0.0002);
-        System.out.println("Route polygon has been created");
 
         // Filtered roads
         MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
-        System.out.println("Road polylines have been created");
 
         // Calculate intersection
         Geometry vectorizedData = roadPolylines.intersection(routePolygon);
-        System.out.println("Intersection calculation done");
 
         // Create polyline(s)
         if(vectorizedData instanceof LineString) {
@@ -78,19 +202,21 @@ public final class SightseekVectorizationUtils {
             System.out.println(vectorizedData.getClass());
         }
 
-        System.out.println("#### Calculation done ####");
-
         return vectorizedPolylines;
     }
 
-    private static Set<String> getTouchedCountries(LineString route, Activity activity) {
+    private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {
         Set<String> touchedCountries = new HashSet<>();
 
-        copyShapefileToInternalStorage(activity, "countries");
+        if(countryShapefile == null) {
+            copyShapefileToInternalStorage(activity, "countries");
+        }
 
         try {
-            ShapeFile countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
-            countryShapefile.READ();
+            if(countryShapefile == null) {
+                countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
+                countryShapefile.READ();
+            }
 
             GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -182,6 +308,38 @@ public final class SightseekVectorizationUtils {
         return new MultiLineString(lineStringList.toArray(new LineString[0]), geometryFactory);
     }
 
+    private static HashMap<String, List<LineString>> getPerCountryRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes) {
+        HashMap<String, List<LineString>> roadSegmentsByCountry = new HashMap<>();
+
+        for(String code : countryCodes) {
+            copyShapefileToInternalStorage(activity, code + "_roads");
+
+            try {
+                ShapeFile roadsShapeFile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), code + "_roads");
+                roadsShapeFile.READ();
+
+                List<LineString> segments = new ArrayList<>();
+                for(int i = 0; i < roadsShapeFile.getSHP_shapeCount(); i++) {
+                    ShpPolyLine shape = roadsShapeFile.getSHP_shape(i);
+                    double[][] points = shape.getPoints();
+
+                    Coordinate[] coordinates = new Coordinate[points.length];
+                    for(int j = 0; j < points.length; j++) {
+                        coordinates[j] = new Coordinate(points[j][0], points[j][1]);
+                    }
+
+                    segments.add(geometryFactory.createLineString(coordinates));
+                }
+
+                roadSegmentsByCountry.put(code, segments);
+            }
+            catch(Exception e) {
+                return roadSegmentsByCountry;
+            }
+        }
+
+        return roadSegmentsByCountry;
+    }
 
     private static Polyline convertLineStringToPolyline(LineString lineString) {
         Coordinate[] coords = lineString.getCoordinates();
@@ -192,11 +350,8 @@ public final class SightseekVectorizationUtils {
             geoPoints.add(geo);
         }
 
-        // TODO: TEMPORARY
         Polyline polyline = new Polyline();
         polyline.setPoints(geoPoints);
-        polyline.setColor(Color.RED);
-        polyline.setWidth(4.0f);
 
         return polyline;
     }
@@ -218,8 +373,6 @@ public final class SightseekVectorizationUtils {
             // TODO: TEMPORARY
             Polyline polyline = new Polyline();
             polyline.setPoints(geoPoints);
-            polyline.setColor(Color.RED);
-            polyline.setWidth(4.0f);
 
             polylines.add(polyline);
         }
