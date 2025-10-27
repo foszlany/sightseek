@@ -38,6 +38,8 @@ import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
 public final class SightseekVectorizationUtils {
+    private static final double TOLERANCE = 0.0002;
+
     private SightseekVectorizationUtils() {}
 
     // TODO: Handle exceptions
@@ -84,11 +86,12 @@ public final class SightseekVectorizationUtils {
         for(RouteData routeData : routeDataset) {
             vectorFutures.add(executor.submit(() -> {
                 // Convert route to polygon
-                Polygon routePolygon = createPolygonFromLineString(routeData.lineString, 0.0002);
+                Polygon routePolygon = createPolygonFromLineString(routeData.lineString, TOLERANCE);
 
                 // Filter segments
                 List<LineString> filteredRoads = new ArrayList<>();
                 Envelope envelope = routeData.lineString.getEnvelopeInternal();
+                envelope.expandBy(TOLERANCE);
 
                 for(String code : routeData.countryCodes) {
                     List<LineString> segments = roadPolylinesPerCountry.get(code);
@@ -166,7 +169,9 @@ public final class SightseekVectorizationUtils {
             this.route = route;
             this.lineString = lineString;
             this.countryCodes = countryCodes;
+
             this.envelope = lineString.getEnvelopeInternal();
+            this.envelope.expandBy(TOLERANCE);
         }
     }
 
