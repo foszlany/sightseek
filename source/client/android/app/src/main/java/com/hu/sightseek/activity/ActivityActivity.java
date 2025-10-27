@@ -227,8 +227,6 @@ public class ActivityActivity extends AppCompatActivity {
 
                             Polyline p = new Polyline();
                             p.setPoints(geoPoints);
-
-                            p.setGeodesic(false);
                             p.getOutlinePaint().set(paint);
 
                             vectorizedDataGroup.add(p);

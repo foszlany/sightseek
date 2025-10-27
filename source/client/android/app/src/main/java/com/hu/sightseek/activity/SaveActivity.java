@@ -11,6 +11,7 @@ import static com.hu.sightseek.utils.SightseekVectorizationUtils.vectorize;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -195,7 +196,13 @@ public class SaveActivity extends AppCompatActivity {
 
                     runOnUiThread(() -> loadingText.setVisibility(GONE));
 
+                    Paint paint = new Paint();
+                    paint.setColor(Color.parseColor("#FF0000"));
+                    paint.setStrokeWidth(4.0f);
+                    paint.setAntiAlias(false);
+
                     for(Polyline p : vectorizedPolylines) {
+                        p.getOutlinePaint().set(paint);
                         mapView.getOverlays().add(p);
                     }
                     mapView.invalidate();
