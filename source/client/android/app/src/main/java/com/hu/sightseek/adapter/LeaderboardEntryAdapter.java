@@ -17,11 +17,11 @@ import com.hu.sightseek.model.LeaderboardEntry;
 
 import java.util.ArrayList;
 
-public class LeaderboardCellEntryAdapter extends RecyclerView.Adapter<LeaderboardCellEntryAdapter.LeaderboardCellEntryViewHolder> {
+public class LeaderboardEntryAdapter extends RecyclerView.Adapter<LeaderboardEntryAdapter.LeaderboardCellEntryViewHolder> {
     private final Context context;
     private final ArrayList<LeaderboardEntry> entryList;
 
-    public LeaderboardCellEntryAdapter(Context context, ArrayList<LeaderboardEntry> entries) {
+    public LeaderboardEntryAdapter(Context context, ArrayList<LeaderboardEntry> entries) {
         this.context = context;
         this.entryList = entries;
     }

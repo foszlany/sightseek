@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 import static com.hu.sightseek.utils.SightseekVectorizationUtils.copyShapefileToInternalStorage;
@@ -18,6 +19,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -42,11 +44,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.hu.sightseek.R;
-import com.hu.sightseek.adapter.LeaderboardCellEntryAdapter;
+import com.hu.sightseek.adapter.LeaderboardEntryAdapter;
 import com.hu.sightseek.model.LeaderboardEntry;
 
 import org.osmdroid.config.Configuration;
-import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -56,14 +57,18 @@ import java.util.concurrent.Executors;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
 public class LeaderboardActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private RecyclerView leaderboardRecyclerView;
     private String folderPath;
     private String countryCode;
 
     private boolean isGridView;
-    private LeaderboardCellEntryAdapter cellAdapter;
-    private ArrayList<LeaderboardEntry> cellEntries;
-    private LeaderboardEntry myCellEntry;
-    private ImageButton narrowSearchButton;
+    private LeaderboardEntryAdapter leaderboardEntryAdapter;
+    private ArrayList<LeaderboardEntry> leaderboardEntries;
+    private LeaderboardEntry myEntry;
+    private ImageButton regionFilterButton;
+    private TextView descriptionTextView;
 
     private Animation fadeIn;
     private Animation rotate;
@@ -81,23 +86,26 @@ public class LeaderboardActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Check if user is logged in
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null) {
             startActivity(new Intent(this, BannerActivity.class));
             finish();
             return;
         }
 
+        db = FirebaseFirestore.getInstance();
+
+        leaderboardRecyclerView = findViewById(R.id.leaderboard_entries);
+        leaderboardRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         folderPath = this.getFilesDir().getAbsolutePath();
-        cellEntries = new ArrayList<>();
+        leaderboardEntries = new ArrayList<>();
         isGridView = false;
-        narrowSearchButton = findViewById(R.id.leaderboard_filterbtn);
+        regionFilterButton = findViewById(R.id.leaderboard_filterbtn);
+        descriptionTextView = findViewById(R.id.leaderboard_description);
 
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
-
-        loadingImage = findViewById(R.id.leaderboard_loading);
-        loadingImage.startAnimation(rotate);
 
         // Add Menu
         Toolbar toolbar = findViewById(R.id.leaderboard_topmenu);
@@ -137,103 +145,28 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
         isGridView = true;
 
-        RecyclerView recyclerView = findViewById(R.id.leaderboard_entries);
-
-        if(cellAdapter == null) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-            Executors.newSingleThreadExecutor().execute(() -> {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                String currentUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
-
-                // Top 100
-                Task<QuerySnapshot> leaderboardTask = db.collection("leaderboard_cells")
-                        .orderBy("cellsVisited", Query.Direction.DESCENDING)
-                        .limit(100)
-                        .get();
-
-                // Username & cells visited
-                Task<DocumentSnapshot> userTask = db.collection("leaderboard_cells")
-                        .document(currentUid)
-                        .get();
-
-                Tasks.whenAllSuccess(leaderboardTask, userTask).addOnSuccessListener(results -> {
-                    QuerySnapshot leaderboardSnapshot = (QuerySnapshot) results.get(0);
-                    DocumentSnapshot userSnapshot = (DocumentSnapshot) results.get(1);
-
-                    for(QueryDocumentSnapshot document : leaderboardSnapshot) {
-                        String username = document.getString("username");
-
-                        Long cellsVisitedHolder = document.getLong("cellsVisited");
-                        long cellsVisited = cellsVisitedHolder == null ? 0 : cellsVisitedHolder;
-                        cellEntries.add(new LeaderboardEntry(username, cellsVisited));
-                    }
-
-                    cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
-
-                    if(userSnapshot.exists()) {
-                        runOnUiThread(() -> {
-                            Long userCellsVisitedHolder = userSnapshot.getLong("cellsVisited");
-                            long userCellsVisited = userCellsVisitedHolder == null ? 0 : userCellsVisitedHolder;
-
-                            // User placing
-                            AggregateQuery countQuery = db.collection("leaderboard_cells")
-                                    .whereGreaterThan("cellsVisited", userCellsVisited)
-                                    .count();
-
-                                    countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
-                                        long placing = snapshot.getCount() + 1;
-
-                                        runOnUiThread(() -> {
-                                            TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                                            myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
-
-                                            String username = userSnapshot.getString("username");
-                                            myCellEntry = new LeaderboardEntry(username, userCellsVisited);
-
-                                            TextView myNameTextView = findViewById(R.id.leaderboard_myname);
-                                            myNameTextView.setText(myCellEntry.getUsername());
-
-                                            TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
-                                            myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myCellEntry.getValue()));
-
-                                            View myEntryView = findViewById(R.id.leaderboard_myentry);
-                                            myEntryView.startAnimation(fadeIn);
-                                            myEntryView.setVisibility(VISIBLE);
-
-                                            View separator = findViewById(R.id.leaderboard_separator);
-                                            separator.startAnimation(fadeIn);
-                                            separator.setVisibility(VISIBLE);
-
-                                            recyclerView.startAnimation(fadeIn);
-                                            recyclerView.setAdapter(cellAdapter);
-
-                                            loadingImage.clearAnimation();
-                                            loadingImage.setVisibility(GONE);
-                                        });
-                                    });
-                        });
-                    }
-                    else {
-                        cellAdapter = new LeaderboardCellEntryAdapter(this, cellEntries);
-                        recyclerView.startAnimation(fadeIn);
-                        recyclerView.setAdapter(cellAdapter);
-
-                        loadingImage.clearAnimation();
-                        loadingImage.setVisibility(GONE);
-                    }
-                });
-            });
-        }
-        else {
-            recyclerView.setAdapter(cellAdapter);
-        }
-
-        TextView descriptionTextView = findViewById(R.id.leaderboard_description);
         descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
+        leaderboardRecyclerView.setVisibility(INVISIBLE); // ??????????????????
+        regionFilterButton.setVisibility(GONE);
 
-        narrowSearchButton.setVisibility(GONE);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            String currentUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
+            // Top 100
+            Task<QuerySnapshot> leaderboardTask = db
+                    .collection("leaderboard_cells")
+                    .orderBy("cellsVisited", Query.Direction.DESCENDING)
+                    .limit(100)
+                    .get();
+
+            // Username & cells visited
+            Task<DocumentSnapshot> userTask = db
+                    .collection("leaderboard_cells")
+                    .document(currentUid)
+                    .get();
+
+            setupLeaderboardViews(leaderboardTask, userTask, "cellsVisited", null);
+        });
     }
 
     private void initRegionalLeaderboard() {
@@ -242,14 +175,159 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
         isGridView = false;
 
-        narrowSearchButton.setVisibility(VISIBLE);
+        leaderboardRecyclerView.setVisibility(INVISIBLE);
+        regionFilterButton.setVisibility(VISIBLE);
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            setupRegionalLeaderboard("Global");
+        });
+    }
+
+    private void setupLeaderboardViews(Task<QuerySnapshot> leaderboardTask, Task<DocumentSnapshot> userTask, String valueStr, String regionalQueryStr) {
+        loadingImage = findViewById(R.id.leaderboard_loading);
+        loadingImage.startAnimation(rotate);
+
+        leaderboardEntries.clear();
+
+        Tasks.whenAllSuccess(leaderboardTask, userTask).addOnSuccessListener(results -> {
+            QuerySnapshot leaderboardSnapshot = (QuerySnapshot) results.get(0);
+            DocumentSnapshot userSnapshot = (DocumentSnapshot) results.get(1);
+
+            for(QueryDocumentSnapshot document : leaderboardSnapshot) {
+                String username = document.getString("username");
+
+                Double valueHolder = document.getDouble(valueStr);
+                double value = valueHolder == null ? 0 : valueHolder;
+
+                leaderboardEntries.add(new LeaderboardEntry(username, value));
+            }
+
+            leaderboardEntryAdapter = new LeaderboardEntryAdapter(this, leaderboardEntries);
+
+            runOnUiThread(() -> {
+                Double valueHolder = userSnapshot.getDouble(valueStr);
+                double value = valueHolder == null ? 0 : valueHolder;
+
+                // User placing
+                AggregateQuery countQuery;
+                if("cellsVisited".equals(valueStr)) {
+                    countQuery = db
+                            .collection("leaderboard_cells")
+                            .whereGreaterThan(valueStr, value)
+                            .count();
+                }
+                else {
+                    countQuery = db
+                            .collection("leaderboard_regional")
+                            .document(regionalQueryStr)
+                            .collection("users")
+                            .whereGreaterThan(valueStr, value)
+                            .count();
+                }
+
+                countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
+                    long placing = snapshot.getCount() + 1;
+
+                    runOnUiThread(() -> {
+                        TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                        myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
+
+                        String username = userSnapshot.getString("username");
+                        myEntry = new LeaderboardEntry(username, value);
+
+                        TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                        myNameTextView.setText(myEntry.getUsername());
+
+                        View myEntryView = findViewById(R.id.leaderboard_myentry);
+                        myEntryView.startAnimation(fadeIn);
+                        myEntryView.setVisibility(VISIBLE);
+
+                        View separator = findViewById(R.id.leaderboard_separator);
+                        separator.startAnimation(fadeIn);
+                        separator.setVisibility(VISIBLE);
+
+                        TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                        if("cellsVisited".equals(valueStr)) {
+                            myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
+                        }
+                        else {
+                            myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
+                        }
+
+                        loadingImage.clearAnimation();
+                        loadingImage.setVisibility(GONE);
+
+                        leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
+                        leaderboardRecyclerView.setVisibility(VISIBLE);
+                        leaderboardRecyclerView.startAnimation(fadeIn);
+                    });
+                });
+            });
+        });
+    }
+
+    private void setupRegionalLeaderboard(String queryStr) {
+        runOnUiThread(() -> {
+            String regionalDescription = queryStr.replace(";", " / ");
+            descriptionTextView.setText(regionalDescription);
+        });
+
+        String currentUid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+
+        // Top 100
+        Task<QuerySnapshot> leaderboardTask = db.collection("leaderboard_regional")
+                .document(queryStr)
+                .collection("users")
+                .orderBy("distance", Query.Direction.DESCENDING)
+                .limit(100)
+                .get();
+
+        // Username & regional distances
+        Task<DocumentSnapshot> userTask = db.collection("leaderboard_regional")
+                .document(queryStr)
+                .collection("users")
+                .document(currentUid)
+                .get();
+
+        setupLeaderboardViews(leaderboardTask, userTask, "distance", queryStr);
+    }
+
+    private String getQueryString(Spinner continentSpinner, Spinner countrySpinner, Spinner regionSpinner, Spinner subRegionSpinner) {
+        String continent = continentSpinner.getSelectedItem().toString();
+        String country = countrySpinner.getSelectedItem().toString();
+        String region = regionSpinner.getSelectedItem().toString();
+        String subRegion = subRegionSpinner.getSelectedItem().toString();
+
+        // Build query
+        StringBuilder queryBuilder = new StringBuilder();
+
+        if(continent.equalsIgnoreCase("None")) {
+            queryBuilder.append("Global");
+        }
+        else {
+            queryBuilder.append(continent);
+
+            if(!country.equalsIgnoreCase("None")) {
+                queryBuilder.append(";").append(country);
+
+                if(!region.equalsIgnoreCase("None")) {
+                    queryBuilder.append(";").append(region);
+
+                    if(!subRegion.equalsIgnoreCase("None")) {
+                        queryBuilder.append(";").append(subRegion);
+                    }
+                }
+            }
+        }
+
+        return queryBuilder.toString();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        narrowSearchButton.setOnClickListener(v -> {
+        regionFilterButton.setOnClickListener(v -> {
             View popupView = LayoutInflater.from(this).inflate(R.layout.filter_region, null);
             PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
             popupWindow.showAsDropDown(v);
@@ -328,7 +406,6 @@ public class LeaderboardActivity extends AppCompatActivity {
             );
             subRegionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             subRegionSpinner.setAdapter(subRegionAdapter);
-
 
             // Continent listener
             continentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -420,7 +497,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                         regionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         regionSpinner.setAdapter(regionAdapter);
                     }
-                    catch (Exception e) {
+                    catch(Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -470,11 +547,22 @@ public class LeaderboardActivity extends AppCompatActivity {
                     catch(Exception e) {
                         throw new RuntimeException(e);
                     }
-
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {}
+            });
+
+            // Search
+            Button queryButton = popupView.findViewById(R.id.leaderboard_narrowsearch_search);
+            queryButton.setOnClickListener(w -> {
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    String queryStr = getQueryString(continentSpinner, countrySpinner, regionSpinner, subRegionSpinner);
+
+                    runOnUiThread(popupWindow::dismiss);
+
+                    setupRegionalLeaderboard(queryStr);
+                });
             });
         });
     }
@@ -507,11 +595,5 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public static GeoPoint mercatorToWgs84(double x, double y) {
-        double lon = Math.toDegrees(x / 6378137.0);
-        double lat = Math.toDegrees(Math.atan(Math.exp(y / 6378137.0)) * 2 - Math.PI / 2);
-        return new GeoPoint(lat, lon);
     }
 }

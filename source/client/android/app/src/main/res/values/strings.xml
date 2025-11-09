@@ -177,6 +177,7 @@
     <string name="statistics_permonthdistance_title">Distance per month</string>
     <string name="leaderboard_entry_placing">#%1$d</string>
     <string name="leaderboard_entry_cellvalue">%1$d</string>
+    <string name="leaderboard_entry_distancevalue">%1$.2f km</string>
     <string name="leaderboard_title">Leaderboard</string>
     <string name="leaderboard_cellsdescription">Cells visited</string>
     <string name="leaderboard_narrowsearch_continent">Continent</string>

@@ -18,7 +18,7 @@ public class RegionalDistanceAggregator {
             double distance = entry.getDistance();
 
             // Global
-            addDistance(distanceMap, "global", distance);
+            addDistance(distanceMap, "Global", distance);
 
             // Continent
             addDistance(distanceMap, continent, distance);
