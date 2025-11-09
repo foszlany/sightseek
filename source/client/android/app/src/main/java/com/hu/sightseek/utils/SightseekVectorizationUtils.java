@@ -1,5 +1,7 @@
 package com.hu.sightseek.utils;
 
+import static com.hu.sightseek.utils.SightseekRegionalLeaderboardUtils.calculateRegionalDistance;
+
 import android.app.Activity;
 import android.content.Context;
 
@@ -42,7 +44,7 @@ public final class SightseekVectorizationUtils {
 
     private SightseekVectorizationUtils() {}
 
-    // TODO: Handle exceptions
+    // TODO: Handle exceptions with log & skipping
     public static ArrayList<String> batchVectorize(Activity activity, ArrayList<Polyline> routes, Logger logger) {
         ArrayList<String> results = new ArrayList<>();
         Set<String> countryCodes = new HashSet<>();
@@ -190,13 +192,16 @@ public final class SightseekVectorizationUtils {
         }
 
         // Route polygon
-        Polygon routePolygon = createPolygonFromLineString(lineString, 0.0002);
+        Polygon routePolygon = createPolygonFromLineString(lineString, TOLERANCE);
 
         // Filtered roads
         MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
 
         // Calculate intersection
         Geometry vectorizedData = roadPolylines.intersection(routePolygon);
+
+        // Calculate regional leaderboard data
+        calculateRegionalDistance(activity, vectorizedData, countryCodes); // TODO CHANGE!!!!
 
         // Create polyline(s)
         if(vectorizedData instanceof LineString) {
@@ -212,7 +217,7 @@ public final class SightseekVectorizationUtils {
             System.out.println(vectorizedData.getClass());
         }
 
-        return vectorizedPolylines;
+        return vectorizedPolylines; // TODO NEW CLASS WITH COUNTRYCODES
     }
 
     private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {

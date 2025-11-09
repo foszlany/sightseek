@@ -215,7 +215,7 @@ public class ActivityActivity extends AppCompatActivity {
 
                     Paint paint = new Paint();
                     paint.setColor(Color.parseColor("#FF0000"));
-                    paint.setStrokeWidth(4.0f);
+                    paint.setStrokeWidth(7.0f);
                     paint.setAntiAlias(false);
 
                     Executors.newSingleThreadExecutor().execute(() -> {
@@ -232,7 +232,7 @@ public class ActivityActivity extends AppCompatActivity {
                             vectorizedDataGroup.add(p);
                         }
 
-                        mapView.getOverlays().add(0, vectorizedDataGroup);
+                        mapView.getOverlays().add(1, vectorizedDataGroup);
 
                         runOnUiThread(() -> {
                             mapView.invalidate();

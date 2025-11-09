@@ -443,7 +443,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                     }
 
                     // Allow for non-existent region-data
-                    boolean success = copyShapefileToInternalStorage(LeaderboardActivity.this, countryCode + "_smallregion");
+                    boolean success = copyShapefileToInternalStorage(LeaderboardActivity.this, countryCode + "_largeregion");
                     if(!success) {
                         return;
                     }

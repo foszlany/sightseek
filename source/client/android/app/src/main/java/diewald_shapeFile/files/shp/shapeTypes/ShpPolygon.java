@@ -55,6 +55,9 @@ public class ShpPolygon extends ShpShape{
   private int[]  SHP_parts;
   private double[][] SHP_xyz_points; // [number of points][x,y,z]
   private double[] SHP_m_values;     // [number of points][m-value]
+  private String countryCode;
+  private String largeRegion;
+  private String smallRegion;
   
   
   private double[][][] parts = null; //[number of polygons][vertices][x, y, z, w]
@@ -214,5 +217,29 @@ public class ShpPolygon extends ShpShape{
    */
   public double[] getMeasureValues(){
     return SHP_m_values;
+  }
+
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
+  }
+
+  public String getLargeRegion() {
+    return largeRegion;
+  }
+
+  public void setLargeRegion(String largeRegion) {
+    this.largeRegion = largeRegion;
+  }
+
+  public String getSmallRegion() {
+    return smallRegion;
+  }
+
+  public void setSmallRegion(String smallRegion) {
+    this.smallRegion = smallRegion;
   }
 }

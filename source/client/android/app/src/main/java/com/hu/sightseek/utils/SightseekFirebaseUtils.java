@@ -92,4 +92,52 @@ public final class SightseekFirebaseUtils {
             db.collection("leaderboard_cells").document(uid).set(leaderboardEntry);
         });
     }
+
+    public static void updateRegionalLeaderboard(Map<String, Double> distanceMap) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String uid = mAuth.getUid();
+
+        if(uid == null) {
+            return;
+        }
+
+        DocumentReference userDocRef = db.collection("users").document(uid);
+
+        userDocRef.get().addOnSuccessListener(snapshot -> {
+            if(!snapshot.exists()) {
+                return;
+            }
+
+            String username = snapshot.getString("username");
+
+            for(Map.Entry<String, Double> entry : distanceMap.entrySet()) {
+                String regionPath = entry.getKey();
+                double newDistance = entry.getValue();
+
+                DocumentReference userRegionDocument = db
+                        .collection("leaderboard_regional")
+                        .document(regionPath)
+                        .collection("users")
+                        .document(uid);
+
+                userRegionDocument.get().addOnSuccessListener(docSnapshot -> {
+                    double totalDistance = newDistance;
+
+                    if(docSnapshot.exists()) {
+                        Double oldDistance = docSnapshot.getDouble("distance");
+                        if(oldDistance != null) {
+                            totalDistance += oldDistance;
+                        }
+                    }
+
+                    Map<String, Object> leaderboardEntry = new HashMap<>();
+                    leaderboardEntry.put("username", username);
+                    leaderboardEntry.put("distance", totalDistance);
+
+                    userRegionDocument.set(leaderboardEntry);
+                });
+            }
+        });
+    }
 }

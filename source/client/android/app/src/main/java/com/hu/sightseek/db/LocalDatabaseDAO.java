@@ -380,6 +380,33 @@ public class LocalDatabaseDAO {
         return polylines;
     }
 
+    public ArrayList<String> getAllVectorizedRoads() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ArrayList<String> roads = new ArrayList<>();
+
+        Cursor cursor = db.query(
+                LocalDatabaseImpl.ACTIVITIES_TABLE,
+                new String[]{LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor.moveToFirst()) {
+            do {
+                String polylineString = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
+                roads.add(polylineString);
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return roads;
+    }
+
     public void deleteImportedActivities() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1", null);
