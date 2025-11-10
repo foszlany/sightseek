@@ -70,8 +70,6 @@ public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardEntry myEntry;
     private ImageButton regionFilterButton;
     private TextView descriptionTextView;
-    private LinearLayout myEntryView;
-    private View separator;
 
     private Animation fadeIn;
     private Animation rotate;
@@ -106,8 +104,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         isGridView = false;
         regionFilterButton = findViewById(R.id.leaderboard_filterbtn);
         descriptionTextView = findViewById(R.id.leaderboard_description);
-        myEntryView = findViewById(R.id.leaderboard_myentry);
-        separator = findViewById(R.id.leaderboard_separator);
 
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
@@ -206,6 +202,20 @@ public class LeaderboardActivity extends AppCompatActivity {
                     else {
                         String regionalDescription = regionalQueryStr.replace(";", " / ");
                         descriptionTextView.setText(regionalDescription);
+                    }
+
+                    TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                    myPlacingTextView.setText(R.string.leaderboard_entry_defaultplacing);
+
+                    TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                    myNameTextView.setText(myEntry.getUsername());
+
+                    TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                    if("cellsVisited".equals(valueStr)) {
+                        myValueTextView.setText(R.string.leaderboard_entry_defaultvalue);
+                    }
+                    else {
+                        myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, 0.0));
                     }
 
                     leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
