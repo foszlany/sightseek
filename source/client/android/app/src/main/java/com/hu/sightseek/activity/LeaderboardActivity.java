@@ -202,7 +202,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                 leaderboardEntries.add(new LeaderboardEntry(username, value));
             }
 
-            leaderboardEntryAdapter = new LeaderboardEntryAdapter(this, leaderboardEntries);
+            leaderboardEntryAdapter = new LeaderboardEntryAdapter(this, leaderboardEntries, isGridView);
 
             runOnUiThread(() -> {
                 Double valueHolder = userSnapshot.getDouble(valueStr);

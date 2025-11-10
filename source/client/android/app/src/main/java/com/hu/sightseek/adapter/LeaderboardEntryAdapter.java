@@ -20,10 +20,12 @@ import java.util.ArrayList;
 public class LeaderboardEntryAdapter extends RecyclerView.Adapter<LeaderboardEntryAdapter.LeaderboardCellEntryViewHolder> {
     private final Context context;
     private final ArrayList<LeaderboardEntry> entryList;
+    private boolean isGridView;
 
-    public LeaderboardEntryAdapter(Context context, ArrayList<LeaderboardEntry> entries) {
+    public LeaderboardEntryAdapter(Context context, ArrayList<LeaderboardEntry> entries, boolean isGridView) {
         this.context = context;
         this.entryList = entries;
+        this.isGridView = isGridView;
     }
 
     @NonNull
@@ -59,7 +61,13 @@ public class LeaderboardEntryAdapter extends RecyclerView.Adapter<LeaderboardEnt
         // Values
         holder.placing.setText(context.getString(R.string.leaderboard_entry_placing, position + 1));
         holder.username.setText(entry.getUsername());
-        holder.value.setText(context.getString(R.string.leaderboard_entry_cellvalue, (int) entry.getValue()));
+
+        if(isGridView) {
+            holder.value.setText(context.getString(R.string.leaderboard_entry_cellvalue, (int) entry.getValue()));
+        }
+        else {
+            holder.value.setText(context.getString(R.string.leaderboard_entry_distancevalue, entry.getValue()));
+        }
     }
 
     @Override
