@@ -199,4 +199,7 @@
     <string name="save_creatingvectordata">Creating vectorized data, please wait…</string>
     <string name="activity_showprocesseddata">Show processed data</string>
     <string name="activity_hideprocesseddata">Hide processed data</string>
+    <string name="leaderboard_entry_defaultplacing">∞</string>
+    <string name="leaderboard_entry_defaultvalue">0</string>
+    <string name="leaderboard_entry_defaultuser">Fetching...</string>
 </resources>

@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -69,7 +70,8 @@ public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardEntry myEntry;
     private ImageButton regionFilterButton;
     private TextView descriptionTextView;
-    private View myEntryView;
+    private LinearLayout myEntryView;
+    private View separator;
 
     private Animation fadeIn;
     private Animation rotate;
@@ -105,6 +107,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         regionFilterButton = findViewById(R.id.leaderboard_filterbtn);
         descriptionTextView = findViewById(R.id.leaderboard_description);
         myEntryView = findViewById(R.id.leaderboard_myentry);
+        separator = findViewById(R.id.leaderboard_separator);
 
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
@@ -259,13 +262,6 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                                 TextView myNameTextView = findViewById(R.id.leaderboard_myname);
                                 myNameTextView.setText(myEntry.getUsername());
-
-                                myEntryView.startAnimation(fadeIn);
-                                myEntryView.setVisibility(VISIBLE);
-
-                                View separator = findViewById(R.id.leaderboard_separator);
-                                separator.startAnimation(fadeIn);
-                                separator.setVisibility(VISIBLE);
 
                                 TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
                                 if("cellsVisited".equals(valueStr)) {

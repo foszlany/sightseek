@@ -212,10 +212,7 @@ public final class SightseekVectorizationUtils {
         else if(vectorizedData instanceof MultiLineString) {
             ArrayList<Polyline> polylines = convertMultiLineStringToPolyline((MultiLineString) vectorizedData);
             vectorizedPolylines.addAll(polylines);
-        }
-        else { // TODO ?
-            System.out.println(vectorizedData.getClass());
-        }
+        }   
 
         return vectorizedPolylines; // TODO NEW CLASS WITH COUNTRYCODES
     }
