@@ -10,6 +10,7 @@ import com.hu.sightseek.interfaces.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
@@ -44,7 +45,6 @@ public final class SightseekVectorizationUtils {
 
     private SightseekVectorizationUtils() {}
 
-    // TODO: Handle exceptions with log & skipping
     public static ArrayList<String> batchVectorize(Activity activity, ArrayList<Polyline> routes, Logger logger) {
         ArrayList<String> results = new ArrayList<>();
         Set<String> countryCodes = new HashSet<>();
@@ -120,8 +120,8 @@ public final class SightseekVectorizationUtils {
                 else if(vectorizedData instanceof MultiLineString) {
                     vectorized.addAll(convertMultiLineStringToPolyline((MultiLineString) vectorizedData));
                 }
-                else { // TODO ?
-                    System.out.println(vectorizedData.getClass());
+                else if(vectorizedData instanceof Polygon || vectorizedData instanceof GeometryCollection) {
+                    throw new RuntimeException("Vectorized data has 2 dimensional elements.");
                 }
 
                 return vectorized;
@@ -259,7 +259,7 @@ public final class SightseekVectorizationUtils {
             }
         }
         catch(Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Shapefile exception: (" + countryShapefile + "): " + e);
         }
 
         return touchedCountries;
@@ -313,7 +313,7 @@ public final class SightseekVectorizationUtils {
                 }
             }
             catch(Exception e) {
-                throw new RuntimeException("Error reading shapefile for country code: " + code, e);
+                throw new RuntimeException("Shapefile exception: (" + code + "): " + e);
             }
         }
 
@@ -411,7 +411,7 @@ public final class SightseekVectorizationUtils {
                     }
                 }
             }
-            catch(IOException ignored) {
+            catch(IOException e) {
                 return false;
             }
         }

@@ -20,7 +20,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -75,7 +74,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     private Animation rotate;
 
     private ImageView loadingImage;
-    private View overlayView;
+    private View noEntriesOverlayView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,10 +226,10 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                     // Setup overlay
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    overlayView = inflater.inflate(R.layout.overlay_noleaderboard, null);
+                    noEntriesOverlayView = inflater.inflate(R.layout.overlay_noleaderboard, null);
 
                     ViewGroup container = findViewById(R.id.leaderboard_entries_container);
-                    container.addView(overlayView);
+                    container.addView(noEntriesOverlayView);
                 });
             }
             else {
@@ -273,9 +272,9 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                             runOnUiThread(() -> {
                                 // Remove empty leaderboard overlay
-                                if(overlayView != null) {
-                                    overlayView.setVisibility(View.GONE);
-                                    overlayView = null;
+                                if(noEntriesOverlayView != null) {
+                                    noEntriesOverlayView.setVisibility(View.GONE);
+                                    noEntriesOverlayView = null;
                                 }
 
                                 // Setup values
