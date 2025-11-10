@@ -100,18 +100,6 @@
         app:layout_constraintTop_toTopOf="@+id/leaderboard_entries"
         app:srcCompat="@drawable/baseline_change_circle_24" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/leaderboard_bottommenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="?android:attr/windowBackground"
-        app:itemActiveIndicatorStyle="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_leaderboard_bottom"/>
-
     <View
         android:id="@+id/leaderboard_separator"
         android:layout_width="match_parent"
@@ -171,4 +159,16 @@
             android:textColor="@color/white"
             android:textSize="18sp"/>
     </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/leaderboard_bottommenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        app:itemActiveIndicatorStyle="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_leaderboard_bottom"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -69,6 +69,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardEntry myEntry;
     private ImageButton regionFilterButton;
     private TextView descriptionTextView;
+    private View myEntryView;
 
     private Animation fadeIn;
     private Animation rotate;
@@ -103,6 +104,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         isGridView = false;
         regionFilterButton = findViewById(R.id.leaderboard_filterbtn);
         descriptionTextView = findViewById(R.id.leaderboard_description);
+        myEntryView = findViewById(R.id.leaderboard_myentry);
 
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
@@ -147,6 +149,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(GONE);
+        myEntryView.setVisibility(INVISIBLE);
 
         Executors.newSingleThreadExecutor().execute(() -> {
             String currentUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
@@ -176,6 +179,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(VISIBLE);
+        myEntryView.setVisibility(INVISIBLE);
 
         Executors.newSingleThreadExecutor().execute(() -> {
             setupRegionalLeaderboard("Global");
@@ -192,6 +196,28 @@ public class LeaderboardActivity extends AppCompatActivity {
             QuerySnapshot leaderboardSnapshot = (QuerySnapshot) results.get(0);
             DocumentSnapshot userSnapshot = (DocumentSnapshot) results.get(1);
 
+            // Empty leaderboard
+            if(leaderboardSnapshot.getDocumentChanges().isEmpty()) {
+                runOnUiThread(() -> {
+                    if("cellsVisited".equals(valueStr)) {
+                        descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
+                    }
+                    else {
+                        String regionalDescription = regionalQueryStr.replace(";", " / ");
+                        descriptionTextView.setText(regionalDescription);
+                    }
+
+                    leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
+                    leaderboardRecyclerView.startAnimation(fadeIn);
+
+                    loadingImage.clearAnimation();
+                    loadingImage.setVisibility(GONE);
+                });
+
+                return;
+            }
+
+            // Setup entries
             for(QueryDocumentSnapshot document : leaderboardSnapshot) {
                 String username = document.getString("username");
 
@@ -225,49 +251,46 @@ public class LeaderboardActivity extends AppCompatActivity {
                                 .count();
                     }
 
-                    countQuery.get(AggregateSource.SERVER)
-                            .addOnSuccessListener(snapshot -> {
-                                long placing = snapshot.getCount() + 1;
+                    countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
+                        long placing = snapshot.getCount() + 1;
 
-                                runOnUiThread(() -> {
-                                    TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                                    myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
+                        runOnUiThread(() -> {
+                            TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                            myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
 
-                                    String username = userSnapshot.getString("username");
-                                    myEntry = new LeaderboardEntry(username, value);
+                            String username = userSnapshot.getString("username");
+                            myEntry = new LeaderboardEntry(username, value);
 
-                                    TextView myNameTextView = findViewById(R.id.leaderboard_myname);
-                                    myNameTextView.setText(myEntry.getUsername());
+                            TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                            myNameTextView.setText(myEntry.getUsername());
 
-                                    View myEntryView = findViewById(R.id.leaderboard_myentry);
-                                    myEntryView.startAnimation(fadeIn);
-                                    myEntryView.setVisibility(VISIBLE);
+                            myEntryView.startAnimation(fadeIn);
+                            myEntryView.setVisibility(VISIBLE);
 
-                                    View separator = findViewById(R.id.leaderboard_separator);
-                                    separator.startAnimation(fadeIn);
-                                    separator.setVisibility(VISIBLE);
+                            View separator = findViewById(R.id.leaderboard_separator);
+                            separator.startAnimation(fadeIn);
+                            separator.setVisibility(VISIBLE);
 
-                                    TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
-                                    if("cellsVisited".equals(valueStr)) {
-                                        myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
+                            TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                            if("cellsVisited".equals(valueStr)) {
+                                myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
 
-                                        descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
-                                    }
-                                    else {
-                                        myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
+                                descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
+                            }
+                            else {
+                                myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
 
-                                        String regionalDescription = regionalQueryStr.replace(";", " / ");
-                                        descriptionTextView.setText(regionalDescription);
-                                    }
+                                String regionalDescription = regionalQueryStr.replace(";", " / ");
+                                descriptionTextView.setText(regionalDescription);
+                            }
 
-                                    loadingImage.clearAnimation();
-                                    loadingImage.setVisibility(GONE);
+                            loadingImage.clearAnimation();
+                            loadingImage.setVisibility(GONE);
 
-                                    leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
-                                    leaderboardRecyclerView.startAnimation(fadeIn);
-                                });
-                            });
-
+                            leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
+                            leaderboardRecyclerView.startAnimation(fadeIn);
+                        });
+                    });
                 }
                 else {
                     loadingImage.clearAnimation();
