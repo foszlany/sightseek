@@ -145,7 +145,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
         isGridView = true;
 
-        leaderboardRecyclerView.setVisibility(INVISIBLE); // ??????????????????
+        leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(GONE);
 
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -174,7 +174,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
         isGridView = false;
 
-        leaderboardRecyclerView.setVisibility(INVISIBLE);
+        leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(VISIBLE);
 
         Executors.newSingleThreadExecutor().execute(() -> {
