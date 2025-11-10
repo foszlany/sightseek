@@ -202,9 +202,6 @@ public final class SightseekVectorizationUtils {
         // Calculate intersection
         Geometry vectorizedDataGeometry = roadPolylines.intersection(routePolygon);
 
-        // Calculate regional leaderboard data
-        calculateRegionalDistance(activity, vectorizedDataGeometry, countryCodes); // TODO CHANGE!!!!
-
         // Create polyline(s)
         if(vectorizedDataGeometry instanceof LineString) {
             Polyline polyline = convertLineStringToPolyline((LineString) vectorizedDataGeometry);
