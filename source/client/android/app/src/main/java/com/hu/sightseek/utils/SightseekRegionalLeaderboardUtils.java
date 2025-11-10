@@ -60,7 +60,7 @@ public final class SightseekRegionalLeaderboardUtils {
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
 
-        // Get distances per region
+        // Convert distances to map
         Map<String, Double> distanceMap = aggregateDistances(entries);
 
         // Update leaderboard
@@ -184,27 +184,32 @@ public final class SightseekRegionalLeaderboardUtils {
     }
 
     @NonNull
-    private static ArrayList<ShpPolygon> getShpPolygons(Activity activity, String shpFilename) throws Exception {
-        ShapeFile shapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), shpFilename);
-        shapefile.READ();
+    private static ArrayList<ShpPolygon> getShpPolygons(Activity activity, String shpFilename) {
+        try {
+            ShapeFile shapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), shpFilename);
+            shapefile.READ();
 
-        ArrayList<ShpPolygon> shapes = new ArrayList<>();
-        for(int i = 0; i < shapefile.getSHP_shapeCount(); i++) {
-            ShpPolygon poly = shapefile.getSHP_shape(i);
-            poly.setCountryCode(shpFilename.substring(0, 2));
+            ArrayList<ShpPolygon> shapes = new ArrayList<>();
+            for(int i = 0; i < shapefile.getSHP_shapeCount(); i++) {
+                ShpPolygon poly = shapefile.getSHP_shape(i);
+                poly.setCountryCode(shpFilename.substring(0, 2));
 
-            // Get region info
-            if(shpFilename.contains("smallregion")) {
-                poly.setSmallRegion(shapefile.getDBF_record(i)[0].trim());
-                poly.setLargeRegion(shapefile.getDBF_record(i)[1].trim());
+                // Get region info
+                if(shpFilename.contains("smallregion")) {
+                    poly.setSmallRegion(shapefile.getDBF_record(i)[0].trim());
+                    poly.setLargeRegion(shapefile.getDBF_record(i)[1].trim());
+                }
+                else if(shpFilename.contains("largeregion")) {
+                    poly.setLargeRegion(shapefile.getDBF_record(i)[0].trim());
+                }
+
+                shapes.add(poly);
             }
-            else if(shpFilename.contains("largeregion")) {
-                poly.setLargeRegion(shapefile.getDBF_record(i)[0].trim());
-            }
-
-            shapes.add(poly);
+            return shapes;
         }
-        return shapes;
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static double getGeodesicLength(Geometry geometry) {

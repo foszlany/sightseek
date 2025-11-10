@@ -2,8 +2,6 @@ package com.hu.sightseek.model;
 
 import androidx.annotation.NonNull;
 
-import org.locationtech.jts.geom.Geometry;
-
 public class RegionalEntry {
     private String continent;
     private String country;
