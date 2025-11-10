@@ -145,7 +145,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
         isGridView = true;
 
-        descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
         leaderboardRecyclerView.setVisibility(INVISIBLE); // ??????????????????
         regionFilterButton.setVisibility(GONE);
 
@@ -249,9 +248,14 @@ public class LeaderboardActivity extends AppCompatActivity {
                         TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
                         if("cellsVisited".equals(valueStr)) {
                             myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
+
+                           descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
                         }
                         else {
                             myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
+
+                            String regionalDescription = regionalQueryStr.replace(";", " / ");
+                            descriptionTextView.setText(regionalDescription);
                         }
 
                         loadingImage.clearAnimation();
@@ -267,11 +271,6 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void setupRegionalLeaderboard(String queryStr) {
-        runOnUiThread(() -> {
-            String regionalDescription = queryStr.replace(";", " / ");
-            descriptionTextView.setText(regionalDescription);
-        });
-
         String currentUid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
         // Top 100
