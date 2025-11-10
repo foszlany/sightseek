@@ -84,7 +84,7 @@ public class SHP_File extends ShapeFileReader{
 
     // READ CONTENT (depends on the Shape.Type)
     if( shape_type == ShpShape.Type.NullShape ){
-      ;// TODO: handle NullShapes
+      ;// handle NullShapes
     } else if( shape_type.isTypeOfPolygon   ()) { while( bb.position() != bb.capacity()) shapes.add( new ShpPolygon(shape_type)   .read(bb) );
     } else if( shape_type.isTypeOfPolyLine  ()) { while( bb.position() != bb.capacity()) shapes.add( new ShpPolyLine(shape_type)  .read(bb) );
     } else if( shape_type.isTypeOfPoint     ()) { while( bb.position() != bb.capacity()) shapes.add( new ShpPoint(shape_type)     .read(bb) );

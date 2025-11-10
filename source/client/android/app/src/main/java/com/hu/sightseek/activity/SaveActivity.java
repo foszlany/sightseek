@@ -3,6 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.utils.SightseekRegionalLeaderboardUtils.calculateRegionalDistance;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
@@ -39,6 +40,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.model.VectorizedDataRecord;
 import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.osmdroid.config.Configuration;
@@ -59,7 +61,7 @@ import java.util.concurrent.Future;
 
 public class SaveActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private ArrayList<Polyline> vectorizedPolylines;
+    private VectorizedDataRecord vectorizedDataRecord;
 
     private String title;
     private TravelCategory categoryIndex;
@@ -186,13 +188,13 @@ public class SaveActivity extends AppCompatActivity {
 
         // Get vectorized dataset
         if(mAuth.getCurrentUser() != null) {
-            Future<ArrayList<Polyline>> future = vectorExecutor.submit(() -> vectorize(this, polyline));
+            Future<VectorizedDataRecord> future = vectorExecutor.submit(() -> vectorize(this, polyline));
             new Thread(() -> {
                 try {
                     TextView loadingText = findViewById(R.id.save_loadingtext);
                     runOnUiThread(() -> loadingText.setVisibility(VISIBLE));
 
-                    vectorizedPolylines = future.get();
+                    vectorizedDataRecord = future.get();
 
                     runOnUiThread(() -> loadingText.setVisibility(GONE));
 
@@ -201,7 +203,7 @@ public class SaveActivity extends AppCompatActivity {
                     paint.setStrokeWidth(4.0f);
                     paint.setAntiAlias(false);
 
-                    for(Polyline p : vectorizedPolylines) {
+                    for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
                         p.getOutlinePaint().set(paint);
                         mapView.getOverlays().add(p);
                     }
@@ -240,7 +242,7 @@ public class SaveActivity extends AppCompatActivity {
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
-            if(mAuth.getCurrentUser() != null && vectorizedPolylines == null) {
+            if(mAuth.getCurrentUser() != null && vectorizedDataRecord.getVectorizedDataPolylines() == null) {
                 Toast.makeText(this, "Please wait for vectorization to finish!", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -252,12 +254,14 @@ public class SaveActivity extends AppCompatActivity {
             }
 
             daoExecutor.execute(() -> {
+                calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord.getVectorizedDataGeometry(), vectorizedDataRecord.getCountryCodes());
+
                 StringBuilder vectorizedDataString = new StringBuilder();
-                for(int i = 0; i < vectorizedPolylines.size(); i++) {
-                    List<GeoPoint> geoPoints = vectorizedPolylines.get(i).getActualPoints();
+                for(int i = 0; i < vectorizedDataRecord.getVectorizedDataPolylines().size(); i++) {
+                    List<GeoPoint> geoPoints = vectorizedDataRecord.getVectorizedDataPolylines().get(i).getActualPoints();
 
                     vectorizedDataString.append(SightseekSpatialUtils.encode(geoPoints));
-                    if(i != vectorizedPolylines.size() - 1) {
+                    if(i != vectorizedDataRecord.getVectorizedDataPolylines().size() - 1) {
                         vectorizedDataString.append(";");
                     }
                 }

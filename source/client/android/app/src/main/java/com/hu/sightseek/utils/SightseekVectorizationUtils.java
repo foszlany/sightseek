@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.hu.sightseek.interfaces.Logger;
+import com.hu.sightseek.model.VectorizedDataRecord;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -177,8 +179,8 @@ public final class SightseekVectorizationUtils {
         }
     }
 
-    public static ArrayList<Polyline> vectorize(Activity activity, Polyline route) {
-        ArrayList<Polyline> vectorizedPolylines = new ArrayList<>();
+    public static VectorizedDataRecord vectorize(Activity activity, Polyline route) {
+        ArrayList<Polyline> vectorizedDataPolylines = new ArrayList<>();
         GeometryFactory geometryFactory = new GeometryFactory();
 
         // LineString
@@ -188,7 +190,7 @@ public final class SightseekVectorizationUtils {
         Set<String> countryCodes = getTouchedCountries(lineString, activity, null);
         if(countryCodes.isEmpty()) {
             System.out.println("No countries have been detected, halting.");
-            return vectorizedPolylines;
+            return new VectorizedDataRecord();
         }
 
         // Route polygon
@@ -198,23 +200,23 @@ public final class SightseekVectorizationUtils {
         MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
 
         // Calculate intersection
-        Geometry vectorizedData = roadPolylines.intersection(routePolygon);
+        Geometry vectorizedDataGeometry = roadPolylines.intersection(routePolygon);
 
         // Calculate regional leaderboard data
-        calculateRegionalDistance(activity, vectorizedData, countryCodes); // TODO CHANGE!!!!
+        calculateRegionalDistance(activity, vectorizedDataGeometry, countryCodes); // TODO CHANGE!!!!
 
         // Create polyline(s)
-        if(vectorizedData instanceof LineString) {
-            Polyline polyline = convertLineStringToPolyline((LineString) vectorizedData);
+        if(vectorizedDataGeometry instanceof LineString) {
+            Polyline polyline = convertLineStringToPolyline((LineString) vectorizedDataGeometry);
 
-            vectorizedPolylines.add(polyline);
+            vectorizedDataPolylines.add(polyline);
         }
-        else if(vectorizedData instanceof MultiLineString) {
-            ArrayList<Polyline> polylines = convertMultiLineStringToPolyline((MultiLineString) vectorizedData);
-            vectorizedPolylines.addAll(polylines);
-        }   
+        else if(vectorizedDataGeometry instanceof MultiLineString) {
+            ArrayList<Polyline> polylines = convertMultiLineStringToPolyline((MultiLineString) vectorizedDataGeometry);
+            vectorizedDataPolylines.addAll(polylines);
+        }
 
-        return vectorizedPolylines; // TODO NEW CLASS WITH COUNTRYCODES
+        return new VectorizedDataRecord(vectorizedDataPolylines, vectorizedDataGeometry, countryCodes);
     }
 
     private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {
