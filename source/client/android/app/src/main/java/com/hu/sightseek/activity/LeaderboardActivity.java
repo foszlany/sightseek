@@ -564,10 +564,12 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         for(int i = 0; i < shapeFile.getDBF_recordCount(); i++) {
                             String regionName = shapeFile.getDBF_record(i)[0].trim();
-                            String subregionName = shapeFile.getDBF_record(i)[1].trim();
+                            if(shapeFile.getDBF_record(i).length > 1) {
+                                String subregionName = shapeFile.getDBF_record(i)[1].trim();
 
-                            if(selectedRegion.equals(regionName)) {
-                                subRegionOptions.add(subregionName);
+                                if(selectedRegion.equals(regionName)) {
+                                    subRegionOptions.add(subregionName);
+                                }
                             }
                         }
 

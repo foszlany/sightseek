@@ -55,12 +55,12 @@
         android:contentDescription="@string/main_filterdesc"
         android:elevation="2dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/leaderboard_entries"
+        app:layout_constraintBottom_toBottomOf="@+id/textView6"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/leaderboard_topmenu"
-        app:layout_constraintVertical_bias="0.37" />
+        app:layout_constraintVertical_bias="0.88" />
 
     <TextView
         android:id="@+id/leaderboard_description"
