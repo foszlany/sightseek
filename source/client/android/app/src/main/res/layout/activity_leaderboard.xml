@@ -76,16 +76,22 @@
         app:layout_constraintTop_toBottomOf="@+id/textView6"
         app:layout_constraintHorizontal_bias="0.5" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/leaderboard_entries"
+    <FrameLayout
+        android:id="@+id/leaderboard_entries_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
-        android:elevation="2dp"
         app:layout_constraintBottom_toTopOf="@+id/leaderboard_myentry"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leaderboard_description" />
+        app:layout_constraintTop_toBottomOf="@+id/leaderboard_description">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/leaderboard_entries"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="24dp"
+            android:elevation="2dp"/>
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/leaderboard_loading"
@@ -97,7 +103,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/leaderboard_separator"
         app:layout_constraintEnd_toEndOf="@+id/leaderboard_image"
         app:layout_constraintStart_toStartOf="@+id/leaderboard_image"
-        app:layout_constraintTop_toTopOf="@+id/leaderboard_entries"
+        app:layout_constraintTop_toTopOf="@+id/leaderboard_entries_container"
         app:srcCompat="@drawable/baseline_change_circle_24" />
 
     <View
@@ -106,7 +112,7 @@
         android:layout_height="1dp"
         android:background="@color/white"
         android:elevation="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/leaderboard_entries"
+        app:layout_constraintBottom_toBottomOf="@+id/leaderboard_entries_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 

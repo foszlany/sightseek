@@ -1,11 +1,11 @@
 package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
-import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 import static com.hu.sightseek.utils.SightseekVectorizationUtils.copyShapefileToInternalStorage;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,9 +20,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -75,6 +75,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     private Animation rotate;
 
     private ImageView loadingImage;
+    private View overlayView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,6 +224,13 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                     loadingImage.clearAnimation();
                     loadingImage.setVisibility(GONE);
+
+                    // Setup overlay
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    overlayView = inflater.inflate(R.layout.overlay_noleaderboard, null);
+
+                    ViewGroup container = findViewById(R.id.leaderboard_entries_container);
+                    container.addView(overlayView);
                 });
             }
             else {
@@ -264,6 +272,13 @@ public class LeaderboardActivity extends AppCompatActivity {
                             long placing = snapshot.getCount() + 1;
 
                             runOnUiThread(() -> {
+                                // Remove empty leaderboard overlay
+                                if(overlayView != null) {
+                                    overlayView.setVisibility(View.GONE);
+                                    overlayView = null;
+                                }
+
+                                // Setup values
                                 TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
                                 myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
 

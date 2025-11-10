@@ -202,4 +202,6 @@
     <string name="leaderboard_entry_defaultplacing">∞</string>
     <string name="leaderboard_entry_defaultvalue">0</string>
     <string name="leaderboard_entry_defaultuser">Fetching...</string>
+    <string name="leaderboard_noentries">No entries were found.</string>
+    <string name="leaderboard_motivationaltext">Perhaps you can change that.</string>
 </resources>
