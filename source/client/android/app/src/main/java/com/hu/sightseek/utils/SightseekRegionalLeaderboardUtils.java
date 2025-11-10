@@ -4,6 +4,7 @@ import static com.hu.sightseek.helpers.CountryInfo.getContinent;
 import static com.hu.sightseek.helpers.CountryInfo.getCountry;
 import static com.hu.sightseek.helpers.RegionalDistanceAggregator.aggregateDistances;
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateRegionalLeaderboard;
+import static com.hu.sightseek.utils.SightseekVectorizationUtils.TOLERANCE;
 import static com.hu.sightseek.utils.SightseekVectorizationUtils.copyShapefileToInternalStorage;
 
 import android.app.Activity;
@@ -14,16 +15,15 @@ import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.RegionalEntry;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
-import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
@@ -44,18 +44,19 @@ public final class SightseekRegionalLeaderboardUtils {
         GeometryFactory geometryFactory = new GeometryFactory();
 
         // Load all vectors from activities
-        MultiLineString allRoads = getAllRoads(activity, geometryFactory);
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, newRoads);
 
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
         // Reduce roads for improved difference calculation
-        PrecisionModel precisionModel = new PrecisionModel(1e4);
+        /*
+        PrecisionModel precisionModel = new PrecisionModel(1e6);
         Geometry reducedNewRoads = GeometryPrecisionReducer.reduce(newRoads, precisionModel);
-        Geometry reducedAllRoads = GeometryPrecisionReducer.reduce(allRoads, precisionModel);
+        Geometry reducedAllRoads = GeometryPrecisionReducer.reduce(allRoads, precisionModel); */
 
         // Get unique roads
-        Geometry uniqueRoads = OverlayNGRobust.overlay(reducedNewRoads, reducedAllRoads, OverlayNG.DIFFERENCE);
+        Geometry uniqueRoads = OverlayNG.overlay(newRoads, allRoads, OverlayNG.DIFFERENCE);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
@@ -67,12 +68,15 @@ public final class SightseekRegionalLeaderboardUtils {
         updateRegionalLeaderboard(distanceMap);
     }
 
-    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory) {
+    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Geometry newRoads) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
         ArrayList<String> allRoads = dao.getAllVectorizedRoads();
         dao.close();
 
         ArrayList<LineString> lineStrings = new ArrayList<>();
+
+        Envelope newRoadsEnvelope = new Envelope(newRoads.getEnvelopeInternal());
+        newRoadsEnvelope.expandBy(TOLERANCE);
 
         for(String roadVectors : allRoads) {
             String[] polylines = roadVectors.split(";");
@@ -92,12 +96,17 @@ public final class SightseekRegionalLeaderboardUtils {
                     coordinates[i] = new Coordinate(lon, lat);
                 }
 
-                lineStrings.add(geometryFactory.createLineString(coordinates));
+                LineString line = geometryFactory.createLineString(coordinates);
+
+                if(newRoadsEnvelope.intersects(line.getEnvelopeInternal())) {
+                    lineStrings.add(line);
+                }
             }
         }
 
         return new MultiLineString(lineStrings.toArray(new LineString[0]), geometryFactory);
     }
+
 
     private static ArrayList<String> getSmallestAvailableRegionFilenames(Activity activity, Set<String> countryCodes) {
         ArrayList<String> shapeFiles = new ArrayList<>();

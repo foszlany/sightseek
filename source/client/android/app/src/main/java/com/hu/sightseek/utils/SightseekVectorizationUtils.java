@@ -1,7 +1,5 @@
 package com.hu.sightseek.utils;
 
-import static com.hu.sightseek.utils.SightseekRegionalLeaderboardUtils.calculateRegionalDistance;
-
 import android.app.Activity;
 import android.content.Context;
 
@@ -32,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -43,7 +40,7 @@ import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
 public final class SightseekVectorizationUtils {
-    private static final double TOLERANCE = 0.0002;
+    static final double TOLERANCE = 0.0002;
 
     private SightseekVectorizationUtils() {}
 
@@ -90,7 +87,7 @@ public final class SightseekVectorizationUtils {
         for(RouteData routeData : routeDataset) {
             vectorFutures.add(executor.submit(() -> {
                 // Convert route to polygon
-                Polygon routePolygon = createPolygonFromLineString(routeData.lineString, TOLERANCE);
+                Polygon routePolygon = createPolygonFromLineString(routeData.lineString);
 
                 // Filter segments
                 List<LineString> filteredRoads = new ArrayList<>();
@@ -194,7 +191,7 @@ public final class SightseekVectorizationUtils {
         }
 
         // Route polygon
-        Polygon routePolygon = createPolygonFromLineString(lineString, TOLERANCE);
+        Polygon routePolygon = createPolygonFromLineString(lineString);
 
         // Filtered roads
         MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
@@ -275,8 +272,8 @@ public final class SightseekVectorizationUtils {
         return geometryFactory.createLineString(coordinates);
     }
 
-    private static Polygon createPolygonFromLineString(LineString route, double tolerance) {
-        Geometry buffered = BufferOp.bufferOp(route, tolerance);
+    private static Polygon createPolygonFromLineString(LineString route) {
+        Geometry buffered = BufferOp.bufferOp(route, TOLERANCE);
         if(buffered instanceof Polygon) {
             return (Polygon) buffered;
         }
