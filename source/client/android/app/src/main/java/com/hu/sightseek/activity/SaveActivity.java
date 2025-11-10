@@ -50,7 +50,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -109,37 +108,7 @@ public class SaveActivity extends AppCompatActivity {
 
         // Spinner
         Spinner spinner = findViewById(R.id.save_category);
-        String[] categories = {
-            TravelCategory.LOCOMOTOR.toString(),
-            TravelCategory.MICROMOBILITY.toString(),
-            TravelCategory.OTHER.toString()
-        };
-
-        // Custom icons
-        int[] icons = {
-                R.drawable.baseline_directions_run_24,
-                R.drawable.baseline_pedal_bike_24,
-                R.drawable.baseline_directions_car_24
-        };
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinneritem_category, R.id.text, categories) {
-            @NonNull
-            @Override
-            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                ImageView icon = view.findViewById(R.id.icon);
-                icon.setImageResource(icons[position]);
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                ImageView icon = view.findViewById(R.id.icon);
-                icon.setImageResource(icons[position]);
-                return view;
-            }
-        };
+        ArrayAdapter<String> adapter = getStringArrayAdapter();
         spinner.setAdapter(adapter);
 
         // Set default value based on average speed
@@ -297,6 +266,41 @@ public class SaveActivity extends AppCompatActivity {
             }
         };
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+    }
+
+    @NonNull
+    private ArrayAdapter<String> getStringArrayAdapter() {
+        String[] categories = {
+            TravelCategory.LOCOMOTOR.toString(),
+            TravelCategory.MICROMOBILITY.toString(),
+            TravelCategory.OTHER.toString()
+        };
+
+        // Custom icons
+        int[] icons = {
+                R.drawable.baseline_directions_run_24,
+                R.drawable.baseline_pedal_bike_24,
+                R.drawable.baseline_directions_car_24
+        };
+
+        return new ArrayAdapter<>(SaveActivity.this, R.layout.spinneritem_category, R.id.text, categories) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                ImageView icon = view.findViewById(R.id.icon);
+                icon.setImageResource(icons[position]);
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                ImageView icon = view.findViewById(R.id.icon);
+                icon.setImageResource(icons[position]);
+                return view;
+            }
+        };
     }
 
     public void createDiscardConfirmationDialog(Intent intent) {
