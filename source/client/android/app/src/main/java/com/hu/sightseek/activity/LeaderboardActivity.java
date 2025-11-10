@@ -149,7 +149,6 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(GONE);
-        myEntryView.setVisibility(INVISIBLE);
 
         Executors.newSingleThreadExecutor().execute(() -> {
             String currentUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
@@ -179,7 +178,6 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(VISIBLE);
-        myEntryView.setVisibility(INVISIBLE);
 
         Executors.newSingleThreadExecutor().execute(() -> {
             setupRegionalLeaderboard("Global");
@@ -213,93 +211,92 @@ public class LeaderboardActivity extends AppCompatActivity {
                     loadingImage.clearAnimation();
                     loadingImage.setVisibility(GONE);
                 });
-
-                return;
             }
+            else {
+                // Setup entries
+                for(QueryDocumentSnapshot document : leaderboardSnapshot) {
+                    String username = document.getString("username");
 
-            // Setup entries
-            for(QueryDocumentSnapshot document : leaderboardSnapshot) {
-                String username = document.getString("username");
+                    Double valueHolder = document.getDouble(valueStr);
+                    double value = valueHolder == null ? 0 : valueHolder;
 
-                Double valueHolder = document.getDouble(valueStr);
-                double value = valueHolder == null ? 0 : valueHolder;
+                    leaderboardEntries.add(new LeaderboardEntry(username, value));
+                }
 
-                leaderboardEntries.add(new LeaderboardEntry(username, value));
-            }
+                leaderboardEntryAdapter = new LeaderboardEntryAdapter(this, leaderboardEntries, isGridView);
 
-            leaderboardEntryAdapter = new LeaderboardEntryAdapter(this, leaderboardEntries, isGridView);
+                runOnUiThread(() -> {
+                    Double valueHolder = userSnapshot.getDouble(valueStr);
+                    double value = valueHolder == null ? 0 : valueHolder;
 
-            runOnUiThread(() -> {
-                Double valueHolder = userSnapshot.getDouble(valueStr);
-                double value = valueHolder == null ? 0 : valueHolder;
+                    if(userSnapshot.exists()) {
+                        // User placing
+                        AggregateQuery countQuery;
+                        if("cellsVisited".equals(valueStr)) {
+                            countQuery = db
+                                    .collection("leaderboard_cells")
+                                    .whereGreaterThan(valueStr, value)
+                                    .count();
+                        }
+                        else {
+                            countQuery = db
+                                    .collection("leaderboard_regional")
+                                    .document(regionalQueryStr)
+                                    .collection("users")
+                                    .whereGreaterThan(valueStr, value)
+                                    .count();
+                        }
 
-                if(userSnapshot.exists()) {
-                    // User placing
-                    AggregateQuery countQuery;
-                    if("cellsVisited".equals(valueStr)) {
-                        countQuery = db
-                                .collection("leaderboard_cells")
-                                .whereGreaterThan(valueStr, value)
-                                .count();
+                        countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
+                            long placing = snapshot.getCount() + 1;
+
+                            runOnUiThread(() -> {
+                                TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                                myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
+
+                                String username = userSnapshot.getString("username");
+                                myEntry = new LeaderboardEntry(username, value);
+
+                                TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                                myNameTextView.setText(myEntry.getUsername());
+
+                                myEntryView.startAnimation(fadeIn);
+                                myEntryView.setVisibility(VISIBLE);
+
+                                View separator = findViewById(R.id.leaderboard_separator);
+                                separator.startAnimation(fadeIn);
+                                separator.setVisibility(VISIBLE);
+
+                                TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                                if("cellsVisited".equals(valueStr)) {
+                                    myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
+
+                                    descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
+                                }
+                                else {
+                                    myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
+
+                                    String regionalDescription = regionalQueryStr.replace(";", " / ");
+                                    descriptionTextView.setText(regionalDescription);
+                                }
+
+                                loadingImage.clearAnimation();
+                                loadingImage.setVisibility(GONE);
+
+                                leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
+                                leaderboardRecyclerView.startAnimation(fadeIn);
+                            });
+                        });
                     }
                     else {
-                        countQuery = db
-                                .collection("leaderboard_regional")
-                                .document(regionalQueryStr)
-                                .collection("users")
-                                .whereGreaterThan(valueStr, value)
-                                .count();
+                        loadingImage.clearAnimation();
+                        loadingImage.setVisibility(GONE);
+
+                        leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
+                        leaderboardRecyclerView.startAnimation(fadeIn);
                     }
-
-                    countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
-                        long placing = snapshot.getCount() + 1;
-
-                        runOnUiThread(() -> {
-                            TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                            myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
-
-                            String username = userSnapshot.getString("username");
-                            myEntry = new LeaderboardEntry(username, value);
-
-                            TextView myNameTextView = findViewById(R.id.leaderboard_myname);
-                            myNameTextView.setText(myEntry.getUsername());
-
-                            myEntryView.startAnimation(fadeIn);
-                            myEntryView.setVisibility(VISIBLE);
-
-                            View separator = findViewById(R.id.leaderboard_separator);
-                            separator.startAnimation(fadeIn);
-                            separator.setVisibility(VISIBLE);
-
-                            TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
-                            if("cellsVisited".equals(valueStr)) {
-                                myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
-
-                                descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
-                            }
-                            else {
-                                myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
-
-                                String regionalDescription = regionalQueryStr.replace(";", " / ");
-                                descriptionTextView.setText(regionalDescription);
-                            }
-
-                            loadingImage.clearAnimation();
-                            loadingImage.setVisibility(GONE);
-
-                            leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
-                            leaderboardRecyclerView.startAnimation(fadeIn);
-                        });
-                    });
-                }
-                else {
-                    loadingImage.clearAnimation();
-                    loadingImage.setVisibility(GONE);
-
-                    leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
-                    leaderboardRecyclerView.startAnimation(fadeIn);
-                }
-            });
+                });
+            }
         });
     }
 
@@ -589,9 +586,12 @@ public class LeaderboardActivity extends AppCompatActivity {
             Button queryButton = popupView.findViewById(R.id.leaderboard_narrowsearch_search);
             queryButton.setOnClickListener(w -> {
                 Executors.newSingleThreadExecutor().execute(() -> {
-                    String queryStr = getQueryString(continentSpinner, countrySpinner, regionSpinner, subRegionSpinner);
+                    runOnUiThread(() -> {
+                        leaderboardRecyclerView.setAdapter(null);
+                        popupWindow.dismiss();
+                    });
 
-                    runOnUiThread(popupWindow::dismiss);
+                    String queryStr = getQueryString(continentSpinner, countrySpinner, regionSpinner, subRegionSpinner);
 
                     setupRegionalLeaderboard(queryStr);
                 });
