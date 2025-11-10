@@ -56,23 +56,25 @@
         android:elevation="2dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/leaderboard_entries"
-        app:layout_constraintEnd_toStartOf="@+id/textView6"
-        app:layout_constraintHorizontal_bias="0.464"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leaderboard_topmenu" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/leaderboard_topmenu"
+        app:layout_constraintVertical_bias="0.37" />
 
     <TextView
         android:id="@+id/leaderboard_description"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/leaderboard_cellsdescription"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:elevation="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:layout_constraintHorizontal_bias="0.5" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/leaderboard_entries"
