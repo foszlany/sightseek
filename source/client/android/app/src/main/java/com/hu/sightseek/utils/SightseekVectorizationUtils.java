@@ -69,7 +69,7 @@ public final class SightseekVectorizationUtils {
                 ShapeFile countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
                 countryShapefile.READ();
 
-                Set<String> routeCountryCodes = (getTouchedCountries(lineString, activity, countryShapefile));
+                Set<String> routeCountryCodes = getTouchedCountries(lineString, activity, countryShapefile);
                 countryCodes.addAll(routeCountryCodes);
 
                 return new RouteData(position, route, lineString, routeCountryCodes);

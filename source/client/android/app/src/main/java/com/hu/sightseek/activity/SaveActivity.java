@@ -99,7 +99,7 @@ public class SaveActivity extends AppCompatActivity {
             return;
         }
 
-        String polylineString = extras.getString("polyline");;
+        String polylineString = "xu~zB}_b~Iiv@yJaKhRmaAzZ";
         String startTime = extras.getString("starttime");
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
@@ -172,6 +172,10 @@ public class SaveActivity extends AppCompatActivity {
                     paint.setColor(Color.parseColor("#FF0000"));
                     paint.setStrokeWidth(4.0f);
                     paint.setAntiAlias(false);
+
+                    if(vectorizedDataRecord.getVectorizedDataPolylines() == null) {
+                        return;
+                    }
 
                     for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
                         p.getOutlinePaint().set(paint);

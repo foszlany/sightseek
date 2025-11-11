@@ -21,13 +21,10 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.overlay.snap.SnapOverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
-import org.locationtech.jts.precision.GeometryPrecisionReducer;
-import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +41,10 @@ public final class SightseekRegionalLeaderboardUtils {
     private SightseekRegionalLeaderboardUtils() {}
 
     public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Set<String> countryCodes) {
+        if(newRoads == null) {
+            return;
+        }
+
         GeometryFactory geometryFactory = new GeometryFactory();
 
         // Load all vectors from activities
@@ -52,13 +53,8 @@ public final class SightseekRegionalLeaderboardUtils {
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
-        // Reduce roads for improved difference calculation
-        PrecisionModel precisionModel = new PrecisionModel(1e6);
-        Geometry reducedNewRoads = GeometryPrecisionReducer.reduce(newRoads, precisionModel);
-        Geometry reducedAllRoads = GeometryPrecisionReducer.reduce(allRoads, precisionModel);
-
         // Get unique roads
-        Geometry uniqueRoads = SnapOverlayOp.difference(reducedNewRoads, reducedAllRoads);
+        Geometry uniqueRoads = SnapOverlayOp.difference(newRoads, allRoads);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
