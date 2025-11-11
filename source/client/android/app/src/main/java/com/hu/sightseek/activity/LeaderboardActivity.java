@@ -64,6 +64,8 @@ public class LeaderboardActivity extends AppCompatActivity {
     private String countryCode;
 
     private boolean isGridView;
+    private boolean isQuerying;
+
     private LeaderboardEntryAdapter leaderboardEntryAdapter;
     private ArrayList<LeaderboardEntry> leaderboardEntries;
     private LeaderboardEntry myEntry;
@@ -100,9 +102,11 @@ public class LeaderboardActivity extends AppCompatActivity {
         leaderboardRecyclerView = findViewById(R.id.leaderboard_entries);
         leaderboardRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        isGridView = false;
+        isQuerying = false;
+
         folderPath = this.getFilesDir().getAbsolutePath();
         leaderboardEntries = new ArrayList<>();
-        isGridView = false;
         regionFilterButton = findViewById(R.id.leaderboard_filterbtn);
         descriptionTextView = findViewById(R.id.leaderboard_description);
         noEntryOverlayContainer = findViewById(R.id.leaderboard_entries_container);
@@ -143,10 +147,11 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void initCellLeaderboard() {
-        if(isGridView) {
+        if(isGridView || isQuerying) {
             return;
         }
         isGridView = true;
+        isQuerying = true;
 
         leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(GONE);
@@ -172,10 +177,11 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void initRegionalLeaderboard() {
-        if(!isGridView) {
+        if(!isGridView || isQuerying) {
             return;
         }
         isGridView = false;
+        isQuerying = true;
 
         leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(VISIBLE);
@@ -272,6 +278,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
                             long placing = snapshot.getCount() + 1;
+                            isQuerying = false;
 
                             runOnUiThread(() -> {
                                 // Setup values
@@ -315,6 +322,8 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
                         leaderboardRecyclerView.startAnimation(fadeIn);
+
+                        isQuerying = false;
                     }
                 });
             }
@@ -617,6 +626,11 @@ public class LeaderboardActivity extends AppCompatActivity {
             // Search
             Button queryButton = popupView.findViewById(R.id.leaderboard_narrowsearch_search);
             queryButton.setOnClickListener(w -> {
+                if(isQuerying) {
+                    return;
+                }
+                isQuerying = true;
+
                 Executors.newSingleThreadExecutor().execute(() -> {
                     runOnUiThread(() -> {
                         leaderboardRecyclerView.setAdapter(null);
