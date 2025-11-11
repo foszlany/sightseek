@@ -1,8 +1,6 @@
 package com.hu.sightseek.utils;
 
 import static com.hu.sightseek.helpers.WKConverter.convertLineGeometryToPolyline;
-import static com.hu.sightseek.helpers.WKConverter.convertLineStringToPolyline;
-import static com.hu.sightseek.helpers.WKConverter.convertMultiLineStringToPolyline;
 
 import android.app.Activity;
 import android.content.Context;
@@ -50,8 +48,8 @@ public final class SightseekVectorizationUtils {
 
     private SightseekVectorizationUtils() {}
 
-    public static ArrayList<String> batchVectorize(Activity activity, ArrayList<Polyline> routes, Logger logger) {
-        ArrayList<String> results = new ArrayList<>();
+    public static ArrayList<VectorizedDataRecord> batchVectorize(Activity activity, ArrayList<Polyline> routes, Logger logger) {
+        ArrayList<VectorizedDataRecord> results = new ArrayList<>();
         Set<String> countryCodes = new HashSet<>();
         GeometryFactory geometryFactory = new GeometryFactory();
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -89,7 +87,7 @@ public final class SightseekVectorizationUtils {
         Map<String, List<LineString>> roadPolylinesPerCountry = getPerCountryRoadPolylines(activity, geometryFactory, countryCodes);
 
         // Process
-        List<Future<ArrayList<Polyline>>> vectorFutures = new ArrayList<>();
+        List<Future<Geometry>> vectorFutures = new ArrayList<>();
         for(RouteData routeData : routeDataset) {
             vectorFutures.add(executor.submit(() -> {
                 // Convert route to polygon
@@ -118,43 +116,31 @@ public final class SightseekVectorizationUtils {
                 // Calculate intersection
                 Geometry vectorizedData = roadPolylines.intersection(routePolygon);
 
-                ArrayList<Polyline> vectorized = new ArrayList<>();
-                if(vectorizedData instanceof LineString) {
-                    vectorized.add(convertLineStringToPolyline((LineString) vectorizedData));
+                PrecisionModel precisionModel = new PrecisionModel(1e6);
+                Geometry reducedVectorizedData = GeometryPrecisionReducer.reduce(vectorizedData, precisionModel);
+
+                if(reducedVectorizedData instanceof LineString || reducedVectorizedData instanceof MultiLineString) {
+                    return reducedVectorizedData;
                 }
-                else if(vectorizedData instanceof MultiLineString) {
-                    vectorized.addAll(convertMultiLineStringToPolyline((MultiLineString) vectorizedData));
-                }
-                else if(vectorizedData instanceof Polygon || vectorizedData instanceof GeometryCollection) {
+                else if(reducedVectorizedData instanceof Polygon || reducedVectorizedData instanceof GeometryCollection) {
                     throw new RuntimeException("Vectorized data has 2 dimensional elements.");
                 }
-
-                return vectorized;
+                else {
+                    return null;
+                }
             }));
         }
 
         // Create polyline string
-        for(Future<ArrayList<Polyline>> future : vectorFutures) {
+        for(Future<Geometry> future : vectorFutures) {
             try {
-                ArrayList<Polyline> polylines = future.get();
-
-                StringBuilder vectorizedDataString = new StringBuilder();
-                for(int i = 0; i < polylines.size(); i++) {
-                    List<GeoPoint> geoPoints = polylines.get(i).getActualPoints();
-
-                    vectorizedDataString.append(SightseekSpatialUtils.encode(geoPoints));
-                    if(i != polylines.size() - 1) {
-                        vectorizedDataString.append(";");
-                    }
-                }
-
                 if(logger != null) {
                     activity.runOnUiThread(() -> {
                         logger.log("Vectorized [" + (count.incrementAndGet()) + "/" + routes.size() + "]");
                     });
                 }
 
-                results.add(vectorizedDataString.toString());
+                results.add(new VectorizedDataRecord(null, future.get(), countryCodes));
             }
             catch(Exception e) {
                 throw new RuntimeException(e);

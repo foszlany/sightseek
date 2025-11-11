@@ -99,7 +99,7 @@ public class RecordActivity extends AppCompatActivity {
     private static final int UPDATE_INTERVAL_MAX = 4000;
     private static final int UPDATE_INTERVAL_MIN = 4000;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-    private static final int MINIMUM_REQUIRED_POINTS_PER_ACTIVITY = 0; // TODO CHANGE LATER
+    private static final int MINIMUM_REQUIRED_POINTS_PER_ACTIVITY = 4; // TODO CHANGE LATER
 
     private BottomNavigationView bottomNav;
     private LinearLayout statOverlay;

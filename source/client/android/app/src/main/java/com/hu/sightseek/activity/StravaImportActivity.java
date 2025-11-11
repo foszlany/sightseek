@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
+import static com.hu.sightseek.utils.SightseekRegionalLeaderboardUtils.calculateRegionalDistance;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.decode;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
 import static com.hu.sightseek.utils.SightseekVectorizationUtils.batchVectorize;
@@ -32,12 +33,16 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ConsoleAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.TravelCategory;
+import com.hu.sightseek.helpers.WKConverter;
 import com.hu.sightseek.model.Activity;
+import com.hu.sightseek.model.VectorizedDataRecord;
 import com.hu.sightseek.utils.SightseekSpatialUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
@@ -52,6 +57,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -341,17 +347,29 @@ public class StravaImportActivity extends AppCompatActivity {
                                             polylines.add(polyline);
                                         }
 
-                                        ArrayList<String> result = batchVectorize(StravaImportActivity.this, polylines, msg -> logIntoConsole(msg));
+                                        List<VectorizedDataRecord> vectorizedDataRecords = batchVectorize(StravaImportActivity.this, polylines, msg -> logIntoConsole(msg));
+                                        List<Geometry> geometries = new ArrayList<>();
+                                        Set<String> countryCodes = new HashSet<>();
                                         for(int i = 0; i < activities.size(); i++) {
-                                            // activities.get(i).setVectorizedData(result.get(i)); // TODO
+                                            Geometry vectorizedDataGeometry = vectorizedDataRecords.get(i).getVectorizedDataGeometry();
+                                            byte[] vectorizedDataBlob = WKConverter.convertGeometryToWKB(vectorizedDataGeometry);
+
+                                            activities.get(i).setVectorizedData(vectorizedDataBlob);
+
+                                            geometries.add(vectorizedDataGeometry);
+                                            countryCodes.addAll(vectorizedDataRecords.get(i).getCountryCodes());
                                         }
 
                                         runOnUiThread(() -> {
-                                            isImporting = false;
-
                                             logIntoConsole("Vectorization has been completed!\n\n");
                                             logIntoConsole("Saving to database...");
+                                        });
 
+                                        Geometry mergedVectorizedData = UnaryUnionOp.union(geometries);
+                                        calculateRegionalDistance(StravaImportActivity.this, mergedVectorizedData, countryCodes);
+
+                                        runOnUiThread(() -> {
+                                            isImporting = false;
                                             LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
                                             dao.addActivities(activities);
                                             dao.close();
