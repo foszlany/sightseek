@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -114,6 +115,10 @@ public class StravaImportActivity extends AppCompatActivity {
         // Home button
         toolbar.setNavigationIcon(R.drawable.baseline_home_24);
         toolbar.setNavigationOnClickListener(v -> {
+            if(isImporting) {
+                Toast.makeText(this, "Please wait for importing to finish.", Toast.LENGTH_LONG).show();
+            }
+
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
@@ -246,6 +251,10 @@ public class StravaImportActivity extends AppCompatActivity {
 
         // Statistics
         if(id == R.id.topmenu_statistics) {
+            if(isImporting) {
+                Toast.makeText(this, "Please wait for importing to finish.", Toast.LENGTH_LONG).show();
+            }
+
             Intent intent = new Intent(this, StatisticsActivity.class);
             startActivity(intent);
             return true;
@@ -253,6 +262,10 @@ public class StravaImportActivity extends AppCompatActivity {
 
         // Profile
         if(id == R.id.topmenu_profile) {
+            if(isImporting) {
+                Toast.makeText(this, "Please wait for importing to finish.", Toast.LENGTH_LONG).show();
+            }
+
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
             return true;
@@ -286,6 +299,16 @@ public class StravaImportActivity extends AppCompatActivity {
             consoleAdapter.clearLogs();
             importLatest(1, "before");
         });
+
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if(isImporting) {
+                    Toast.makeText(StravaImportActivity.this, "Please wait for importing to finish.", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
     public void importLatest(int page, String mode) {
