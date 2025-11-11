@@ -239,6 +239,8 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         noEntryOverlayContainer.addView(noEntriesOverlayView);
                     }
+
+                    isQuerying = false;
                 });
             }
             else {
@@ -278,7 +280,6 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
                             long placing = snapshot.getCount() + 1;
-                            isQuerying = false;
 
                             runOnUiThread(() -> {
                                 // Setup values
@@ -311,6 +312,8 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                                 leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
                                 leaderboardRecyclerView.startAnimation(fadeIn);
+
+                                isQuerying = false;
                             });
                         });
                     }
