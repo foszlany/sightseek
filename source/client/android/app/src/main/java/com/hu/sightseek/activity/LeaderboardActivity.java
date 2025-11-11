@@ -75,6 +75,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
     private ImageView loadingImage;
     private View noEntriesOverlayView;
+    private ViewGroup noEntryOverlayContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +105,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         isGridView = false;
         regionFilterButton = findViewById(R.id.leaderboard_filterbtn);
         descriptionTextView = findViewById(R.id.leaderboard_description);
+        noEntryOverlayContainer = findViewById(R.id.leaderboard_entries_container);
 
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
@@ -225,11 +227,12 @@ public class LeaderboardActivity extends AppCompatActivity {
                     loadingImage.setVisibility(GONE);
 
                     // Setup overlay
-                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    noEntriesOverlayView = inflater.inflate(R.layout.overlay_noleaderboard, null);
+                    if(noEntriesOverlayView == null) {
+                        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        noEntriesOverlayView = inflater.inflate(R.layout.overlay_noleaderboard, null);
 
-                    ViewGroup container = findViewById(R.id.leaderboard_entries_container);
-                    container.addView(noEntriesOverlayView);
+                        noEntryOverlayContainer.addView(noEntriesOverlayView);
+                    }
                 });
             }
             else {
@@ -271,12 +274,6 @@ public class LeaderboardActivity extends AppCompatActivity {
                             long placing = snapshot.getCount() + 1;
 
                             runOnUiThread(() -> {
-                                // Remove empty leaderboard overlay
-                                if(noEntriesOverlayView != null) {
-                                    noEntriesOverlayView.setVisibility(View.GONE);
-                                    noEntriesOverlayView = null;
-                                }
-
                                 // Setup values
                                 TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
                                 myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
@@ -300,6 +297,8 @@ public class LeaderboardActivity extends AppCompatActivity {
                                     descriptionTextView.setText(regionalDescription);
                                 }
 
+                                removeEmptyLeaderboardOverlay();
+
                                 loadingImage.clearAnimation();
                                 loadingImage.setVisibility(GONE);
 
@@ -309,6 +308,8 @@ public class LeaderboardActivity extends AppCompatActivity {
                         });
                     }
                     else {
+                        removeEmptyLeaderboardOverlay();
+
                         loadingImage.clearAnimation();
                         loadingImage.setVisibility(GONE);
 
@@ -318,6 +319,15 @@ public class LeaderboardActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void removeEmptyLeaderboardOverlay() {
+        // Remove empty leaderboard overlay
+        if(noEntriesOverlayView != null) {
+            noEntryOverlayContainer = findViewById(R.id.leaderboard_entries_container);
+            noEntryOverlayContainer.removeView(noEntriesOverlayView);
+            noEntriesOverlayView = null;
+        }
     }
 
     private void setupRegionalLeaderboard(String queryStr) {
