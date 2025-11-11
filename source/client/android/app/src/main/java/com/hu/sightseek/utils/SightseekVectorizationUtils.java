@@ -217,12 +217,9 @@ public final class SightseekVectorizationUtils {
     private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {
         Set<String> touchedCountries = new HashSet<>();
 
-        if(countryShapefile == null) {
-            copyShapefileToInternalStorage(activity, "countries");
-        }
-
         try {
             if(countryShapefile == null) {
+                copyShapefileToInternalStorage(activity, "countries");
                 countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
                 countryShapefile.READ();
             }
