@@ -343,7 +343,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
                                         ArrayList<String> result = batchVectorize(StravaImportActivity.this, polylines, msg -> logIntoConsole(msg));
                                         for(int i = 0; i < activities.size(); i++) {
-                                            activities.get(i).setVectorizedData(result.get(i));
+                                            // activities.get(i).setVectorizedData(result.get(i)); // TODO
                                         }
 
                                         runOnUiThread(() -> {
@@ -395,7 +395,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 int elapsedTime = jsonActivity.getInt("moving_time");
                                 int distance = jsonActivity.getInt("distance");
 
-                                Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId, "");
+                                Activity a = new Activity(0, name, category.getIndex(), polyline, startDate, elapsedTime, distance, stravaId, null);
                                 activities.add(a);
 
                                 List<GeoPoint> pointList = decode(polyline);

@@ -2,6 +2,8 @@ package com.hu.sightseek.model;
 
 import com.hu.sightseek.enums.TravelCategory;
 
+import java.util.Arrays;
+
 public class Activity {
     private int id;
     private String name;
@@ -11,9 +13,9 @@ public class Activity {
     private double elapsedtime;
     private double distance;
     private long stravaId;
-    private String vectorizedData;
+    private byte[] vectorizedData;
 
-    public Activity(int id, String name, int category, String polyline, String starttime, double elapsedtime, double distance, long stravaId, String vectorizedData) {
+    public Activity(int id, String name, int category, String polyline, String starttime, double elapsedtime, double distance, long stravaId, byte[] vectorizedData) {
         this.id = id;
         this.name = name;
         this.category = TravelCategory.values()[category];
@@ -89,9 +91,9 @@ public class Activity {
         this.stravaId = stravaId;
     }
 
-    public String getVectorizedData() { return vectorizedData; }
+    public byte[] getVectorizedData() { return vectorizedData; }
 
-    public void setVectorizedData(String vectorizedData) { this.vectorizedData = vectorizedData; }
+    public void setVectorizedData(byte[] vectorizedData) { this.vectorizedData = vectorizedData; }
 
     @Override
     public String toString() {
@@ -104,7 +106,7 @@ public class Activity {
                 ", elapsedtime=" + elapsedtime +
                 ", distance=" + distance +
                 ", stravaId=" + stravaId +
-                ", vectorizedData='" + vectorizedData + '\'' +
+                ", vectorizedData='" + Arrays.toString(vectorizedData) + '\'' +
                 '}';
     }
 }

@@ -9,10 +9,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.enums.SavedAttractionStatus;
 import com.hu.sightseek.enums.TravelCategory;
+import com.hu.sightseek.helpers.WKConverter;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
 import com.hu.sightseek.utils.SightseekSpatialUtils;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
@@ -34,7 +37,7 @@ public class LocalDatabaseDAO {
     }
 
     /* ############### ACTIVITIES ############### */
-    public long addActivity(String name, int category, String polyline, String startTime, double elapsedTime, double distance, long stravaid, String vectorizedData) {
+    public long addActivity(String name, int category, String polyline, String startTime, double elapsedTime, double distance, long stravaid, byte[] vectorizedData) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -198,7 +201,7 @@ public class LocalDatabaseDAO {
             double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
             double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
             long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
-            String vectorizedData = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
+            byte[] vectorizedData = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
             cursor.close();
             db.close();
@@ -243,7 +246,7 @@ public class LocalDatabaseDAO {
                 double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
                 double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
                 long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
-                String vectorizedData = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
+                byte[] vectorizedData = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
                 activities.add(new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
             } while(cursor.moveToNext());
@@ -380,9 +383,9 @@ public class LocalDatabaseDAO {
         return polylines;
     }
 
-    public ArrayList<String> getAllVectorizedRoads() {
+    public List<Geometry> getAllVectorizedRoads() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<String> roads = new ArrayList<>();
+        ArrayList<Geometry> roads = new ArrayList<>();
 
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
@@ -396,8 +399,15 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                String polylineString = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
-                roads.add(polylineString);
+                try {
+                    byte[] vectorizedDataBlob = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
+                    Geometry vectorizedDataGeometry = WKConverter.convertWKBToGeometry(vectorizedDataBlob);
+                    roads.add(vectorizedDataGeometry);
+                }
+                catch(ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
             } while(cursor.moveToNext());
         }
 

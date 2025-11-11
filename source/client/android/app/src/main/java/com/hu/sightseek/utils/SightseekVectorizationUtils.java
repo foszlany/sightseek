@@ -1,5 +1,9 @@
 package com.hu.sightseek.utils;
 
+import static com.hu.sightseek.helpers.WKConverter.convertLineGeometryToPolyline;
+import static com.hu.sightseek.helpers.WKConverter.convertLineStringToPolyline;
+import static com.hu.sightseek.helpers.WKConverter.convertMultiLineStringToPolyline;
+
 import android.app.Activity;
 import android.content.Context;
 
@@ -15,7 +19,9 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
@@ -177,7 +183,6 @@ public final class SightseekVectorizationUtils {
     }
 
     public static VectorizedDataRecord vectorize(Activity activity, Polyline route) {
-        ArrayList<Polyline> vectorizedDataPolylines = new ArrayList<>();
         GeometryFactory geometryFactory = new GeometryFactory();
 
         // LineString
@@ -199,18 +204,14 @@ public final class SightseekVectorizationUtils {
         // Calculate intersection
         Geometry vectorizedDataGeometry = roadPolylines.intersection(routePolygon);
 
+        // Reduce
+        PrecisionModel precisionModel = new PrecisionModel(1e6);
+        Geometry reducedVectorizedDataGeometry = GeometryPrecisionReducer.reduce(vectorizedDataGeometry, precisionModel);
+
         // Create polyline(s)
-        if(vectorizedDataGeometry instanceof LineString) {
-            Polyline polyline = convertLineStringToPolyline((LineString) vectorizedDataGeometry);
+        List<Polyline> vectorizedDataPolylines = convertLineGeometryToPolyline(reducedVectorizedDataGeometry);
 
-            vectorizedDataPolylines.add(polyline);
-        }
-        else if(vectorizedDataGeometry instanceof MultiLineString) {
-            ArrayList<Polyline> polylines = convertMultiLineStringToPolyline((MultiLineString) vectorizedDataGeometry);
-            vectorizedDataPolylines.addAll(polylines);
-        }
-
-        return new VectorizedDataRecord(vectorizedDataPolylines, vectorizedDataGeometry, countryCodes);
+        return new VectorizedDataRecord(vectorizedDataPolylines, reducedVectorizedDataGeometry, countryCodes);
     }
 
     private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {
@@ -347,44 +348,6 @@ public final class SightseekVectorizationUtils {
         }
 
         return roadSegmentsByCountry;
-    }
-
-    private static Polyline convertLineStringToPolyline(LineString lineString) {
-        Coordinate[] coords = lineString.getCoordinates();
-        ArrayList<GeoPoint> geoPoints = new ArrayList<>();
-
-        for(Coordinate coord : coords) {
-            GeoPoint geo = new GeoPoint(coord.x, coord.y);
-            geoPoints.add(geo);
-        }
-
-        Polyline polyline = new Polyline();
-        polyline.setPoints(geoPoints);
-
-        return polyline;
-    }
-
-    private static ArrayList<Polyline> convertMultiLineStringToPolyline(MultiLineString multiLineString) {
-        ArrayList<Polyline> polylines = new ArrayList<>();
-
-        for(int i = 0; i < multiLineString.getNumGeometries(); i++) {
-            LineString line = (LineString) multiLineString.getGeometryN(i);
-            Coordinate[] coords = line.getCoordinates();
-
-            ArrayList<GeoPoint> geoPoints = new ArrayList<>();
-            for(Coordinate coord : coords) {
-                double lat = coord.y;
-                double lon = coord.x;
-                geoPoints.add(new GeoPoint(lat, lon));
-            }
-
-            Polyline polyline = new Polyline();
-            polyline.setPoints(geoPoints);
-
-            polylines.add(polyline);
-        }
-
-        return polylines;
     }
 
     public static boolean copyShapefileToInternalStorage(Context context, String fileName) {

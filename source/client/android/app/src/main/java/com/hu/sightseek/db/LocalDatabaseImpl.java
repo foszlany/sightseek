@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class LocalDatabaseImpl extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "activities.db";
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 13;
 
     // Activity table
     public static final String ACTIVITIES_TABLE = "activities";
@@ -40,7 +40,7 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
                     ACTIVITIES_ELAPSEDTIME + " REAL, " +
                     ACTIVITIES_DISTANCE + " REAL, " +
                     ACTIVITIES_STRAVAID + " REAL, " +
-                    ACTIVITIES_VECTORIZEDDATA + " TEXT);";
+                    ACTIVITIES_VECTORIZEDDATA + " BLOB);";
 
 
     private static final String ATTRACTIONS_TABLE_CREATE =

@@ -1,6 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.helpers.WKConverter.convertWKBToPolylines;
 import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
@@ -38,6 +39,7 @@ import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.utils.SightseekFirebaseUtils;
 import com.hu.sightseek.utils.SightseekSpatialUtils;
 
+import org.locationtech.jts.io.ParseException;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -219,17 +221,18 @@ public class ActivityActivity extends AppCompatActivity {
                     paint.setAntiAlias(false);
 
                     Executors.newSingleThreadExecutor().execute(() -> {
-                        String vectorizedDataString = activity.getVectorizedData();
-                        String[] vectorizedDataArray = vectorizedDataString.split(";");
+                        byte[] vectorizedDataBlob = activity.getVectorizedData();
+                        try {
+                            List<Polyline> vectorizedDataPolylines = convertWKBToPolylines(vectorizedDataBlob);
 
-                        for(String encodedRoute : vectorizedDataArray) {
-                            List<GeoPoint> geoPoints = SightseekSpatialUtils.decode(encodedRoute);
+                            for(Polyline p : vectorizedDataPolylines) {
+                                p.getOutlinePaint().set(paint);
 
-                            Polyline p = new Polyline();
-                            p.setPoints(geoPoints);
-                            p.getOutlinePaint().set(paint);
-
-                            vectorizedDataGroup.add(p);
+                                vectorizedDataGroup.add(p);
+                            }
+                        }
+                        catch(ParseException e) {
+                            throw new RuntimeException(e);
                         }
 
                         mapView.getOverlays().add(1, vectorizedDataGroup);

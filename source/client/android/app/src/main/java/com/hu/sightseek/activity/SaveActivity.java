@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.helpers.WKConverter.convertGeometryToWKB;
 import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.utils.SightseekRegionalLeaderboardUtils.calculateRegionalDistance;
 import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
@@ -98,7 +99,7 @@ public class SaveActivity extends AppCompatActivity {
             return;
         }
 
-        String polylineString = "}rmyG_oyyBlGkJxErFkHhK}DbHnKdP";
+        String polylineString = extras.getString("polyline");;
         String startTime = extras.getString("starttime");
         double elapsedTime = extras.getDouble("elapsedtime");
         double totalDist = extras.getDouble("dist");
@@ -211,7 +212,7 @@ public class SaveActivity extends AppCompatActivity {
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
-            if(mAuth.getCurrentUser() != null && vectorizedDataRecord.getVectorizedDataPolylines() == null) {
+            if(mAuth.getCurrentUser() != null && vectorizedDataRecord == null) {
                 Toast.makeText(this, "Please wait for vectorization to finish!", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -225,18 +226,10 @@ public class SaveActivity extends AppCompatActivity {
             daoExecutor.execute(() -> {
                 calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord.getVectorizedDataGeometry(), vectorizedDataRecord.getCountryCodes());
 
-                StringBuilder vectorizedDataString = new StringBuilder();
-                for(int i = 0; i < vectorizedDataRecord.getVectorizedDataPolylines().size(); i++) {
-                    List<GeoPoint> geoPoints = vectorizedDataRecord.getVectorizedDataPolylines().get(i).getActualPoints();
-
-                    vectorizedDataString.append(SightseekSpatialUtils.encode(geoPoints));
-                    if(i != vectorizedDataRecord.getVectorizedDataPolylines().size() - 1) {
-                        vectorizedDataString.append(";");
-                    }
-                }
+                byte[] vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
 
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataString.toString());
+                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
 
                 if(mAuth.getCurrentUser() != null) {
                     HashMap<String, Integer> visitedCells = getVisitedCells(pointList);

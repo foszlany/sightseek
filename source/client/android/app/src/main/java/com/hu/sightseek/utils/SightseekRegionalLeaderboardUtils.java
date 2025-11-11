@@ -21,9 +21,12 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.operation.overlay.snap.SnapOverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
@@ -50,13 +53,12 @@ public final class SightseekRegionalLeaderboardUtils {
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
         // Reduce roads for improved difference calculation
-        /*
         PrecisionModel precisionModel = new PrecisionModel(1e6);
         Geometry reducedNewRoads = GeometryPrecisionReducer.reduce(newRoads, precisionModel);
-        Geometry reducedAllRoads = GeometryPrecisionReducer.reduce(allRoads, precisionModel); */
+        Geometry reducedAllRoads = GeometryPrecisionReducer.reduce(allRoads, precisionModel);
 
         // Get unique roads
-        Geometry uniqueRoads = OverlayNG.overlay(newRoads, allRoads, OverlayNG.DIFFERENCE);
+        Geometry uniqueRoads = SnapOverlayOp.difference(reducedNewRoads, reducedAllRoads);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
@@ -70,43 +72,33 @@ public final class SightseekRegionalLeaderboardUtils {
 
     private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Geometry newRoads) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
-        ArrayList<String> allRoads = dao.getAllVectorizedRoads();
+        List<Geometry> allRoads = dao.getAllVectorizedRoads();
         dao.close();
 
-        ArrayList<LineString> lineStrings = new ArrayList<>();
+        List<LineString> usableLines = new ArrayList<>();
 
         Envelope newRoadsEnvelope = new Envelope(newRoads.getEnvelopeInternal());
         newRoadsEnvelope.expandBy(TOLERANCE);
 
-        for(String roadVectors : allRoads) {
-            String[] polylines = roadVectors.split(";");
-
-            for(String segment : polylines) {
-                List<GeoPoint> coords = SightseekSpatialUtils.decode(segment);
-                if(coords.size() < 2) {
-                    continue;
+        for(Geometry g : allRoads) {
+            if(newRoadsEnvelope.intersects(g.getEnvelopeInternal())) {
+                if(g instanceof LineString) {
+                    usableLines.add((LineString) g);
                 }
-
-                Coordinate[] coordinates = new Coordinate[coords.size()];
-                for(int i = 0; i < coords.size(); i++) {
-                    GeoPoint point = coords.get(i);
-                    double lat = point.getLatitude();
-                    double lon = point.getLongitude();
-
-                    coordinates[i] = new Coordinate(lon, lat);
+                else if(g instanceof MultiLineString) {
+                    MultiLineString mls = (MultiLineString) g;
+                    for(int i = 0; i < mls.getNumGeometries(); i++) {
+                        usableLines.add((LineString) mls.getGeometryN(i));
+                    }
                 }
-
-                LineString line = geometryFactory.createLineString(coordinates);
-
-                if(newRoadsEnvelope.intersects(line.getEnvelopeInternal())) {
-                    lineStrings.add(line);
+                else {
+                    throw new IllegalArgumentException("Unexpected geometry: " + g.getGeometryType());
                 }
             }
         }
 
-        return new MultiLineString(lineStrings.toArray(new LineString[0]), geometryFactory);
+        return geometryFactory.createMultiLineString(usableLines.toArray(new LineString[0]));
     }
-
 
     private static ArrayList<String> getSmallestAvailableRegionFilenames(Activity activity, Set<String> countryCodes) {
         ArrayList<String> shapeFiles = new ArrayList<>();
@@ -176,7 +168,8 @@ public final class SightseekRegionalLeaderboardUtils {
                             regionPolygon = GeometryFixer.fix(regionPolygon);
                         }
 
-                        Geometry clippedRoads = OverlayNGRobust.overlay(uniqueRoads, regionPolygon, OverlayNG.INTERSECTION);
+                        Geometry newRoadsCleaned = GeometryFixer.fix(uniqueRoads);
+                        Geometry clippedRoads = OverlayNGRobust.overlay(newRoadsCleaned, regionPolygon, OverlayNG.INTERSECTION);
                         entry.setDistance(getGeodesicLength(clippedRoads));
 
                         System.out.println("New entry: " + entry);
