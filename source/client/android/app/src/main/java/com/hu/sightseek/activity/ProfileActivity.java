@@ -232,7 +232,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 }
                                 else {
                                     runOnUiThread(() -> {
-                                        Toast.makeText(this, "You don't have anything linked"., Toast.LENGTH_LONG).show();
+                                        Toast.makeText(this, "You don't have anything linked", Toast.LENGTH_LONG).show();
                                     });
                                 }
                             });
@@ -249,7 +249,12 @@ public class ProfileActivity extends AppCompatActivity {
         Button logoutButton = findViewById(R.id.profile_logout);
         logoutButton.setOnClickListener(v -> {
             mAuth.signOut();
-            finish();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+
+            Toast.makeText(this, "You were signed out.", Toast.LENGTH_LONG).show();
         });
     }
 
