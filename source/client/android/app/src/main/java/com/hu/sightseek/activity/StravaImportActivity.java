@@ -119,6 +119,7 @@ public class StravaImportActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             if(isImporting) {
                 Toast.makeText(this, "Please wait for importing to finish.", Toast.LENGTH_LONG).show();
+                return;
             }
 
             Intent intent = new Intent(this, MainActivity.class);
@@ -212,8 +213,6 @@ public class StravaImportActivity extends AppCompatActivity {
                                             stravaIdDoc.set(stravaData);
                                         }
                                         else if(!Objects.equals(stravaSnapshot.get("uid"), uid)) {
-                                            System.out.println(stravaSnapshot.get("uid"));
-                                            System.out.println(uid);
                                             onFailReturnToProfile("Account is already linked.");
                                         }
                                     });
@@ -274,6 +273,7 @@ public class StravaImportActivity extends AppCompatActivity {
         if(id == R.id.topmenu_statistics) {
             if(isImporting) {
                 Toast.makeText(this, "Please wait for importing to finish.", Toast.LENGTH_LONG).show();
+                return false;
             }
 
             Intent intent = new Intent(this, StatisticsActivity.class);
@@ -285,6 +285,7 @@ public class StravaImportActivity extends AppCompatActivity {
         if(id == R.id.topmenu_profile) {
             if(isImporting) {
                 Toast.makeText(this, "Please wait for importing to finish.", Toast.LENGTH_LONG).show();
+                return false;
             }
 
             Intent intent = new Intent(this, ProfileActivity.class);
