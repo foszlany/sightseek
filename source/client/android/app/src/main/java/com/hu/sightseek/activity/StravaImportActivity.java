@@ -213,7 +213,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                             stravaIdDoc.set(stravaData);
                                         }
                                         else if(!Objects.equals(stravaSnapshot.get("uid"), uid)) {
-                                            onFailReturnToProfile("Account is already linked.");
+                                            onFailReturnToProfile("This account is already linked.");
                                         }
                                     });
                                 });

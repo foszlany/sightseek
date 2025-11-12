@@ -44,6 +44,7 @@ import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
@@ -187,14 +188,6 @@ public class ProfileActivity extends AppCompatActivity {
                     .setMessage("Are you sure you want to unlink your account? This will delete all activities that were imported!")
                     .setPositiveButton("Yes", (d, which) -> {
                         Executors.newSingleThreadExecutor().execute(() -> {
-                            LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
-                            ArrayList<GeoPoint> points = dao2.getAllImportedPoints();
-                            dao2.deleteImportedActivities();
-                            dao2.close();
-
-                            HashMap<String, Integer> cells = getVisitedCells(points);
-                            updateCellsInFirebase(mAuth, cells, true);
-
                             SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
                             if(prefs.contains("StravaLatestImportDate")) {
                                 prefs.edit().remove("StravaLatestImportDate").apply();
@@ -207,12 +200,41 @@ public class ProfileActivity extends AppCompatActivity {
 
                             userDocument.get().addOnSuccessListener(documentSnapshot -> {
                                 if(documentSnapshot.contains("stravaId")) {
-                                    userDocument.update("stravaId", -1);
-                                }
-                            });
+                                    Long stravaIdHolder = documentSnapshot.getLong("stravaId");
+                                    long stravaId = stravaIdHolder == null ? -1 : stravaIdHolder;
 
-                            runOnUiThread(() -> {
-                                Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
+                                    if(stravaId == -1) {
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(this, "You don't have anything linked.", Toast.LENGTH_LONG).show();
+                                        });
+                                    }
+                                    else {
+                                        LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
+                                        ArrayList<GeoPoint> points = dao2.getAllImportedPoints();
+                                        dao2.deleteImportedActivities();
+                                        dao2.close();
+
+                                        HashMap<String, Integer> cells = getVisitedCells(points);
+                                        updateCellsInFirebase(mAuth, cells, true);
+
+                                        userDocument.update("stravaId", -1);
+
+                                        DocumentReference stravaIdDoc = FirebaseFirestore.getInstance()
+                                                .collection("strava_ids")
+                                                .document(String.valueOf(stravaId));
+
+                                        stravaIdDoc.delete();
+
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
+                                        });
+                                    }
+                                }
+                                else {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(this, "You don't have anything linked"., Toast.LENGTH_LONG).show();
+                                    });
+                                }
                             });
                         });
                     })
