@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
@@ -57,6 +58,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
@@ -184,7 +186,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                         .collection("users")
                                         .document(uid);
 
-                                // Check if stravaid matches stored one TODO: ADD TO SEPERATE TABLE AND CHECK
+                                // Check if strava id matches stored one
                                 long stravaId = json.getJSONObject("athlete").getLong("id");
                                 userDocument.get().addOnSuccessListener(documentSnapshot -> {
                                     if(!documentSnapshot.contains("stravaId") || documentSnapshot.getLong("stravaId") == -1) {
@@ -194,8 +196,27 @@ public class StravaImportActivity extends AppCompatActivity {
                                         Long storedStravaId = documentSnapshot.getLong("stravaId");
                                         if(storedStravaId != null && storedStravaId != stravaId && storedStravaId > 0) {
                                             onFailReturnToProfile("You have a different account linked!");
+                                            return;
                                         }
                                     }
+
+                                    // Check whether strava account is already connected
+                                    DocumentReference stravaIdDoc = FirebaseFirestore.getInstance()
+                                            .collection("strava_ids")
+                                            .document(String.valueOf(stravaId));
+
+                                    stravaIdDoc.get().addOnSuccessListener(stravaSnapshot -> {
+                                        if(!stravaSnapshot.exists()) {
+                                            Map<String, Object> stravaData = new HashMap<>();
+                                            stravaData.put("uid", uid);
+                                            stravaIdDoc.set(stravaData);
+                                        }
+                                        else if(!Objects.equals(stravaSnapshot.get("uid"), uid)) {
+                                            System.out.println(stravaSnapshot.get("uid"));
+                                            System.out.println(uid);
+                                            onFailReturnToProfile("Account is already linked.");
+                                        }
+                                    });
                                 });
 
                                 accessToken = json.getString("access_token");
