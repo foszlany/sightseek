@@ -212,19 +212,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                         descriptionTextView.setText(regionalDescription);
                     }
 
-                    TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                    myPlacingTextView.setText(R.string.leaderboard_entry_defaultplacing);
-
-                    TextView myNameTextView = findViewById(R.id.leaderboard_myname);
-                    myNameTextView.setText(myEntry.getUsername());
-
-                    TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
-                    if("cellsVisited".equals(valueStr)) {
-                        myValueTextView.setText(R.string.leaderboard_entry_defaultvalue);
-                    }
-                    else {
-                        myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, 0.0));
-                    }
+                    initDefaultValues(valueStr);
 
                     leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
                     leaderboardRecyclerView.startAnimation(fadeIn);
@@ -281,56 +269,71 @@ public class LeaderboardActivity extends AppCompatActivity {
                         countQuery.get(AggregateSource.SERVER).addOnSuccessListener(snapshot -> {
                             long placing = snapshot.getCount() + 1;
 
-                            runOnUiThread(() -> {
-                                // Setup values
-                                TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
-                                myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
+                            // Setup values
+                            TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+                            myPlacingTextView.setText(getString(R.string.leaderboard_entry_placing, placing));
 
-                                String username = userSnapshot.getString("username");
-                                myEntry = new LeaderboardEntry(username, value);
+                            String username = userSnapshot.getString("username");
+                            myEntry = new LeaderboardEntry(username, value);
 
-                                TextView myNameTextView = findViewById(R.id.leaderboard_myname);
-                                myNameTextView.setText(myEntry.getUsername());
+                            TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+                            myNameTextView.setText(myEntry.getUsername());
 
-                                TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
-                                if("cellsVisited".equals(valueStr)) {
-                                    myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
+                            TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+                            if("cellsVisited".equals(valueStr)) {
+                                myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
+                            }
+                            else {
+                                myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
+                            }
 
-                                    descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
-                                }
-                                else {
-                                    myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
-
-                                    String regionalDescription = regionalQueryStr.replace(";", " / ");
-                                    descriptionTextView.setText(regionalDescription);
-                                }
-
-                                removeEmptyLeaderboardOverlay();
-
-                                loadingImage.clearAnimation();
-                                loadingImage.setVisibility(GONE);
-
-                                leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
-                                leaderboardRecyclerView.startAnimation(fadeIn);
-
-                                isQuerying = false;
-                            });
+                            finalizeQuery(valueStr, regionalQueryStr);
                         });
                     }
                     else {
-                        removeEmptyLeaderboardOverlay();
+                        initDefaultValues(valueStr);
 
-                        loadingImage.clearAnimation();
-                        loadingImage.setVisibility(GONE);
-
-                        leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
-                        leaderboardRecyclerView.startAnimation(fadeIn);
-
-                        isQuerying = false;
+                        finalizeQuery(valueStr, regionalQueryStr);
                     }
                 });
             }
         });
+    }
+
+    private void initDefaultValues(String valueStr) {
+        TextView myPlacingTextView = findViewById(R.id.leaderboard_myplacing);
+        myPlacingTextView.setText(R.string.leaderboard_entry_defaultplacing);
+
+        TextView myNameTextView = findViewById(R.id.leaderboard_myname);
+        myNameTextView.setText(myEntry.getUsername());
+
+        TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
+        if("cellsVisited".equals(valueStr)) {
+            myValueTextView.setText(R.string.leaderboard_entry_defaultvalue);
+        }
+        else {
+            myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, 0.0));
+        }
+    }
+
+    private void finalizeQuery(String valueStr, String regionalQueryStr) {
+        removeEmptyLeaderboardOverlay();
+
+        if("cellsVisited".equals(valueStr)) {
+            descriptionTextView.setText(getString(R.string.leaderboard_cellsdescription));
+        }
+        else {
+            String regionalDescription = regionalQueryStr.replace(";", " / ");
+            descriptionTextView.setText(regionalDescription);
+        }
+
+        loadingImage.clearAnimation();
+        loadingImage.setVisibility(GONE);
+
+        leaderboardRecyclerView.setAdapter(leaderboardEntryAdapter);
+        leaderboardRecyclerView.startAnimation(fadeIn);
+
+        isQuerying = false;
     }
 
     private void removeEmptyLeaderboardOverlay() {
