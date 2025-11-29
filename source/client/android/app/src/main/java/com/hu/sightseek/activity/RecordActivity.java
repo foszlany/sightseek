@@ -64,8 +64,8 @@ import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.AttractionInfoWindow;
 import com.hu.sightseek.model.Attraction;
 import com.hu.sightseek.model.AttractionGeoPoint;
+import com.hu.sightseek.providers.HeatmapProvider;
 import com.hu.sightseek.service.RecordingService;
-import com.hu.sightseek.utils.GenericUtils;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
@@ -517,7 +517,7 @@ public class RecordActivity extends AppCompatActivity {
                     // For now this is a static overlay that can be created once
                     // Should be able to regenerate the heatmap when zooming in/out or moving
                     if(heatmapOverlay == null) {
-                        heatmapOverlay = GenericUtils.createHeatmapOverlay(mapView, importedPoints);
+                        heatmapOverlay = HeatmapProvider.createHeatmapOverlay(mapView, importedPoints);
                     }
                     else {
                         mapView.getOverlays().add(0, heatmapOverlay);
