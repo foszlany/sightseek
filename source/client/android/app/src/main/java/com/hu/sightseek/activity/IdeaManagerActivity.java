@@ -1,6 +1,6 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.SightseekGenericUtils.hideKeyboard;
+import static com.hu.sightseek.utils.GenericUtils.hideKeyboard;
 
 import android.content.Intent;
 import android.os.Bundle;

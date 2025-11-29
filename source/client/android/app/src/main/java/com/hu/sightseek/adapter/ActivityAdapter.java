@@ -1,7 +1,7 @@
 package com.hu.sightseek.adapter;
 
-import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
+import static com.hu.sightseek.utils.SpatialUtils.getBoundingBox;
+import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,13 +19,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.PolyUtil;
-import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.activity.ActivityActivity;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
-import com.hu.sightseek.utils.SightseekSpatialUtils;
+import com.hu.sightseek.utils.SpatialUtils;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
@@ -132,7 +129,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         executor.execute(() -> {
             Bitmap cache = imageCache.get(id);
             if(cache == null) {
-                List<GeoPoint> points = SightseekSpatialUtils.decode(activity.getPolyline());
+                List<GeoPoint> points = SpatialUtils.decode(activity.getPolyline());
                 cache = renderMapImage(points);
                 imageCache.put(id, cache);
             }

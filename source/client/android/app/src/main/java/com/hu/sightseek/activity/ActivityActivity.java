@@ -2,11 +2,11 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helpers.WKConverter.convertWKBToPolylines;
-import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
-import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.GenericUtils.createScreenshot;
+import static com.hu.sightseek.utils.SpatialUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SpatialUtils.getVisitedCells;
+import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
+import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -36,8 +36,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
-import com.hu.sightseek.utils.SightseekFirebaseUtils;
-import com.hu.sightseek.utils.SightseekSpatialUtils;
+import com.hu.sightseek.utils.FirebaseUtils;
+import com.hu.sightseek.utils.SpatialUtils;
 
 import org.locationtech.jts.io.ParseException;
 import org.osmdroid.config.Configuration;
@@ -149,7 +149,7 @@ public class ActivityActivity extends AppCompatActivity {
 
         // Setup polyline
         String polylineString = activity.getPolyline();
-        List<GeoPoint> pointList = SightseekSpatialUtils.decode(polylineString);
+        List<GeoPoint> pointList = SpatialUtils.decode(polylineString);
         Polyline polyline = new Polyline();
         for(GeoPoint point : pointList) {
             polyline.addPoint(point);
@@ -186,8 +186,8 @@ public class ActivityActivity extends AppCompatActivity {
                             }
                         }
                         else {
-                            HashMap<String, Integer> cells = getVisitedCells(SightseekSpatialUtils.decode(polylineString));
-                            SightseekFirebaseUtils.updateCellsInFirebase(mAuth, cells, true);
+                            HashMap<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
+                            FirebaseUtils.updateCellsInFirebase(mAuth, cells, true);
                         }
 
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);

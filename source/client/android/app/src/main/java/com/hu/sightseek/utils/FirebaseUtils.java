@@ -8,8 +8,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class SightseekFirebaseUtils {
-    private SightseekFirebaseUtils() {}
+public final class FirebaseUtils {
+    private FirebaseUtils() {}
 
     public static void updateCellsInFirebase(FirebaseAuth mAuth, HashMap<String, Integer> cells, boolean isRemoval) {
         String uid = mAuth.getUid();

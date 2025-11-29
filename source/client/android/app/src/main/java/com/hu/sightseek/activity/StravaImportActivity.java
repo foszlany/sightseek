@@ -1,11 +1,11 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.utils.SightseekGenericUtils.STRAVA_CLIENT_ID;
-import static com.hu.sightseek.utils.SightseekRegionalLeaderboardUtils.calculateRegionalDistance;
-import static com.hu.sightseek.utils.SightseekSpatialUtils.decode;
-import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
-import static com.hu.sightseek.utils.SightseekVectorizationUtils.batchVectorize;
+import static com.hu.sightseek.utils.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.utils.GenericUtils.STRAVA_CLIENT_ID;
+import static com.hu.sightseek.utils.RegionalLeaderboardUtils.calculateRegionalDistance;
+import static com.hu.sightseek.utils.SpatialUtils.decode;
+import static com.hu.sightseek.utils.SpatialUtils.getVisitedCells;
+import static com.hu.sightseek.utils.VectorizationUtils.batchVectorize;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
@@ -38,7 +37,7 @@ import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.helpers.WKConverter;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.VectorizedDataRecord;
-import com.hu.sightseek.utils.SightseekSpatialUtils;
+import com.hu.sightseek.utils.SpatialUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -386,7 +385,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 executor.execute(() -> {
                                     try {
                                         for(Activity activity : activities) {
-                                            List<GeoPoint> points = SightseekSpatialUtils.decode(activity.getPolyline());
+                                            List<GeoPoint> points = SpatialUtils.decode(activity.getPolyline());
                                             Polyline polyline = new Polyline();
                                             polyline.setPoints(points);
                                             polylines.add(polyline);

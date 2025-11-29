@@ -3,9 +3,9 @@ package com.hu.sightseek.utils;
 import static com.hu.sightseek.helpers.CountryInfo.getContinent;
 import static com.hu.sightseek.helpers.CountryInfo.getCountry;
 import static com.hu.sightseek.helpers.RegionalDistanceAggregator.aggregateDistances;
-import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateRegionalLeaderboard;
-import static com.hu.sightseek.utils.SightseekVectorizationUtils.TOLERANCE;
-import static com.hu.sightseek.utils.SightseekVectorizationUtils.copyShapefileToInternalStorage;
+import static com.hu.sightseek.utils.FirebaseUtils.updateRegionalLeaderboard;
+import static com.hu.sightseek.utils.VectorizationUtils.TOLERANCE;
+import static com.hu.sightseek.utils.VectorizationUtils.copyShapefileToInternalStorage;
 
 import android.app.Activity;
 
@@ -35,10 +35,10 @@ import java.util.Set;
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
-public final class SightseekRegionalLeaderboardUtils {
+public final class RegionalLeaderboardUtils {
     private static final ArrayList<String> regionTypes = new ArrayList<>(Arrays.asList("smallregion", "largeregion", "country"));
 
-    private SightseekRegionalLeaderboardUtils() {}
+    private RegionalLeaderboardUtils() {}
 
     public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Set<String> countryCodes) {
         if(newRoads == null) {

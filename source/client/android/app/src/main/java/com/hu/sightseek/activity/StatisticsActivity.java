@@ -3,10 +3,10 @@ package com.hu.sightseek.activity;
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.utils.SightseekGenericUtils.createScreenshot;
-import static com.hu.sightseek.utils.SightseekStatisticsUtils.getCategorySpecificStatistics;
-import static com.hu.sightseek.utils.SightseekStatisticsUtils.getDetailedGenericStatistics;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
+import static com.hu.sightseek.utils.GenericUtils.createScreenshot;
+import static com.hu.sightseek.utils.StatisticsUtils.getCategorySpecificStatistics;
+import static com.hu.sightseek.utils.StatisticsUtils.getDetailedGenericStatistics;
+import static com.hu.sightseek.utils.GenericUtils.getLocationString;
 
 import android.content.Context;
 import android.content.Intent;

@@ -12,7 +12,7 @@ import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.helpers.WKConverter;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
-import com.hu.sightseek.utils.SightseekSpatialUtils;
+import com.hu.sightseek.utils.SpatialUtils;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -328,7 +328,7 @@ public class LocalDatabaseDAO {
                 String polylineString = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
                 List<GeoPoint> geoPoints;
 
-                geoPoints = SightseekSpatialUtils.decode(polylineString);
+                geoPoints = SpatialUtils.decode(polylineString);
                 points.addAll(geoPoints);
             } while(cursor.moveToNext());
         }

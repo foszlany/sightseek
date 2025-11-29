@@ -3,10 +3,10 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-import static com.hu.sightseek.utils.SightseekGenericUtils.getBitmapFromVectorDrawable;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
-import static com.hu.sightseek.utils.SightseekGenericUtils.defaultToBudapest;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.GenericUtils.getBitmapFromVectorDrawable;
+import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
+import static com.hu.sightseek.utils.GenericUtils.defaultToBudapest;
+import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
 
 import android.animation.ValueAnimator;
 import android.app.NotificationChannel;
@@ -65,7 +65,7 @@ import com.hu.sightseek.fragment.AttractionInfoWindow;
 import com.hu.sightseek.model.Attraction;
 import com.hu.sightseek.model.AttractionGeoPoint;
 import com.hu.sightseek.service.RecordingService;
-import com.hu.sightseek.utils.SightseekGenericUtils;
+import com.hu.sightseek.utils.GenericUtils;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
@@ -517,7 +517,7 @@ public class RecordActivity extends AppCompatActivity {
                     // For now this is a static overlay that can be created once
                     // Should be able to regenerate the heatmap when zooming in/out or moving
                     if(heatmapOverlay == null) {
-                        heatmapOverlay = SightseekGenericUtils.createHeatmapOverlay(mapView, importedPoints);
+                        heatmapOverlay = GenericUtils.createHeatmapOverlay(mapView, importedPoints);
                     }
                     else {
                         mapView.getOverlays().add(0, heatmapOverlay);

@@ -3,13 +3,13 @@ package com.hu.sightseek.activity;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helpers.WKConverter.convertGeometryToWKB;
-import static com.hu.sightseek.utils.SightseekFirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.utils.SightseekRegionalLeaderboardUtils.calculateRegionalDistance;
-import static com.hu.sightseek.utils.SightseekSpatialUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SightseekSpatialUtils.getVisitedCells;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupRouteLine;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
-import static com.hu.sightseek.utils.SightseekVectorizationUtils.vectorize;
+import static com.hu.sightseek.utils.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.utils.RegionalLeaderboardUtils.calculateRegionalDistance;
+import static com.hu.sightseek.utils.SpatialUtils.getBoundingBox;
+import static com.hu.sightseek.utils.SpatialUtils.getVisitedCells;
+import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
+import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.VectorizationUtils.vectorize;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -42,7 +42,7 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.VectorizedDataRecord;
-import com.hu.sightseek.utils.SightseekSpatialUtils;
+import com.hu.sightseek.utils.SpatialUtils;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
@@ -147,7 +147,7 @@ public class SaveActivity extends AppCompatActivity {
 
         // Setup polyline
         assert polylineString != null : "Polyline string is null, unable to save activity!";
-        List<GeoPoint> pointList = SightseekSpatialUtils.decode(polylineString);
+        List<GeoPoint> pointList = SpatialUtils.decode(polylineString);
         Polyline polyline = new Polyline();
         for(GeoPoint point : pointList) {
             polyline.addPoint(point);

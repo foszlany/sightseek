@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SightseekSpatialUtils {
-    private SightseekSpatialUtils() {}
+public class SpatialUtils {
+    private SpatialUtils() {}
 
     public static HashMap<String, Integer> getVisitedCells(List<GeoPoint> pointList) {
         HashMap<String, Integer> visitedCells = new HashMap<>();

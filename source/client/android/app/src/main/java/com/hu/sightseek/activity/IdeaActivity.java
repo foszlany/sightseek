@@ -2,10 +2,10 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.utils.SightseekGenericUtils.defaultToBudapest;
-import static com.hu.sightseek.utils.SightseekGenericUtils.getLocationString;
-import static com.hu.sightseek.utils.SightseekStatisticsUtils.getMedianPoint;
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.GenericUtils.defaultToBudapest;
+import static com.hu.sightseek.utils.GenericUtils.getLocationString;
+import static com.hu.sightseek.utils.StatisticsUtils.getMedianPoint;
+import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -40,7 +40,7 @@ import com.hu.sightseek.fragment.SelectLocationFragment;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Attraction;
-import com.hu.sightseek.utils.SightseekSpatialUtils;
+import com.hu.sightseek.utils.SpatialUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -250,12 +250,12 @@ public class IdeaActivity extends AppCompatActivity {
                 ArrayList<GeoPoint> allPoints = new ArrayList<>();
 
                 for(int i = 0; i < activities.size(); i++) {
-                    ArrayList<GeoPoint> points = new ArrayList<>(SightseekSpatialUtils.decode(activities.get(i).getPolyline()));
+                    ArrayList<GeoPoint> points = new ArrayList<>(SpatialUtils.decode(activities.get(i).getPolyline()));
 
                     allPoints.addAll(points);
                 }
 
-                BoundingBox boundingBox = SightseekSpatialUtils.getBoundingBox(allPoints).increaseByScale(1.2f);
+                BoundingBox boundingBox = SpatialUtils.getBoundingBox(allPoints).increaseByScale(1.2f);
                 double lat = boundingBox.getLatSouth() + Math.random() * (boundingBox.getLatNorth() - boundingBox.getLatSouth());
                 double lon = boundingBox.getLonWest() + Math.random() * (boundingBox.getLonEast() - boundingBox.getLonWest());
                 boundingBoxPoint = new LatLng(lat, lon);

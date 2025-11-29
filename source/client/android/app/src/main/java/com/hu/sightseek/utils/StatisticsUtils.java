@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class SightseekStatisticsUtils {
-    private SightseekStatisticsUtils() {}
+public final class StatisticsUtils {
+    private StatisticsUtils() {}
 
     public static Task<HashMap<String, Serializable>> getDetailedGenericStatistics(Context ctx) {
         TaskCompletionSource<HashMap<String, Serializable>> source = new TaskCompletionSource<>();

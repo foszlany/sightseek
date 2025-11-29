@@ -43,12 +43,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public final class SightseekGenericUtils {
+public final class GenericUtils {
     public static final String STRAVA_CLIENT_ID = "180650";
     public static final double BUDAPEST_LATITUDE = 47.499;
     public static final double BUDAPEST_LONGITUDE = 19.044;
 
-    private SightseekGenericUtils() {}
+    private GenericUtils() {}
 
     public static void setupRouteLine(Polyline route, boolean isLight) {
         if(isLight) {

@@ -43,10 +43,10 @@ import diewald_shapeFile.files.shp.shapeTypes.ShpPolyLine;
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
-public final class SightseekVectorizationUtils {
+public final class VectorizationUtils {
     static final double TOLERANCE = 0.0002;
 
-    private SightseekVectorizationUtils() {}
+    private VectorizationUtils() {}
 
     public static ArrayList<VectorizedDataRecord> batchVectorize(Activity activity, ArrayList<Polyline> routes, Logger logger) {
         ArrayList<VectorizedDataRecord> results = new ArrayList<>();

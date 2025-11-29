@@ -1,6 +1,6 @@
 package com.hu.sightseek.fragment;
 
-import static com.hu.sightseek.utils.SightseekGenericUtils.setupZoomSettings;
+import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -21,7 +21,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.hu.sightseek.R;
 import com.hu.sightseek.activity.IdeaActivity;
-import com.hu.sightseek.utils.SightseekGenericUtils;
+import com.hu.sightseek.utils.GenericUtils;
 
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
@@ -67,7 +67,7 @@ public class SelectLocationFragment extends DialogFragment {
                 || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 || ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
 
-            referencePoint = new GeoPoint(SightseekGenericUtils.BUDAPEST_LATITUDE, SightseekGenericUtils.BUDAPEST_LONGITUDE);
+            referencePoint = new GeoPoint(GenericUtils.BUDAPEST_LATITUDE, GenericUtils.BUDAPEST_LONGITUDE);
             mapView.getController().setCenter(referencePoint);
             refreshMarker(referencePoint);
         }
