@@ -2,7 +2,6 @@ package com.hu.sightseek.providers;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -11,34 +10,39 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.GroundOverlay;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class HeatmapProvider {
-    public static GroundOverlay createHeatmapOverlay(MapView mapView, ArrayList<LatLng> points) {
-        int gridSize = 512;
+    private static final int RADIUS = 6;
+    private static final double SIGMA = 3.0;
+
+    private static double[][] kernel;
+
+    private HeatmapProvider() {}
+
+    public static GroundOverlay createHeatmapOverlay(MapView mapView, List<LatLng> points) {
+        int gridSize = 256;
+
         int[][] density = new int[gridSize][gridSize];
         BoundingBox box = mapView.getBoundingBox();
 
-        // Gaussian blur
-        int radius = 6;
-        double sigma = 3.0;
-        double twoSigmaSquared = 2 * sigma * sigma;
+        // Get kernel
+        if(kernel == null) {
+            setKernel();
+        }
 
+        // Create density grid
         for(LatLng p : points) {
             int cx = (int) (((p.longitude - box.getLonWest()) / box.getLongitudeSpanWithDateLine()) * gridSize);
             int cy = (int) (((box.getLatNorth() - p.latitude) / box.getLatitudeSpan()) * gridSize);
 
-            // Neighbors
-            for(int dy = -radius; dy <= radius; dy++) {
-                for(int dx = -radius; dx <= radius; dx++) {
+            for(int dy = -RADIUS; dy <= RADIUS; dy++) {
+                for(int dx = -RADIUS; dx <= RADIUS; dx++) {
                     int x = cx + dx;
                     int y = cy + dy;
 
                     if(x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
-                        double distSquared = dx * dx + dy * dy;
-                        double weight = Math.exp(-distSquared / twoSigmaSquared);
-
-                        density[y][x] += (int) (weight * 100);
+                        density[y][x] += (int) kernel[dy + RADIUS][dx + RADIUS];
                     }
                 }
             }
@@ -55,33 +59,46 @@ public class HeatmapProvider {
         }
 
         // Generate overlay image
-        Bitmap bmp = Bitmap.createBitmap(gridSize, gridSize, Bitmap.Config.ARGB_8888);
+        int[] pixels = new int[gridSize * gridSize];
         for(int y = 0; y < gridSize; y++) {
             for(int x = 0; x < gridSize; x++) {
                 int val = density[y][x];
+
                 if(val == 0) {
-                    bmp.setPixel(x, y, Color.TRANSPARENT);
+                    pixels[y * gridSize + x] = Color.TRANSPARENT;
                 }
                 else {
                     float intensity = (float) val / maxDensity;
-                    bmp.setPixel(x, y, getHeatmapColor(intensity));
+                    pixels[y * gridSize + x] = getHeatmapColor(intensity);
                 }
             }
         }
 
-        // Create and Add overlay
-        BitmapDrawable drawable = new BitmapDrawable(mapView.getContext().getResources(), bmp);
-        GroundOverlay overlay = new org.osmdroid.views.overlay.GroundOverlay();
-        overlay.setImage(drawable.getBitmap());
+        // Create bitmap
+        Bitmap bmp = Bitmap.createBitmap(gridSize, gridSize, Bitmap.Config.ARGB_8888);
+        bmp.setPixels(pixels, 0, gridSize, 0, 0, gridSize, gridSize);
+
+        // Create overlay
+        GroundOverlay overlay = new GroundOverlay();
+        overlay.setImage(bmp);
 
         GeoPoint topLeft = new GeoPoint(box.getLatNorth(), box.getLonWest());
         GeoPoint bottomRight = new GeoPoint(box.getLatSouth(), box.getLonEast());
         overlay.setPosition(topLeft, bottomRight);
 
-        mapView.getOverlays().add(0, overlay);
-        mapView.invalidate();
-
         return overlay;
+    }
+
+    private static void setKernel() {
+        double twoSigmaSquared = 2 * SIGMA * SIGMA;
+
+        kernel = new double[2 * RADIUS + 1][2 * RADIUS + 1];
+        for (int dy = -RADIUS; dy <= RADIUS; dy++) {
+            for (int dx = -RADIUS; dx <= RADIUS; dx++) {
+                double distSquared = dx * dx + dy * dy;
+                kernel[dy + RADIUS][dx + RADIUS] = Math.exp(-distSquared / twoSigmaSquared) * 100;
+            }
+        }
     }
 
     private static int getHeatmapColor(float intensity) {

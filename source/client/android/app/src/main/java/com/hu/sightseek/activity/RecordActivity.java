@@ -26,6 +26,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -70,6 +71,9 @@ import com.hu.sightseek.service.RecordingService;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.FolderOverlay;
@@ -513,16 +517,13 @@ public class RecordActivity extends AppCompatActivity {
                         dao.close();
                     }
 
-                    //TODO
-                    // For now this is a static overlay that can be created once
-                    // Should be able to regenerate the heatmap when zooming in/out or moving
-                    if(heatmapOverlay == null) {
-                        heatmapOverlay = HeatmapProvider.createHeatmapOverlay(mapView, importedPoints);
+                    if(heatmapOverlay != null) {
+                        mapView.getOverlays().remove(heatmapOverlay);
                     }
-                    else {
-                        mapView.getOverlays().add(0, heatmapOverlay);
-                        mapView.invalidate();
-                    }
+
+                    heatmapOverlay = HeatmapProvider.createHeatmapOverlay(mapView, importedPoints);
+                    mapView.getOverlays().add(0, heatmapOverlay);
+                    mapView.invalidate();
                 });
 
                 animateButton(heatmapButton, true, R.color.orange);
@@ -535,6 +536,40 @@ public class RecordActivity extends AppCompatActivity {
                 });
 
                 animateButton(heatmapButton, false, R.color.orange);
+            }
+        });
+
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        Runnable refreshHeatmap = () -> {
+            if(isHeatmapOn && importedPoints != null) {
+                mapView.getOverlays().remove(heatmapOverlay);
+                heatmapOverlay = HeatmapProvider.createHeatmapOverlay(mapView, importedPoints);
+                mapView.getOverlays().add(0, heatmapOverlay);
+                mapView.invalidate();
+            }
+        };
+
+        // Zoom / Move listener
+        mapView.addMapListener(new MapListener() {
+            @Override
+            public boolean onScroll(ScrollEvent event) {
+                if(isHeatmapOn && importedPoints != null) {
+                    handler.removeCallbacks(refreshHeatmap);
+                    handler.postDelayed(refreshHeatmap, 400);
+                }
+
+                return false;
+            }
+
+            @Override
+            public boolean onZoom(ZoomEvent event) {
+                if(isHeatmapOn && importedPoints != null) {
+                    handler.removeCallbacks(refreshHeatmap);
+                    handler.postDelayed(refreshHeatmap, 400);
+                }
+
+                return false;
             }
         });
 

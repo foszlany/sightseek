@@ -56,7 +56,7 @@ public class SpatialUtils {
         return new BoundingBox(maxLat, maxLon, minLat, minLon);
     }
 
-    // From PolyUtil class rewritten for OSMDroid's GeoPoint
+    // From Google Maps API Library's PolyUtil class rewritten for OSMDroid's GeoPoint
     public static String encode(final List<GeoPoint> path) {
         long lastLat = 0;
         long lastLng = 0;
