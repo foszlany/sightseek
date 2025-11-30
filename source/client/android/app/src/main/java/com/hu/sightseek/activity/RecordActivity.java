@@ -539,11 +539,12 @@ public class RecordActivity extends AppCompatActivity {
             }
         });
 
-
+        // Refresh heatmap
         Handler handler = new Handler(Looper.getMainLooper());
         Runnable refreshHeatmap = () -> {
             if(isHeatmapOn && importedPoints != null) {
                 mapView.getOverlays().remove(heatmapOverlay);
+
                 heatmapOverlay = HeatmapProvider.createHeatmapOverlay(mapView, importedPoints);
                 mapView.getOverlays().add(0, heatmapOverlay);
                 mapView.invalidate();

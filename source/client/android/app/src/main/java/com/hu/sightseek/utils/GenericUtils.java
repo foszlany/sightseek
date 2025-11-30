@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import org.osmdroid.util.BoundingBox;
@@ -31,6 +34,8 @@ import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -158,8 +163,33 @@ public final class GenericUtils {
             }
 
         }
-        else { // < ANDROID 10.0 TODO
-            Toast.makeText(ctx, "how will i even test this", Toast.LENGTH_LONG).show();
+        else { // < ANDROID 10.0
+            if(ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions((Activity) ctx, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return;
+            }
+
+            File picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File appDir = new File(picturesDir, "SightSeek");
+            if(!appDir.exists()) {
+                appDir.mkdir();
+            }
+
+            File imageFile = new File(appDir, fileName);
+
+            try(FileOutputStream out = new FileOutputStream(imageFile)) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+
+                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                intent.setData(Uri.fromFile(imageFile));
+                ctx.sendBroadcast(intent);
+
+                Toast.makeText(ctx, "Saved: " + imageFile, Toast.LENGTH_LONG).show();
+            }
+            catch(IOException e) {
+                Toast.makeText(ctx, "An error has occurred while trying to save the screenshot: Failed creation", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
