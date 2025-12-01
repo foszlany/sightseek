@@ -15,16 +15,24 @@ import java.util.List;
 public class HeatmapProvider {
     private static final int RADIUS = 6;
     private static final double SIGMA = 3.0;
+    private static final int GRIDHEIGHT = 300;
 
     private static double[][] kernel;
 
     private HeatmapProvider() {}
 
     public static GroundOverlay createHeatmapOverlay(MapView mapView, List<LatLng> points) {
-        int gridSize = 256;
-
-        int[][] density = new int[gridSize][gridSize];
+        // Get dimensions
         BoundingBox box = mapView.getBoundingBox();
+
+        double lonSpan = box.getLongitudeSpanWithDateLine();
+        double latSpan = box.getLatitudeSpan();
+        double midLat = (box.getLatNorth() + box.getLatSouth()) / 2.0;
+        double lonSpanMeters = lonSpan * Math.cos(Math.toRadians(midLat));
+        double aspect = lonSpanMeters / latSpan;
+
+        int gridWidth = (int)(GRIDHEIGHT * aspect);
+        int[][] density = new int[GRIDHEIGHT][gridWidth];
 
         // Get kernel
         if(kernel == null) {
@@ -33,15 +41,15 @@ public class HeatmapProvider {
 
         // Create density grid
         for(LatLng p : points) {
-            int cx = (int) (((p.longitude - box.getLonWest()) / box.getLongitudeSpanWithDateLine()) * gridSize);
-            int cy = (int) (((box.getLatNorth() - p.latitude) / box.getLatitudeSpan()) * gridSize);
+            int cx = (int) (((p.longitude - box.getLonWest()) / box.getLongitudeSpanWithDateLine()) * gridWidth);
+            int cy = (int) (((box.getLatNorth() - p.latitude) / box.getLatitudeSpan()) * GRIDHEIGHT);
 
             for(int dy = -RADIUS; dy <= RADIUS; dy++) {
                 for(int dx = -RADIUS; dx <= RADIUS; dx++) {
                     int x = cx + dx;
                     int y = cy + dy;
 
-                    if(x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    if(x >= 0 && x < gridWidth && y >= 0 && y < GRIDHEIGHT) {
                         density[y][x] += (int) kernel[dy + RADIUS][dx + RADIUS];
                     }
                 }
@@ -59,24 +67,24 @@ public class HeatmapProvider {
         }
 
         // Generate overlay image
-        int[] pixels = new int[gridSize * gridSize];
-        for(int y = 0; y < gridSize; y++) {
-            for(int x = 0; x < gridSize; x++) {
+        int[] pixels = new int[gridWidth * GRIDHEIGHT];
+        for(int y = 0; y < GRIDHEIGHT; y++) {
+            for(int x = 0; x < gridWidth; x++) {
                 int val = density[y][x];
 
                 if(val == 0) {
-                    pixels[y * gridSize + x] = Color.TRANSPARENT;
+                    pixels[y * gridWidth + x] = Color.TRANSPARENT;
                 }
                 else {
                     float intensity = (float) val / maxDensity;
-                    pixels[y * gridSize + x] = getHeatmapColor(intensity);
+                    pixels[y * gridWidth + x] = getHeatmapColor(intensity);
                 }
             }
         }
 
         // Create bitmap
-        Bitmap bmp = Bitmap.createBitmap(gridSize, gridSize, Bitmap.Config.ARGB_8888);
-        bmp.setPixels(pixels, 0, gridSize, 0, 0, gridSize, gridSize);
+        Bitmap bmp = Bitmap.createBitmap(gridWidth, GRIDHEIGHT, Bitmap.Config.ARGB_8888);
+        bmp.setPixels(pixels, 0, gridWidth, 0, 0, gridWidth, GRIDHEIGHT);
 
         // Create overlay
         GroundOverlay overlay = new GroundOverlay();
