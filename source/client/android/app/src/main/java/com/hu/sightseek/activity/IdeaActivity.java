@@ -4,7 +4,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.GenericUtils.defaultToBudapest;
 import static com.hu.sightseek.utils.GenericUtils.getLocationString;
-import static com.hu.sightseek.utils.StatisticsUtils.getMedianPoint;
+import static com.hu.sightseek.providers.StatisticsProvider.getMedianPoint;
 import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;

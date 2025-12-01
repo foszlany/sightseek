@@ -190,27 +190,15 @@
                 android:textColor="@color/white"
                 app:backgroundTint="@color/dark_gray" />
 
-            <!---
-            <Button
-                android:id="@+id/profile_deleteactivivitiesbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="62dp"
-                android:background="@drawable/generic_rounded_background"
-                android:text="@string/profile_deleteallactivities"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/delete_red"/>
-
             <Button
                 android:id="@+id/profile_deleteaccountbtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="32dp"
                 android:background="@drawable/generic_rounded_background"
                 android:text="@string/profile_deleteaccount"
                 android:textColor="@color/white"
                 app:backgroundTint="@color/red"/>
-               -->
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

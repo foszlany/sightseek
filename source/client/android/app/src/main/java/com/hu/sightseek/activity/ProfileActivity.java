@@ -38,6 +38,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.fragment.DeleteAccountFragment;
+import com.hu.sightseek.fragment.SelectLocationFragment;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
@@ -254,6 +256,13 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
 
             Toast.makeText(this, "You were signed out.", Toast.LENGTH_LONG).show();
+        });
+
+        // Delete account
+        Button deleteAccountButton = findViewById(R.id.profile_deleteaccountbtn);
+        deleteAccountButton.setOnClickListener(v -> {
+            DeleteAccountFragment fragment = new DeleteAccountFragment();
+            fragment.show(getSupportFragmentManager(), "deleteAccountPopup");
         });
     }
 

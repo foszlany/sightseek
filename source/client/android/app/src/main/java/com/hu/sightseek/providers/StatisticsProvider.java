@@ -1,4 +1,4 @@
-package com.hu.sightseek.utils;
+package com.hu.sightseek.providers;
 
 import android.content.Context;
 
@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class StatisticsUtils {
-    private StatisticsUtils() {}
+public final class StatisticsProvider {
+    private StatisticsProvider() {}
 
     public static Task<HashMap<String, Serializable>> getDetailedGenericStatistics(Context ctx) {
         TaskCompletionSource<HashMap<String, Serializable>> source = new TaskCompletionSource<>();

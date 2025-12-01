@@ -204,4 +204,7 @@
     <string name="leaderboard_entry_defaultuser">Fetching...</string>
     <string name="leaderboard_noentries">No entries were found.</string>
     <string name="leaderboard_motivationaltext">Perhaps you can change that.</string>
+    <string name="deleteaccountpopup_title">If you wish to delete your account, confirm your password below.</string>
+    <string name="deleteaccountpopup_confirmpassword">Confirm password</string>
+    <string name="deleteaccountpopup_disclaimer">This action is irreversible.</string>
 </resources>

@@ -4,8 +4,8 @@ import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.utils.GenericUtils.createScreenshot;
-import static com.hu.sightseek.utils.StatisticsUtils.getCategorySpecificStatistics;
-import static com.hu.sightseek.utils.StatisticsUtils.getDetailedGenericStatistics;
+import static com.hu.sightseek.providers.StatisticsProvider.getCategorySpecificStatistics;
+import static com.hu.sightseek.providers.StatisticsProvider.getDetailedGenericStatistics;
 import static com.hu.sightseek.utils.GenericUtils.getLocationString;
 
 import android.content.Context;
