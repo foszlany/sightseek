@@ -12,14 +12,14 @@ import org.osmdroid.views.overlay.GroundOverlay;
 
 import java.util.List;
 
-public class HeatmapProvider {
+public class HeatmapOverlayProvider {
     private static final int RADIUS = 6;
     private static final double SIGMA = 3.0;
     private static final int GRIDHEIGHT = 300;
 
     private static double[][] kernel;
 
-    private HeatmapProvider() {}
+    private HeatmapOverlayProvider() {}
 
     public static GroundOverlay createHeatmapOverlay(MapView mapView, List<LatLng> points) {
         // Get dimensions
@@ -101,8 +101,8 @@ public class HeatmapProvider {
         double twoSigmaSquared = 2 * SIGMA * SIGMA;
 
         kernel = new double[2 * RADIUS + 1][2 * RADIUS + 1];
-        for (int dy = -RADIUS; dy <= RADIUS; dy++) {
-            for (int dx = -RADIUS; dx <= RADIUS; dx++) {
+        for(int dy = -RADIUS; dy <= RADIUS; dy++) {
+            for(int dx = -RADIUS; dx <= RADIUS; dx++) {
                 double distSquared = dx * dx + dy * dy;
                 kernel[dy + RADIUS][dx + RADIUS] = Math.exp(-distSquared / twoSigmaSquared) * 100;
             }

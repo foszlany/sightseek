@@ -3,6 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import static com.hu.sightseek.providers.IdeaOverlayProvider.getIdeasOverlay;
 import static com.hu.sightseek.utils.GenericUtils.getBitmapFromVectorDrawable;
 import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
 import static com.hu.sightseek.utils.GenericUtils.defaultToBudapest;
@@ -18,7 +19,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
@@ -64,13 +64,9 @@ import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-import com.hu.sightseek.fragment.IdeaInfoWindow;
-import com.hu.sightseek.model.Idea;
-import com.hu.sightseek.model.IdeaGeoPoint;
-import com.hu.sightseek.providers.HeatmapProvider;
+import com.hu.sightseek.providers.HeatmapOverlayProvider;
 import com.hu.sightseek.service.RecordingService;
 
-import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.events.MapListener;
@@ -88,13 +84,10 @@ import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
-import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlayOptions;
-import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
@@ -555,7 +548,7 @@ public class RecordActivity extends AppCompatActivity {
                         mapView.getOverlays().remove(heatmapOverlay);
                     }
 
-                    heatmapOverlay = HeatmapProvider.createHeatmapOverlay(mapView, importedPoints);
+                    heatmapOverlay = HeatmapOverlayProvider.createHeatmapOverlay(mapView, importedPoints);
                     mapView.getOverlays().add(0, heatmapOverlay);
                     mapView.invalidate();
                 });
@@ -579,7 +572,7 @@ public class RecordActivity extends AppCompatActivity {
             if(isHeatmapOn && importedPoints != null) {
                 mapView.getOverlays().remove(heatmapOverlay);
 
-                heatmapOverlay = HeatmapProvider.createHeatmapOverlay(mapView, importedPoints);
+                heatmapOverlay = HeatmapOverlayProvider.createHeatmapOverlay(mapView, importedPoints);
                 mapView.getOverlays().add(0, heatmapOverlay);
                 mapView.invalidate();
             }
@@ -662,12 +655,14 @@ public class RecordActivity extends AppCompatActivity {
                         // Import if necessary
                         if(ideaOverlay == null) {
                             mapView.getOverlays().add(new MapEventsOverlay(mapEventsReceiver));
-                            getIdeasOverlay(ideaButton);
+                            ideaOverlay = getIdeasOverlay(this, ideaButton, areIdeasOn, mapView);
+                            mapView.getOverlays().add(ideaOverlay);
                         }
-                        else {
+
+                        runOnUiThread(() -> {
                             ideaOverlay.setEnabled(true);
                             mapView.invalidate();
-                        }
+                        });
                     });
                 }
                 else {
@@ -838,73 +833,6 @@ public class RecordActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
-    private void getIdeasOverlay(ImageButton ideaButton) {
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-        ArrayList<Idea> ideas = dao.getSavedIdeas();
-        dao.close();
-
-        List<IGeoPoint> points = new ArrayList<>();
-        for(Idea a : ideas) {
-            points.add(new IdeaGeoPoint(a.getLatitude(), a.getLongitude(), a.getName(), a.getId()));
-        }
-
-        runOnUiThread(() -> {
-            SimpleFastPointOverlayOptions layoutStyle = SimpleFastPointOverlayOptions.getDefaultStyle()
-                    .setAlgorithm(points.size() < 8000 ? SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION : SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
-                    .setRadius(8)
-                    .setIsClickable(true);
-
-            // Styles
-            Paint pointStyle = new Paint();
-            pointStyle.setColor(Color.parseColor("#DE003B"));
-            layoutStyle.setPointStyle(pointStyle);
-
-            Paint textStyle = new Paint();
-            textStyle.setColor(Color.RED);
-            textStyle.setTextSize(26);
-            textStyle.setFakeBoldText(true);
-            textStyle.setShadowLayer(1, 1, 1, Color.GRAY);
-            textStyle.setTextAlign(Paint.Align.CENTER);
-            layoutStyle.setTextStyle(textStyle);
-
-            Paint highlightStyle = new Paint();
-            highlightStyle.setColor(Color.TRANSPARENT);
-            layoutStyle.setSelectedPointStyle(highlightStyle);
-
-            layoutStyle.setLabelPolicy(SimpleFastPointOverlayOptions.LabelPolicy.ZOOM_THRESHOLD);
-            layoutStyle.setMinZoomShowLabels(10);
-
-            // Create overlay
-            if(ideaOverlay != null) {
-                mapView.getOverlays().remove(ideaOverlay);
-            }
-
-            ideaOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
-            mapView.getOverlays().add(ideaOverlay);
-            if(areIdeasOn) {
-                ideaOverlay.setEnabled(true);
-            }
-
-            if(!shouldRebuildIdeasOverlay) {
-                // Point listener
-                ideaOverlay.setOnClickListener((point, i) -> {
-                    if(!areIdeasOn) {
-                        return;
-                    }
-
-                    IdeaGeoPoint ideaPoint = (IdeaGeoPoint) point.get(i);
-
-                    InfoWindow.closeAllInfoWindowsOn(mapView);
-
-                    IdeaInfoWindow info = new IdeaInfoWindow(R.layout.idea_popup, mapView, layoutStyle, points, ideaOverlay, ideaButton);
-                    info.open(ideaPoint, new GeoPoint(ideaPoint.getLatitude(), ideaPoint.getLongitude()), 0, 0);
-                });
-            }
-
-            mapView.invalidate();
-        });
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -952,8 +880,26 @@ public class RecordActivity extends AppCompatActivity {
         };
 
         if(ideaOverlay != null && shouldRebuildIdeasOverlay) {
-            Executors.newSingleThreadExecutor().execute(() -> getIdeasOverlay(null));
-            shouldRebuildIdeasOverlay = false;
+            mapView.getOverlays().remove(ideaOverlay);
+
+            Executors.newSingleThreadExecutor().execute(() -> {
+                SimpleFastPointOverlay newOverlay = getIdeasOverlay(this, null, areIdeasOn, mapView);
+
+                runOnUiThread(() -> {
+                    ideaOverlay = newOverlay;
+
+                    if(areIdeasOn) {
+                        ideaOverlay.setEnabled(true);
+                        mapView.getOverlays().add(ideaOverlay);
+                    }
+                    else {
+                        ideaOverlay.setEnabled(false);
+                    }
+
+                    mapView.invalidate();
+                    shouldRebuildIdeasOverlay = false;
+                });
+            });
         }
     }
 
