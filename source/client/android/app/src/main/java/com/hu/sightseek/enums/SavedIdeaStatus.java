@@ -2,7 +2,7 @@ package com.hu.sightseek.enums;
 
 import androidx.annotation.NonNull;
 
-public enum SavedAttractionStatus {
+public enum SavedIdeaStatus {
     SAVED(0),
     IGNORED(1),
     VISITED(2),
@@ -10,7 +10,7 @@ public enum SavedAttractionStatus {
 
     private final int index;
 
-    SavedAttractionStatus(int index) {
+    SavedIdeaStatus(int index) {
         this.index = index;
     }
 

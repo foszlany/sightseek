@@ -19,25 +19,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hu.sightseek.R;
 import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-import com.hu.sightseek.enums.SavedAttractionStatus;
-import com.hu.sightseek.model.Attraction;
+import com.hu.sightseek.enums.SavedIdeaStatus;
+import com.hu.sightseek.model.Idea;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.IdeaViewHolder> implements Filterable {
-    private final ArrayList<Attraction> attractionListFull;
-    private ArrayList<Attraction> attractionListFilteredByCategory;
-    private ArrayList<Attraction> attractionListFiltered;
+public class IdeaAdapter extends RecyclerView.Adapter<IdeaAdapter.IdeaViewHolder> implements Filterable {
+    private final ArrayList<Idea> ideaListFull;
+    private ArrayList<Idea> ideaListFilteredByCategory;
+    private ArrayList<Idea> ideaListFiltered;
     private String searchQuery;
 
     private final Context context;
 
-    public AttractionAdapter(Context context, ArrayList<Attraction> attractionList) {
+    public IdeaAdapter(Context context, ArrayList<Idea> ideaList) {
         this.context = context;
-        this.attractionListFull = new ArrayList<>(attractionList);
-        this.attractionListFilteredByCategory = new ArrayList<>(attractionList);
-        this.attractionListFiltered = new ArrayList<>(attractionList);
+        this.ideaListFull = new ArrayList<>(ideaList);
+        this.ideaListFilteredByCategory = new ArrayList<>(ideaList);
+        this.ideaListFiltered = new ArrayList<>(ideaList);
         this.searchQuery = "";
     }
 
@@ -50,17 +50,17 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
 
     @Override
     public void onBindViewHolder(@NonNull IdeaViewHolder holder, int position) {
-        Attraction attraction = attractionListFiltered.get(position);
+        Idea idea = ideaListFiltered.get(position);
 
         // Values
-        holder.name.setText(attraction.getName());
-        holder.place.setText(attraction.getPlace());
-        holder.status.setText(attraction.getStatus().toString());
+        holder.name.setText(idea.getName());
+        holder.place.setText(idea.getPlace());
+        holder.status.setText(idea.getStatus().toString());
 
         // Status change button
         ImageButton statusChange1Button = holder.itemView.findViewById(R.id.ideamanager_statuschangebtn);
         statusChange1Button.setOnClickListener(v -> {
-            View popupView = LayoutInflater.from(v.getContext()).inflate(R.layout.attractionstatuschange_popup, null);
+            View popupView = LayoutInflater.from(v.getContext()).inflate(R.layout.ideastatuschange_popup, null);
             AlertDialog popupDialog = new AlertDialog.Builder(v.getContext())
                     .setView(popupView)
                     .create();
@@ -69,30 +69,30 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
             Button ignoreButton = popupView.findViewById(R.id.ideamanager_popup_ignorebtn);
             Button visitedButton = popupView.findViewById(R.id.ideamanager_popup_visitedbtn);
 
-            if(attraction.getStatus() == SavedAttractionStatus.SAVED) {
+            if(idea.getStatus() == SavedIdeaStatus.SAVED) {
                 savedButton.setVisibility(GONE);
             }
-            else if(attraction.getStatus() == SavedAttractionStatus.IGNORED) {
+            else if(idea.getStatus() == SavedIdeaStatus.IGNORED) {
                 ignoreButton.setVisibility(GONE);
             }
-            else if(attraction.getStatus() == SavedAttractionStatus.VISITED) {
+            else if(idea.getStatus() == SavedIdeaStatus.VISITED) {
                 visitedButton.setVisibility(GONE);
             }
 
             popupDialog.show();
 
             savedButton.setOnClickListener(w -> {
-                changeStatus(attraction, SavedAttractionStatus.SAVED, holder, position);
+                changeStatus(idea, SavedIdeaStatus.SAVED, holder, position);
                 popupDialog.dismiss();
             });
 
             ignoreButton.setOnClickListener(w -> {
-                changeStatus(attraction, SavedAttractionStatus.IGNORED, holder, position);
+                changeStatus(idea, SavedIdeaStatus.IGNORED, holder, position);
                 popupDialog.dismiss();
             });
 
             visitedButton.setOnClickListener(w -> {
-                changeStatus(attraction, SavedAttractionStatus.VISITED, holder, position);
+                changeStatus(idea, SavedIdeaStatus.VISITED, holder, position);
                 popupDialog.dismiss();
             });
         });
@@ -101,28 +101,28 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
         ImageButton deleteButton = holder.itemView.findViewById(R.id.ideamanager_removebtn);
         deleteButton.setOnClickListener(v -> {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(holder.itemView.getContext());
-            dao.deleteAttraction(attraction.getId());
+            dao.deleteIdea(idea.getId());
             dao.close();
 
             notifyItemRemoved(position);
 
-            if(attraction.getStatus() == SavedAttractionStatus.SAVED) {
+            if(idea.getStatus() == SavedIdeaStatus.SAVED) {
                 IdeaBroadcaster.sendUpdate(context);
             }
         });
     }
 
-    private void changeStatus(Attraction attraction, SavedAttractionStatus status, @NonNull IdeaViewHolder holder, int position) {
-        if(attraction.getStatus() != status) {
+    private void changeStatus(Idea idea, SavedIdeaStatus status, @NonNull IdeaViewHolder holder, int position) {
+        if(idea.getStatus() != status) {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(holder.itemView.getContext());
-            dao.updateAttractionStatus(attraction.getId(), status.getIndex());
+            dao.updateIdeaStatus(idea.getId(), status.getIndex());
             dao.close();
 
-            attraction.setStatus(status);
+            idea.setStatus(status);
 
             notifyItemChanged(position);
 
-            if(attraction.getStatus() == SavedAttractionStatus.SAVED) {
+            if(idea.getStatus() == SavedIdeaStatus.SAVED) {
                 IdeaBroadcaster.sendUpdate(context);
             }
         }
@@ -130,7 +130,7 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
 
     @Override
     public int getItemCount() {
-        return attractionListFiltered.size();
+        return ideaListFiltered.size();
     }
 
     public static class IdeaViewHolder extends RecyclerView.ViewHolder {
@@ -146,23 +146,23 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
     }
 
     // Filters
-    private final Filter attractionFilter = new Filter() {
+    private final Filter ideaFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            ArrayList<Attraction> filteredList = new ArrayList<>();
+            ArrayList<Idea> filteredList = new ArrayList<>();
             FilterResults results = new FilterResults();
 
             String filterPattern = constraint == null ? "" : constraint.toString().toLowerCase().trim();
 
-            ArrayList<Attraction> baseAttractionList = attractionListFilteredByCategory.isEmpty() ? attractionListFull : attractionListFilteredByCategory;
+            ArrayList<Idea> baseIdeaList = ideaListFilteredByCategory.isEmpty() ? ideaListFull : ideaListFilteredByCategory;
 
             if(filterPattern.isEmpty()) {
-                filteredList.addAll(baseAttractionList);
+                filteredList.addAll(baseIdeaList);
             }
             else {
-                for(Attraction attraction : baseAttractionList) {
-                    if(attraction.getName() != null && attraction.getName().toLowerCase().contains(filterPattern)) {
-                        filteredList.add(attraction);
+                for(Idea idea : baseIdeaList) {
+                    if(idea.getName() != null && idea.getName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(idea);
                     }
                 }
             }
@@ -175,28 +175,28 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             searchQuery = constraint != null ? constraint.toString() : "";
-            attractionListFiltered = (results != null && results.values != null) ? ((ArrayList<Attraction>) results.values) : new ArrayList<>();
+            ideaListFiltered = (results != null && results.values != null) ? ((ArrayList<Idea>) results.values) : new ArrayList<>();
 
             notifyDataSetChanged();
         }
     };
 
-    public void applyCategoryFilter(List<Attraction> categoryFilteredList) {
-        attractionListFilteredByCategory.clear();
-        attractionListFilteredByCategory.addAll(categoryFilteredList);
+    public void applyCategoryFilter(List<Idea> categoryFilteredList) {
+        ideaListFilteredByCategory.clear();
+        ideaListFilteredByCategory.addAll(categoryFilteredList);
 
         if(!searchQuery.isEmpty()) {
             String filterPattern = searchQuery.toLowerCase().trim();
-            ArrayList<Attraction> searchFiltered = new ArrayList<>();
-            for(Attraction attraction : attractionListFilteredByCategory) {
-                if(attraction.getName() != null && attraction.getName().toLowerCase().contains(filterPattern)) {
-                    searchFiltered.add(attraction);
+            ArrayList<Idea> searchFiltered = new ArrayList<>();
+            for(Idea idea : ideaListFilteredByCategory) {
+                if(idea.getName() != null && idea.getName().toLowerCase().contains(filterPattern)) {
+                    searchFiltered.add(idea);
                 }
             }
-            attractionListFiltered = searchFiltered;
+            ideaListFiltered = searchFiltered;
         }
         else {
-            attractionListFiltered = new ArrayList<>(attractionListFilteredByCategory);
+            ideaListFiltered = new ArrayList<>(ideaListFilteredByCategory);
         }
 
         notifyDataSetChanged();
@@ -208,6 +208,6 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
 
     @Override
     public Filter getFilter() {
-        return attractionFilter;
+        return ideaFilter;
     }
 }

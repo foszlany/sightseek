@@ -15,8 +15,8 @@ import androidx.core.content.res.ResourcesCompat;
 import com.hu.sightseek.R;
 import com.hu.sightseek.activity.RecordActivity;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-import com.hu.sightseek.enums.SavedAttractionStatus;
-import com.hu.sightseek.model.AttractionGeoPoint;
+import com.hu.sightseek.enums.SavedIdeaStatus;
+import com.hu.sightseek.model.IdeaGeoPoint;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.views.MapView;
@@ -29,46 +29,46 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AttractionInfoWindow extends InfoWindow {
+public class IdeaInfoWindow extends InfoWindow {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     SimpleFastPointOverlayOptions layoutStyle;
     List<IGeoPoint> points;
-    SimpleFastPointOverlay attractionsOverlay;
-    ImageButton attractionButton;
+    SimpleFastPointOverlay ideasOverlay;
+    ImageButton ideaButton;
 
-    public AttractionInfoWindow(int layoutResId, MapView mapView, SimpleFastPointOverlayOptions layoutStyle, List<IGeoPoint> points, SimpleFastPointOverlay attractionsOverlay, ImageButton attractionButton) {
+    public IdeaInfoWindow(int layoutResId, MapView mapView, SimpleFastPointOverlayOptions layoutStyle, List<IGeoPoint> points, SimpleFastPointOverlay ideasOverlay, ImageButton ideaButton) {
         super(layoutResId, mapView);
 
         this.layoutStyle = layoutStyle;
         this.points = points;
-        this.attractionsOverlay = attractionsOverlay;
-        this.attractionButton = attractionButton;
+        this.ideasOverlay = ideasOverlay;
+        this.ideaButton = ideaButton;
     }
 
     @Override
     public void onOpen(Object obj) {
         View view = mView;
 
-        TextView placeTextView = view.findViewById(R.id.attractionpopup_placename);
-        Button visitedButton = view.findViewById(R.id.attractionpopup_visitedbtn);
-        Button removeButton = view.findViewById(R.id.attractionpopup_removebtn);
+        TextView placeTextView = view.findViewById(R.id.ideapopup_placename);
+        Button visitedButton = view.findViewById(R.id.ideapopup_visitedbtn);
+        Button removeButton = view.findViewById(R.id.ideapopup_removebtn);
 
-        AttractionGeoPoint attractionPoint = (AttractionGeoPoint) obj;
-        placeTextView.setText(attractionPoint.getLabel());
+        IdeaGeoPoint ideaPoint = (IdeaGeoPoint) obj;
+        placeTextView.setText(ideaPoint.getLabel());
 
         visitedButton.setOnClickListener(v -> {
             executor.execute(() -> {
                 LocalDatabaseDAO dao2 = new LocalDatabaseDAO(view.getContext());
-                dao2.updateAttractionStatus(attractionPoint.getId(), SavedAttractionStatus.VISITED.getIndex());
+                dao2.updateIdeaStatus(ideaPoint.getId(), SavedIdeaStatus.VISITED.getIndex());
                 dao2.close();
 
                 if(points.size() >= 2000) {
                     swapIcon(true);
                 }
 
-                points.remove(attractionPoint);
-                attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
+                points.remove(ideaPoint);
+                ideasOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
                 mMapView.postInvalidate();
 
                 if(points.size() >= 2000) {
@@ -83,15 +83,15 @@ public class AttractionInfoWindow extends InfoWindow {
         removeButton.setOnClickListener(v -> {
             executor.execute(() -> {
                 LocalDatabaseDAO dao2 = new LocalDatabaseDAO(view.getContext());
-                dao2.deleteAttraction(attractionPoint.getId());
+                dao2.deleteIdea(ideaPoint.getId());
                 dao2.close();
 
                 if(points.size() >= 2000) {
                     swapIcon(true);
                 }
 
-                points.remove(attractionPoint);
-                attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
+                points.remove(ideaPoint);
+                ideasOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
                 mMapView.postInvalidate();
 
                 if(points.size() >= 2000) {
@@ -114,14 +114,14 @@ public class AttractionInfoWindow extends InfoWindow {
                 icon = ResourcesCompat.getDrawable(mView.getResources(), R.drawable.baseline_change_circle_24, null);
 
                 Animation rotate = AnimationUtils.loadAnimation(mView.getContext(), R.anim.looping_rotation);
-                attractionButton.startAnimation(rotate);
+                ideaButton.startAnimation(rotate);
             }
             else {
                 icon = ResourcesCompat.getDrawable(mView.getResources(), R.drawable.baseline_attractions_24, null);
-                attractionButton.clearAnimation();
+                ideaButton.clearAnimation();
             }
 
-            attractionButton.setImageDrawable(icon);
+            ideaButton.setImageDrawable(icon);
         });
     }
 }

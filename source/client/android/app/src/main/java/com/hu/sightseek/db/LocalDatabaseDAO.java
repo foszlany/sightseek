@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
-import com.hu.sightseek.enums.SavedAttractionStatus;
+import com.hu.sightseek.enums.SavedIdeaStatus;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.helpers.WKConverter;
 import com.hu.sightseek.model.Activity;
-import com.hu.sightseek.model.Attraction;
+import com.hu.sightseek.model.Idea;
 import com.hu.sightseek.utils.SpatialUtils;
 
 import org.locationtech.jts.geom.Geometry;
@@ -442,101 +442,101 @@ public class LocalDatabaseDAO {
         db.close();
     }
 
-    /* ############### ATTRACTIONS ############### */
+    /* ############### IDEAS ############### */
 
-    public ArrayList<Attraction> getAllAttractions() {
+    public ArrayList<Idea> getAllIdeas() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<Attraction> attractions = new ArrayList<>();
+        ArrayList<Idea> ideas = new ArrayList<>();
 
         Cursor cursor = db.query(
-                LocalDatabaseImpl.ATTRACTIONS_TABLE,
+                LocalDatabaseImpl.IDEAS_TABLE,
                 null,
                 null,
                 null,
                 null,
                 null,
-                LocalDatabaseImpl.ATTRACTIONS_STATUS + " ASC"
+                LocalDatabaseImpl.IDEAS_STATUS + " ASC"
         );
 
         if(cursor.moveToFirst()) {
             do {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_ID));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_NAME));
-                String place = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_PLACE));
-                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LATITUDE));
-                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LONGITUDE));
-                int status = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_STATUS));
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_NAME));
+                String place = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_PLACE));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_LONGITUDE));
+                int status = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_STATUS));
 
-                attractions.add(new Attraction(id, name, place, latitude, longitude, SavedAttractionStatus.values()[status]));
+                ideas.add(new Idea(id, name, place, latitude, longitude, SavedIdeaStatus.values()[status]));
             } while(cursor.moveToNext());
         }
 
         cursor.close();
         db.close();
 
-        return attractions;
+        return ideas;
     }
 
-    public ArrayList<Attraction> getSavedAttractions() {
+    public ArrayList<Idea> getSavedIdeas() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<Attraction> attractions = new ArrayList<>();
+        ArrayList<Idea> ideas = new ArrayList<>();
 
         Cursor cursor = db.query(
-                LocalDatabaseImpl.ATTRACTIONS_TABLE,
+                LocalDatabaseImpl.IDEAS_TABLE,
                 null,
-                LocalDatabaseImpl.ATTRACTIONS_STATUS + " = ?",
-                new String[]{String.valueOf(SavedAttractionStatus.SAVED.getIndex())},
+                LocalDatabaseImpl.IDEAS_STATUS + " = ?",
+                new String[]{String.valueOf(SavedIdeaStatus.SAVED.getIndex())},
                 null,
                 null,
-                LocalDatabaseImpl.ATTRACTIONS_ID + " DESC"
+                LocalDatabaseImpl.IDEAS_ID + " DESC"
         );
 
         if(cursor.moveToFirst()) {
             do {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_ID));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_NAME));
-                String place = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_PLACE));
-                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LATITUDE));
-                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_LONGITUDE));
-                int status = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_STATUS));
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_NAME));
+                String place = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_PLACE));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_LONGITUDE));
+                int status = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_STATUS));
 
-                attractions.add(new Attraction(id, name, place, latitude, longitude, SavedAttractionStatus.values()[status]));
+                ideas.add(new Idea(id, name, place, latitude, longitude, SavedIdeaStatus.values()[status]));
             } while(cursor.moveToNext());
         }
 
         cursor.close();
         db.close();
 
-        return attractions;
+        return ideas;
     }
 
-    public long addAttraction(long id, String name, String place, double latitude, double longitude, int status) {
+    public long addIdea(long id, String name, String place, double latitude, double longitude, int status) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(LocalDatabaseImpl.ATTRACTIONS_ID, id);
-        values.put(LocalDatabaseImpl.ATTRACTIONS_NAME, name);
-        values.put(LocalDatabaseImpl.ATTRACTIONS_PLACE, place);
-        values.put(LocalDatabaseImpl.ATTRACTIONS_LATITUDE, latitude);
-        values.put(LocalDatabaseImpl.ATTRACTIONS_LONGITUDE, longitude);
-        values.put(LocalDatabaseImpl.ATTRACTIONS_STATUS, status);
+        values.put(LocalDatabaseImpl.IDEAS_ID, id);
+        values.put(LocalDatabaseImpl.IDEAS_NAME, name);
+        values.put(LocalDatabaseImpl.IDEAS_PLACE, place);
+        values.put(LocalDatabaseImpl.IDEAS_LATITUDE, latitude);
+        values.put(LocalDatabaseImpl.IDEAS_LONGITUDE, longitude);
+        values.put(LocalDatabaseImpl.IDEAS_STATUS, status);
 
-        db.insert(LocalDatabaseImpl.ATTRACTIONS_TABLE, null, values);
+        db.insert(LocalDatabaseImpl.IDEAS_TABLE, null, values);
         db.close();
 
         return id;
     }
 
-    public int updateAttractionStatus(long id, int newStatus) {
+    public int updateIdeaStatus(long id, int newStatus) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(LocalDatabaseImpl.ATTRACTIONS_STATUS, newStatus);
+        values.put(LocalDatabaseImpl.IDEAS_STATUS, newStatus);
 
         int rowsAffected = db.update(
-                LocalDatabaseImpl.ATTRACTIONS_TABLE,
+                LocalDatabaseImpl.IDEAS_TABLE,
                 values,
-                LocalDatabaseImpl.ATTRACTIONS_ID + " = ?",
+                LocalDatabaseImpl.IDEAS_ID + " = ?",
                 new String[]{String.valueOf(id)}
         );
 
@@ -544,13 +544,13 @@ public class LocalDatabaseDAO {
         return rowsAffected;
     }
 
-    public HashSet<Long> getAttractionIds() {
+    public HashSet<Long> getIdeaIds() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         HashSet<Long> ids = new HashSet<>();
 
         Cursor cursor = db.query(
-                LocalDatabaseImpl.ATTRACTIONS_TABLE,
-                new String[]{LocalDatabaseImpl.ATTRACTIONS_ID},
+                LocalDatabaseImpl.IDEAS_TABLE,
+                new String[]{LocalDatabaseImpl.IDEAS_ID},
                 null,
                 null,
                 null,
@@ -560,7 +560,7 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ATTRACTIONS_ID));
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.IDEAS_ID));
                 ids.add(id);
             } while(cursor.moveToNext());
         }
@@ -571,20 +571,20 @@ public class LocalDatabaseDAO {
         return ids;
     }
 
-    public void deleteAttraction(long id) {
+    public void deleteIdea(long id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(LocalDatabaseImpl.ATTRACTIONS_TABLE, "id = ?", new String[]{String.valueOf(id)});
+        db.delete(LocalDatabaseImpl.IDEAS_TABLE, "id = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 
-    public void printAllAttractions() {
+    public void printAllIdeas() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        List<Attraction> attractions = getAllAttractions();
+        List<Idea> ideas = getAllIdeas();
 
-        if(!attractions.isEmpty()) {
+        if(!ideas.isEmpty()) {
             System.out.println("###########");
-            for(Attraction a : attractions) {
+            for(Idea a : ideas) {
                 System.out.println(a.toString());
             }
             System.out.println("###########");

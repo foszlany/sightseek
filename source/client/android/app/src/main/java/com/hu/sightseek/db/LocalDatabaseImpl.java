@@ -21,14 +21,14 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
     public static final String ACTIVITIES_VECTORIZEDDATA = "vectorizeddata";
 
 
-    // Saved attractions table
-    public static final String ATTRACTIONS_TABLE = "attractions";
-    public static final String ATTRACTIONS_ID = "id";
-    public static final String ATTRACTIONS_NAME = "name";
-    public static final String ATTRACTIONS_PLACE = "place";
-    public static final String ATTRACTIONS_LATITUDE = "latitude";
-    public static final String ATTRACTIONS_LONGITUDE = "longitude";
-    public static final String ATTRACTIONS_STATUS = "status";
+    // Saved ideas table
+    public static final String IDEAS_TABLE = "attractions";
+    public static final String IDEAS_ID = "id";
+    public static final String IDEAS_NAME = "name";
+    public static final String IDEAS_PLACE = "place";
+    public static final String IDEAS_LATITUDE = "latitude";
+    public static final String IDEAS_LONGITUDE = "longitude";
+    public static final String IDEAS_STATUS = "status";
 
     private static final String ACTIVITIES_TABLE_CREATE =
             "CREATE TABLE " + ACTIVITIES_TABLE + " (" +
@@ -43,14 +43,14 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
                     ACTIVITIES_VECTORIZEDDATA + " BLOB);";
 
 
-    private static final String ATTRACTIONS_TABLE_CREATE =
-            "CREATE TABLE " + ATTRACTIONS_TABLE + " (" +
-                    ATTRACTIONS_ID + " BIGINT PRIMARY KEY, " +
-                    ATTRACTIONS_NAME + " TEXT NOT NULL, " +
-                    ATTRACTIONS_PLACE + " TEXT NOT NULL, " +
-                    ATTRACTIONS_LATITUDE + " REAL NOT NULL, " +
-                    ATTRACTIONS_LONGITUDE + " REAL NOT NULL, " +
-                    ATTRACTIONS_STATUS + " TEXT NOT NULL);";
+    private static final String IDEAS_TABLE_CREATE =
+            "CREATE TABLE " + IDEAS_TABLE + " (" +
+                    IDEAS_ID + " BIGINT PRIMARY KEY, " +
+                    IDEAS_NAME + " TEXT NOT NULL, " +
+                    IDEAS_PLACE + " TEXT NOT NULL, " +
+                    IDEAS_LATITUDE + " REAL NOT NULL, " +
+                    IDEAS_LONGITUDE + " REAL NOT NULL, " +
+                    IDEAS_STATUS + " TEXT NOT NULL);";
 
     public LocalDatabaseImpl(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -59,13 +59,13 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ACTIVITIES_TABLE_CREATE);
-        db.execSQL(ATTRACTIONS_TABLE_CREATE);
+        db.execSQL(IDEAS_TABLE_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + ACTIVITIES_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + ATTRACTIONS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + IDEAS_TABLE);
         onCreate(db);
     }
 }

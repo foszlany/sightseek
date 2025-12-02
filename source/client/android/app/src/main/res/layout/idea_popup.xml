@@ -10,7 +10,7 @@
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/attractionpopup_placename"
+        android:id="@+id/ideapopup_placename"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -25,27 +25,27 @@
         android:textSize="22sp"/>
 
     <Button
-        android:id="@+id/attractionpopup_visitedbtn"
+        android:id="@+id/ideapopup_visitedbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:layout_weight="1"
         android:background="@drawable/generic_rounded_background"
-        android:text="@string/attractionpopup_markasvisited"
+        android:text="@string/ideapopup_markasvisited"
         android:textColor="@color/white"
         android:textSize="15sp"
         app:backgroundTint="@color/theme_main"/>
 
     <Button
-        android:id="@+id/attractionpopup_removebtn"
+        android:id="@+id/ideapopup_removebtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:layout_weight="1"
         android:background="@drawable/generic_rounded_background"
-        android:text="@string/attractionpopup_removefromsaved"
+        android:text="@string/ideapopup_removefromsaved"
         android:textColor="@color/white"
         android:textSize="15sp"
         app:backgroundTint="@color/delete_red"/>

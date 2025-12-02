@@ -64,9 +64,9 @@ import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-import com.hu.sightseek.fragment.AttractionInfoWindow;
-import com.hu.sightseek.model.Attraction;
-import com.hu.sightseek.model.AttractionGeoPoint;
+import com.hu.sightseek.fragment.IdeaInfoWindow;
+import com.hu.sightseek.model.Idea;
+import com.hu.sightseek.model.IdeaGeoPoint;
 import com.hu.sightseek.providers.HeatmapProvider;
 import com.hu.sightseek.service.RecordingService;
 
@@ -135,16 +135,16 @@ public class RecordActivity extends AppCompatActivity {
     FolderOverlay polylineGroup;
     private boolean isPolylinesOverlayOn;
 
-    private boolean areAttractionsOn;
-    private SimpleFastPointOverlay attractionsOverlay;
-    private boolean shouldRebuildAttractionsOverlay;
+    private boolean areIdeasOn;
+    private SimpleFastPointOverlay ideaOverlay;
+    private boolean shouldRebuildIdeasOverlay;
 
     private final BroadcastReceiver ideaReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(IdeaBroadcaster.ACTION_ATTRACTIONS_UPDATED.equals(intent.getAction())) {
-                if(attractionsOverlay != null) {
-                    shouldRebuildAttractionsOverlay = true;
+            if(IdeaBroadcaster.ACTION_IDEAS_UPDATED.equals(intent.getAction())) {
+                if(ideaOverlay != null) {
+                    shouldRebuildIdeasOverlay = true;
                 }
             }
         }
@@ -190,8 +190,8 @@ public class RecordActivity extends AppCompatActivity {
         isLocked = true;
         isHeatmapOn = false;
         polylineGroup = new FolderOverlay();
-        areAttractionsOn = false;
-        shouldRebuildAttractionsOverlay = false;
+        areIdeasOn = false;
+        shouldRebuildIdeasOverlay = false;
 
         isPolylinesOverlayOn = false;
 
@@ -512,7 +512,7 @@ public class RecordActivity extends AppCompatActivity {
         // Update receiver
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 ideaReceiver,
-                new IntentFilter(IdeaBroadcaster.ACTION_ATTRACTIONS_UPDATED)
+                new IntentFilter(IdeaBroadcaster.ACTION_IDEAS_UPDATED)
         );
 
         // Lock button
@@ -645,37 +645,37 @@ public class RecordActivity extends AppCompatActivity {
             }
         });
 
-        // Attractions button
-        ImageButton attractionButton = findViewById(R.id.record_attractionbtn);
+        // Ideas button
+        ImageButton ideaButton = findViewById(R.id.record_ideabtn);
         if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-            attractionButton.setVisibility(INVISIBLE);
+            ideaButton.setVisibility(INVISIBLE);
             return;
         }
         else {
-            attractionButton.setOnClickListener(v -> {
-                areAttractionsOn = !areAttractionsOn;
+            ideaButton.setOnClickListener(v -> {
+                areIdeasOn = !areIdeasOn;
 
-                if(areAttractionsOn) {
-                    animateButton(attractionButton, true, R.color.light_purple);
+                if(areIdeasOn) {
+                    animateButton(ideaButton, true, R.color.light_purple);
 
                     Executors.newSingleThreadExecutor().execute(() -> {
                         // Import if necessary
-                        if(attractionsOverlay == null) {
+                        if(ideaOverlay == null) {
                             mapView.getOverlays().add(new MapEventsOverlay(mapEventsReceiver));
-                            getAttractionsOverlay(attractionButton);
+                            getIdeasOverlay(ideaButton);
                         }
                         else {
-                            attractionsOverlay.setEnabled(true);
+                            ideaOverlay.setEnabled(true);
                             mapView.invalidate();
                         }
                     });
                 }
                 else {
-                    animateButton(attractionButton, false, R.color.light_purple);
+                    animateButton(ideaButton, false, R.color.light_purple);
                     runOnUiThread(() -> {
-                        if(attractionsOverlay != null) {
+                        if(ideaOverlay != null) {
                             InfoWindow.closeAllInfoWindowsOn(mapView);
-                            attractionsOverlay.setEnabled(false);
+                            ideaOverlay.setEnabled(false);
                             mapView.invalidate();
                         }
                     });
@@ -838,14 +838,14 @@ public class RecordActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
-    private void getAttractionsOverlay(ImageButton attractionButton) {
+    private void getIdeasOverlay(ImageButton ideaButton) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-        ArrayList<Attraction> attractions = dao.getSavedAttractions();
+        ArrayList<Idea> ideas = dao.getSavedIdeas();
         dao.close();
 
         List<IGeoPoint> points = new ArrayList<>();
-        for(Attraction a : attractions) {
-            points.add(new AttractionGeoPoint(a.getLatitude(), a.getLongitude(), a.getName(), a.getId()));
+        for(Idea a : ideas) {
+            points.add(new IdeaGeoPoint(a.getLatitude(), a.getLongitude(), a.getName(), a.getId()));
         }
 
         runOnUiThread(() -> {
@@ -875,29 +875,29 @@ public class RecordActivity extends AppCompatActivity {
             layoutStyle.setMinZoomShowLabels(10);
 
             // Create overlay
-            if(attractionsOverlay != null) {
-                mapView.getOverlays().remove(attractionsOverlay);
+            if(ideaOverlay != null) {
+                mapView.getOverlays().remove(ideaOverlay);
             }
 
-            attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
-            mapView.getOverlays().add(attractionsOverlay);
-            if(areAttractionsOn) {
-                attractionsOverlay.setEnabled(true);
+            ideaOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
+            mapView.getOverlays().add(ideaOverlay);
+            if(areIdeasOn) {
+                ideaOverlay.setEnabled(true);
             }
 
-            if(!shouldRebuildAttractionsOverlay) {
+            if(!shouldRebuildIdeasOverlay) {
                 // Point listener
-                attractionsOverlay.setOnClickListener((point, i) -> {
-                    if(!areAttractionsOn) {
+                ideaOverlay.setOnClickListener((point, i) -> {
+                    if(!areIdeasOn) {
                         return;
                     }
 
-                    AttractionGeoPoint attractionPoint = (AttractionGeoPoint) point.get(i);
+                    IdeaGeoPoint ideaPoint = (IdeaGeoPoint) point.get(i);
 
                     InfoWindow.closeAllInfoWindowsOn(mapView);
 
-                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView, layoutStyle, points, attractionsOverlay, attractionButton);
-                    info.open(attractionPoint, new GeoPoint(attractionPoint.getLatitude(), attractionPoint.getLongitude()), 0, 0);
+                    IdeaInfoWindow info = new IdeaInfoWindow(R.layout.idea_popup, mapView, layoutStyle, points, ideaOverlay, ideaButton);
+                    info.open(ideaPoint, new GeoPoint(ideaPoint.getLatitude(), ideaPoint.getLongitude()), 0, 0);
                 });
             }
 
@@ -951,9 +951,9 @@ public class RecordActivity extends AppCompatActivity {
             }
         };
 
-        if(attractionsOverlay != null && shouldRebuildAttractionsOverlay) {
-            Executors.newSingleThreadExecutor().execute(() -> getAttractionsOverlay(null));
-            shouldRebuildAttractionsOverlay = false;
+        if(ideaOverlay != null && shouldRebuildIdeasOverlay) {
+            Executors.newSingleThreadExecutor().execute(() -> getIdeasOverlay(null));
+            shouldRebuildIdeasOverlay = false;
         }
     }
 

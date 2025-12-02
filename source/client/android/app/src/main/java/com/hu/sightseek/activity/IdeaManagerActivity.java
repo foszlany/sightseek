@@ -27,10 +27,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
-import com.hu.sightseek.adapter.AttractionAdapter;
+import com.hu.sightseek.adapter.IdeaAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-import com.hu.sightseek.enums.SavedAttractionStatus;
-import com.hu.sightseek.model.Attraction;
+import com.hu.sightseek.enums.SavedIdeaStatus;
+import com.hu.sightseek.model.Idea;
 
 import org.osmdroid.config.Configuration;
 
@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class IdeaManagerActivity extends AppCompatActivity {
-    private AttractionAdapter adapter;
-    private ArrayList<Attraction> attractions;
+    private IdeaAdapter adapter;
+    private ArrayList<Idea> ideas;
     private int checkedSortByMethod;
     private boolean isSavedChecked;
     private boolean isIgnoredChecked;
@@ -86,11 +86,11 @@ public class IdeaManagerActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-        attractions = new ArrayList<>();
-        attractions = dao.getAllAttractions();
+        ideas = new ArrayList<>();
+        ideas = dao.getAllIdeas();
         dao.close();
 
-        adapter = new AttractionAdapter(this, attractions);
+        adapter = new IdeaAdapter(this, ideas);
         recyclerView.setAdapter(adapter);
 
         // Searchbar
@@ -148,7 +148,7 @@ public class IdeaManagerActivity extends AppCompatActivity {
     }
 
     private void initFilterPopup(View menuItemView) {
-        View popupView = LayoutInflater.from(this).inflate(R.layout.filter_attraction, null);
+        View popupView = LayoutInflater.from(this).inflate(R.layout.filter_idea, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popupWindow.showAsDropDown(menuItemView);
 
@@ -170,16 +170,16 @@ public class IdeaManagerActivity extends AppCompatActivity {
         applyButton.setOnClickListener(v -> {
             // Sort by
             if(checkedSortByMethod == R.id.ideamanager_filtermenu_nameaz) {
-                Collections.sort(attractions, (a1, a2) -> a1.getName().compareTo(a2.getName()));
+                Collections.sort(ideas, (a1, a2) -> a1.getName().compareTo(a2.getName()));
             }
             else if(checkedSortByMethod == R.id.ideamanager_filtermenu_nameza) {
-                Collections.sort(attractions, (a1, a2) -> a2.getName().compareTo(a1.getName()));
+                Collections.sort(ideas, (a1, a2) -> a2.getName().compareTo(a1.getName()));
             }
             else if(checkedSortByMethod == R.id.ideamanager_filtermenu_placeaz) {
-                Collections.sort(attractions, (a1, a2) -> a1.getPlace().compareToIgnoreCase(a2.getPlace()));
+                Collections.sort(ideas, (a1, a2) -> a1.getPlace().compareToIgnoreCase(a2.getPlace()));
             }
             else if(checkedSortByMethod == R.id.ideamanager_filtermenu_placeza) {
-                Collections.sort(attractions, (a1, a2) -> a2.getPlace().compareToIgnoreCase(a1.getPlace()));
+                Collections.sort(ideas, (a1, a2) -> a2.getPlace().compareToIgnoreCase(a1.getPlace()));
             }
 
             // Categories
@@ -187,16 +187,16 @@ public class IdeaManagerActivity extends AppCompatActivity {
             isIgnoredChecked = ignoredCheckBox.isChecked();
             isVisitedChecked = visitedCheckBox.isChecked();
 
-            ArrayList<Attraction> filtered = new ArrayList<>();
+            ArrayList<Idea> filtered = new ArrayList<>();
             if(!(!isSavedChecked && !isIgnoredChecked && !isVisitedChecked)) {
-                for(Attraction attraction : attractions) {
-                    if(attraction.getStatus() == SavedAttractionStatus.SAVED && !isSavedChecked
-                            || attraction.getStatus() == SavedAttractionStatus.IGNORED && !isIgnoredChecked
-                            || attraction.getStatus() == SavedAttractionStatus.VISITED && !isVisitedChecked) {
+                for(Idea idea : ideas) {
+                    if(idea.getStatus() == SavedIdeaStatus.SAVED && !isSavedChecked
+                            || idea.getStatus() == SavedIdeaStatus.IGNORED && !isIgnoredChecked
+                            || idea.getStatus() == SavedIdeaStatus.VISITED && !isVisitedChecked) {
                         continue;
                     }
 
-                    filtered.add(attraction);
+                    filtered.add(idea);
                 }
             }
 

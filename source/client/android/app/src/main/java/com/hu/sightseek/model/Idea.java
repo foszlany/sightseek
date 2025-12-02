@@ -2,17 +2,17 @@ package com.hu.sightseek.model;
 
 import androidx.annotation.NonNull;
 
-import com.hu.sightseek.enums.SavedAttractionStatus;
+import com.hu.sightseek.enums.SavedIdeaStatus;
 
-public class Attraction {
+public class Idea {
     private long id;
     private String name;
     private String place;
     private double latitude;
     private double longitude;
-    private SavedAttractionStatus status;
+    private SavedIdeaStatus status;
 
-    public Attraction(long id, String name, String place, double latitude, double longitude, SavedAttractionStatus status) {
+    public Idea(long id, String name, String place, double latitude, double longitude, SavedIdeaStatus status) {
         this.id = id;
         this.name = name;
         this.place = place;
@@ -21,7 +21,7 @@ public class Attraction {
         this.status = status;
     }
 
-    public Attraction() {}
+    public Idea() {}
 
     public long getId() {
         return id;
@@ -35,7 +35,7 @@ public class Attraction {
         return place;
     }
 
-    public SavedAttractionStatus getStatus() {
+    public SavedIdeaStatus getStatus() {
         return status;
     }
 
@@ -47,14 +47,14 @@ public class Attraction {
         return longitude;
     }
 
-    public void setStatus(SavedAttractionStatus status) {
+    public void setStatus(SavedIdeaStatus status) {
         this.status = status;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "Attraction{" +
+        return "Idea{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", place='" + place + '\'' +

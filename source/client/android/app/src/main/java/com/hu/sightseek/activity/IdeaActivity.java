@@ -36,11 +36,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.broadcast.IdeaBroadcaster;
-import com.hu.sightseek.enums.SavedAttractionStatus;
+import com.hu.sightseek.enums.SavedIdeaStatus;
 import com.hu.sightseek.fragment.SelectLocationFragment;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
-import com.hu.sightseek.model.Attraction;
+import com.hu.sightseek.model.Idea;
 import com.hu.sightseek.utils.SpatialUtils;
 
 import org.json.JSONArray;
@@ -67,7 +67,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class IdeaActivity extends AppCompatActivity {
-    private Attraction currentAttraction;
+    private Idea currentIdea;
     private HashSet<Long> ignoredIds;
 
     private JSONArray data;
@@ -131,12 +131,12 @@ public class IdeaActivity extends AppCompatActivity {
         });
 
         // Variables
-        currentAttraction = null;
+        currentIdea = null;
         ignoredIds = new HashSet<>();
         Executors.newSingleThreadExecutor().execute(() -> {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
             activities = dao.getAllActivities();
-            ignoredIds.addAll(dao.getAttractionIds());
+            ignoredIds.addAll(dao.getIdeaIds());
             dao.close();
 
             // Setup map
@@ -210,7 +210,7 @@ public class IdeaActivity extends AppCompatActivity {
 
             referencePoint = locationPoint;
 
-            findAttraction();
+            findIdea();
         }
 
         // Median point
@@ -235,7 +235,7 @@ public class IdeaActivity extends AppCompatActivity {
             }
 
             referencePoint = medianPoint;
-            findAttraction();
+            findIdea();
         }
 
         // I'm feeling lucky (Random point within bounding box)
@@ -265,7 +265,7 @@ public class IdeaActivity extends AppCompatActivity {
             }
 
             referencePoint = boundingBoxPoint;
-            findAttraction();
+            findIdea();
         }
     }
 
@@ -275,7 +275,7 @@ public class IdeaActivity extends AppCompatActivity {
         referenceIndex = R.id.idea_radio_medianbtn; // Reset for a new query
     }
 
-    public void findAttraction() {
+    public void findIdea() {
         if(data != null && data.length() != 0) {
             retrieveAndSetupElementFromJson();
             return;
@@ -412,7 +412,7 @@ public class IdeaActivity extends AppCompatActivity {
             locationString = getLocationString(this, latitude, longitude);
 
             if(id != 0) {
-                currentAttraction = new Attraction(id, name, locationString, latitude, longitude, SavedAttractionStatus.INVALID);
+                currentIdea = new Idea(id, name, locationString, latitude, longitude, SavedIdeaStatus.INVALID);
             }
 
             String fallbackUrl = "https://www.google.com/search?q=" + locationString + " " + name.replace(" ", "%20");
@@ -625,16 +625,16 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Save
         saveButton.setOnClickListener(v -> {
-            if(currentAttraction == null) {
+            if(currentIdea == null) {
                 return;
             }
 
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.SAVED.getIndex());
+            dao.addIdea(currentIdea.getId(), currentIdea.getName(), currentIdea.getPlace(), currentIdea.getLatitude(), currentIdea.getLongitude(), SavedIdeaStatus.SAVED.getIndex());
             dao.close();
 
-            ignoredIds.add(currentAttraction.getId());
-            currentAttraction = null;
+            ignoredIds.add(currentIdea.getId());
+            currentIdea = null;
 
             IdeaBroadcaster.sendUpdate(this);
 
@@ -643,16 +643,16 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Ignore
         ignoreButton.setOnClickListener(v -> {
-            if(currentAttraction == null) {
+            if(currentIdea == null) {
                 return;
             }
 
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.IGNORED.getIndex());
+            dao.addIdea(currentIdea.getId(), currentIdea.getName(), currentIdea.getPlace(), currentIdea.getLatitude(), currentIdea.getLongitude(), SavedIdeaStatus.IGNORED.getIndex());
             dao.close();
 
-            ignoredIds.add(currentAttraction.getId());
-            currentAttraction = null;
+            ignoredIds.add(currentIdea.getId());
+            currentIdea = null;
 
             findReferencePoint();
         });
@@ -663,7 +663,7 @@ public class IdeaActivity extends AppCompatActivity {
                     .load(R.drawable.loading)
                     .into(imageView);
 
-            currentAttraction = null;
+            currentIdea = null;
             findReferencePoint();
         });
 

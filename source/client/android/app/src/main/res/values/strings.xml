@@ -64,7 +64,7 @@
     <string name="idea_title">How about…</string>
     <string name="idea_ignore">Ignore</string>
     <string name="idea_next">Next</string>
-    <string name="idea_imgdesc">An image showcasing the attraction to visit.</string>
+    <string name="idea_imgdesc">An image showcasing the idea to visit.</string>
     <string name="idea_googleicondesc">An image of the Google logo.</string>
     <string name="idea_location">Location</string>
     <string name="idea_median">Median</string>
@@ -123,8 +123,8 @@
     <string name="register_error_email_taken">Email address is already taken.</string>
     <string name="idea_add">Add</string>
     <string name="record_attractionsdesc">Attractions</string>
-    <string name="attractionpopup_markasvisited">Mark as visited</string>
-    <string name="attractionpopup_removefromsaved">Remove from saved</string>
+    <string name="ideapopup_markasvisited">Mark as visited</string>
+    <string name="ideapopup_removefromsaved">Remove from saved</string>
     <string name="statistics_generalcard_general">General</string>
     <string name="statistics_generalcard_activitiescreated">Activities created: %1$.0f</string>
     <string name="statistics_generalcard_totalkilometers">Total kilometers: %1$.2f km</string>
@@ -150,7 +150,7 @@
     <string name="statistics_percategory_totaldistance">Total distance: %1$.2f km</string>
     <string name="save_manageideas">Manage your saved ideas</string>
     <string name="ideamanager_title">Saved Attractions</string>
-    <string name="ideamanager_searchhint">Search for attractions…</string>
+    <string name="ideamanager_searchhint">Search for ideas…</string>
     <string name="ideamanager_visited">Visited</string>
     <string name="ideamanager_remove">Remove</string>
     <string name="ideamanager_saved">Saved</string>
