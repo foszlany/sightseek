@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hu.sightseek.R;
+import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.SavedAttractionStatus;
 import com.hu.sightseek.model.Attraction;
@@ -104,6 +105,10 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
             dao.close();
 
             notifyItemRemoved(position);
+
+            if(attraction.getStatus() == SavedAttractionStatus.SAVED) {
+                IdeaBroadcaster.sendUpdate(context);
+            }
         });
     }
 
@@ -116,6 +121,10 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Id
             attraction.setStatus(status);
 
             notifyItemChanged(position);
+
+            if(attraction.getStatus() == SavedAttractionStatus.SAVED) {
+                IdeaBroadcaster.sendUpdate(context);
+            }
         }
     }
 

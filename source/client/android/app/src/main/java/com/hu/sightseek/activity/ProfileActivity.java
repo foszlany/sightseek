@@ -39,7 +39,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.DeleteAccountFragment;
-import com.hu.sightseek.fragment.SelectLocationFragment;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;

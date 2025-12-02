@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.R;
+import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.enums.SavedAttractionStatus;
 import com.hu.sightseek.fragment.SelectLocationFragment;
 import com.hu.sightseek.db.LocalDatabaseDAO;
@@ -630,11 +631,12 @@ public class IdeaActivity extends AppCompatActivity {
 
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
             dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.SAVED.getIndex());
-            dao.printAllAttractions();
             dao.close();
 
             ignoredIds.add(currentAttraction.getId());
             currentAttraction = null;
+
+            IdeaBroadcaster.sendUpdate(this);
 
             findReferencePoint();
         });
@@ -647,7 +649,6 @@ public class IdeaActivity extends AppCompatActivity {
 
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
             dao.addAttraction(currentAttraction.getId(), currentAttraction.getName(), currentAttraction.getPlace(), currentAttraction.getLatitude(), currentAttraction.getLongitude(), SavedAttractionStatus.IGNORED.getIndex());
-            dao.printAllAttractions();
             dao.close();
 
             ignoredIds.add(currentAttraction.getId());

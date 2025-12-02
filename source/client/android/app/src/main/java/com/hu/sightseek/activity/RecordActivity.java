@@ -47,6 +47,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -61,6 +62,7 @@ import com.google.maps.android.BuildConfig;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
+import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.AttractionInfoWindow;
 import com.hu.sightseek.model.Attraction;
@@ -135,7 +137,32 @@ public class RecordActivity extends AppCompatActivity {
 
     private boolean areAttractionsOn;
     private SimpleFastPointOverlay attractionsOverlay;
+    private boolean shouldRebuildAttractionsOverlay;
 
+    private final BroadcastReceiver ideaReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(IdeaBroadcaster.ACTION_ATTRACTIONS_UPDATED.equals(intent.getAction())) {
+                if(attractionsOverlay != null) {
+                    shouldRebuildAttractionsOverlay = true;
+                }
+            }
+        }
+    };
+
+    // Cancel when clicking outside
+    MapEventsReceiver mapEventsReceiver = new MapEventsReceiver() {
+        @Override
+        public boolean singleTapConfirmedHelper(GeoPoint p) {
+            InfoWindow.closeAllInfoWindowsOn(mapView);
+            return false;
+        }
+
+        @Override
+        public boolean longPressHelper(GeoPoint p) {
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +191,7 @@ public class RecordActivity extends AppCompatActivity {
         isHeatmapOn = false;
         polylineGroup = new FolderOverlay();
         areAttractionsOn = false;
+        shouldRebuildAttractionsOverlay = false;
 
         isPolylinesOverlayOn = false;
 
@@ -481,6 +509,12 @@ public class RecordActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // Update receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                ideaReceiver,
+                new IntentFilter(IdeaBroadcaster.ACTION_ATTRACTIONS_UPDATED)
+        );
+
         // Lock button
         ImageButton lockButton = findViewById(R.id.record_lockbtn);
         lockButton.setOnClickListener(v -> {
@@ -627,78 +661,8 @@ public class RecordActivity extends AppCompatActivity {
                     Executors.newSingleThreadExecutor().execute(() -> {
                         // Import if necessary
                         if(attractionsOverlay == null) {
-                            LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                            ArrayList<Attraction> attractions = dao.getSavedAttractions();
-                            dao.close();
-
-                            List<IGeoPoint> points = new ArrayList<>();
-                            for(Attraction a : attractions) {
-                                points.add(new AttractionGeoPoint(a.getLatitude(), a.getLongitude(), a.getName(), a.getId()));
-                            }
-
-                            // Cancel when clicking outside
-                            MapEventsReceiver mReceive = new MapEventsReceiver() {
-                                @Override
-                                public boolean singleTapConfirmedHelper(GeoPoint p) {
-                                    InfoWindow.closeAllInfoWindowsOn(mapView);
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean longPressHelper(GeoPoint p) {
-                                    return false;
-                                }
-                            };
-
-                            mapView.getOverlays().add(new MapEventsOverlay(mReceive));
-
-                            runOnUiThread(() -> {
-                                SimpleFastPointOverlayOptions layoutStyle = SimpleFastPointOverlayOptions.getDefaultStyle()
-                                        .setAlgorithm(points.size() < 8000 ? SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION : SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
-                                        .setRadius(8)
-                                        .setIsClickable(true);
-
-                                // Styles
-                                Paint pointStyle = new Paint();
-                                pointStyle.setColor(Color.parseColor("#DE003B"));
-                                layoutStyle.setPointStyle(pointStyle);
-
-                                Paint textStyle = new Paint();
-                                textStyle.setColor(Color.RED);
-                                textStyle.setTextSize(26);
-                                textStyle.setFakeBoldText(true);
-                                textStyle.setShadowLayer(1, 1, 1, Color.GRAY);
-                                textStyle.setTextAlign(Paint.Align.CENTER);
-                                layoutStyle.setTextStyle(textStyle);
-
-                                Paint highlightStyle = new Paint();
-                                highlightStyle.setColor(Color.TRANSPARENT);
-                                layoutStyle.setSelectedPointStyle(highlightStyle);
-
-                                layoutStyle.setLabelPolicy(SimpleFastPointOverlayOptions.LabelPolicy.ZOOM_THRESHOLD);
-                                layoutStyle.setMinZoomShowLabels(10);
-
-                                // Create overlay
-                                attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
-
-                                mapView.getOverlays().add(attractionsOverlay);
-                                attractionsOverlay.setEnabled(true);
-                                mapView.invalidate();
-
-                                // Point listener
-                                attractionsOverlay.setOnClickListener((point, i) -> {
-                                    if(!areAttractionsOn) {
-                                        return;
-                                    }
-
-                                    AttractionGeoPoint attractionPoint = (AttractionGeoPoint) point.get(i);
-
-                                    InfoWindow.closeAllInfoWindowsOn(mapView);
-
-                                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView, layoutStyle, points, attractionsOverlay, attractionButton);
-                                    info.open(attractionPoint, new GeoPoint(attractionPoint.getLatitude(), attractionPoint.getLongitude()), 0, 0);
-                                });
-                            });
+                            mapView.getOverlays().add(new MapEventsOverlay(mapEventsReceiver));
+                            getAttractionsOverlay(attractionButton);
                         }
                         else {
                             attractionsOverlay.setEnabled(true);
@@ -874,6 +838,73 @@ public class RecordActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
+    private void getAttractionsOverlay(ImageButton attractionButton) {
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+        ArrayList<Attraction> attractions = dao.getSavedAttractions();
+        dao.close();
+
+        List<IGeoPoint> points = new ArrayList<>();
+        for(Attraction a : attractions) {
+            points.add(new AttractionGeoPoint(a.getLatitude(), a.getLongitude(), a.getName(), a.getId()));
+        }
+
+        runOnUiThread(() -> {
+            SimpleFastPointOverlayOptions layoutStyle = SimpleFastPointOverlayOptions.getDefaultStyle()
+                    .setAlgorithm(points.size() < 8000 ? SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION : SimpleFastPointOverlayOptions.RenderingAlgorithm.MAXIMUM_OPTIMIZATION)
+                    .setRadius(8)
+                    .setIsClickable(true);
+
+            // Styles
+            Paint pointStyle = new Paint();
+            pointStyle.setColor(Color.parseColor("#DE003B"));
+            layoutStyle.setPointStyle(pointStyle);
+
+            Paint textStyle = new Paint();
+            textStyle.setColor(Color.RED);
+            textStyle.setTextSize(26);
+            textStyle.setFakeBoldText(true);
+            textStyle.setShadowLayer(1, 1, 1, Color.GRAY);
+            textStyle.setTextAlign(Paint.Align.CENTER);
+            layoutStyle.setTextStyle(textStyle);
+
+            Paint highlightStyle = new Paint();
+            highlightStyle.setColor(Color.TRANSPARENT);
+            layoutStyle.setSelectedPointStyle(highlightStyle);
+
+            layoutStyle.setLabelPolicy(SimpleFastPointOverlayOptions.LabelPolicy.ZOOM_THRESHOLD);
+            layoutStyle.setMinZoomShowLabels(10);
+
+            // Create overlay
+            if(attractionsOverlay != null) {
+                mapView.getOverlays().remove(attractionsOverlay);
+            }
+
+            attractionsOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
+            mapView.getOverlays().add(attractionsOverlay);
+            if(areAttractionsOn) {
+                attractionsOverlay.setEnabled(true);
+            }
+
+            if(!shouldRebuildAttractionsOverlay) {
+                // Point listener
+                attractionsOverlay.setOnClickListener((point, i) -> {
+                    if(!areAttractionsOn) {
+                        return;
+                    }
+
+                    AttractionGeoPoint attractionPoint = (AttractionGeoPoint) point.get(i);
+
+                    InfoWindow.closeAllInfoWindowsOn(mapView);
+
+                    AttractionInfoWindow info = new AttractionInfoWindow(R.layout.attraction_popup, mapView, layoutStyle, points, attractionsOverlay, attractionButton);
+                    info.open(attractionPoint, new GeoPoint(attractionPoint.getLatitude(), attractionPoint.getLongitude()), 0, 0);
+                });
+            }
+
+            mapView.invalidate();
+        });
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -882,6 +913,7 @@ public class RecordActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
+
                 if(location != null) {
                     GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
                     if(isLocked) {
@@ -905,8 +937,9 @@ public class RecordActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
-                if (location != null) {
+                if(location != null) {
                     GeoPoint point = new GeoPoint(location.getLatitude(), location.getLongitude());
+
                     if(isLocked && mapView != null) {
                         mapView.getController().setCenter(point);
                     }
@@ -917,6 +950,11 @@ public class RecordActivity extends AppCompatActivity {
                 }
             }
         };
+
+        if(attractionsOverlay != null && shouldRebuildAttractionsOverlay) {
+            Executors.newSingleThreadExecutor().execute(() -> getAttractionsOverlay(null));
+            shouldRebuildAttractionsOverlay = false;
+        }
     }
 
     @Override
