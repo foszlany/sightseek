@@ -64,8 +64,8 @@ public class LocalDatabaseDAO {
             values.put(LocalDatabaseImpl.ACTIVITIES_NAME, activity.getName());
             values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, activity.getCategory().getIndex());
             values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, activity.getPolyline());
-            values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, activity.getStarttime());
-            values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedtime());
+            values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, activity.getStartTime());
+            values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedTime());
             values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, activity.getDistance());
             values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
             values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());

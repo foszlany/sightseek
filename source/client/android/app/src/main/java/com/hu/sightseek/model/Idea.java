@@ -21,8 +21,6 @@ public class Idea {
         this.status = status;
     }
 
-    public Idea() {}
-
     public long getId() {
         return id;
     }

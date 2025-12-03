@@ -1,8 +1,8 @@
 package com.hu.sightseek.model;
 
 public class LeaderboardEntry {
-    private String username;
-    private double value;
+    private final String username;
+    private final double value;
 
     public LeaderboardEntry(String username, double value) {
         this.username = username;
@@ -13,15 +13,7 @@ public class LeaderboardEntry {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public double getValue() {
         return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
     }
 }

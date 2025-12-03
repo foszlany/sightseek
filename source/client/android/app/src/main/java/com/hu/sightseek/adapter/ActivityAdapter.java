@@ -100,12 +100,12 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         holder.name.setText(activity.getName());
         holder.category.setText(activity.getCategory().toShortString());
 
-        String startTime = activity.getStarttime().replace("T", ". ").replace("-", ".");
+        String startTime = activity.getStartTime().replace("T", ". ").replace("-", ".");
         holder.startTime.setText(startTime);
 
         holder.distance.setText(String.format(Locale.US, "%.2f km", activity.getDistance() / 1000.0));
 
-        double elapsedTime = activity.getElapsedtime();
+        double elapsedTime = activity.getElapsedTime();
         int hours = (int) elapsedTime / 3600;
         int minutes = ((int) elapsedTime % 3600) / 60;
         int seconds = (int) elapsedTime % 60;

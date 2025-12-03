@@ -217,10 +217,10 @@ public class MainActivity extends AppCompatActivity {
         applyButton.setOnClickListener(v -> {
             // Sort by
             if(checkedSortByMethod == R.id.main_filtermenu_date_recent) {
-                Collections.sort(activities, (a1, a2) -> a2.getStarttime().compareTo(a1.getStarttime()));
+                Collections.sort(activities, (a1, a2) -> a2.getStartTime().compareTo(a1.getStartTime()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_date_old) {
-                Collections.sort(activities, (a1, a2) -> a1.getStarttime().compareTo(a2.getStarttime()));
+                Collections.sort(activities, (a1, a2) -> a1.getStartTime().compareTo(a2.getStartTime()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_alpha_az) {
                 Collections.sort(activities, (a1, a2) -> a1.getName().compareToIgnoreCase(a2.getName()));
@@ -235,10 +235,10 @@ public class MainActivity extends AppCompatActivity {
                 Collections.sort(activities, (a1, a2) -> Double.compare(a2.getDistance(), a1.getDistance()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_time_lth) {
-                Collections.sort(activities, (a1, a2) -> Double.compare(a1.getElapsedtime(), a2.getElapsedtime()));
+                Collections.sort(activities, (a1, a2) -> Double.compare(a1.getElapsedTime(), a2.getElapsedTime()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_time_htl) {
-                Collections.sort(activities, (a1, a2) -> Double.compare(a2.getElapsedtime(), a1.getElapsedtime()));
+                Collections.sort(activities, (a1, a2) -> Double.compare(a2.getElapsedTime(), a1.getElapsedTime()));
             }
 
             // Categories

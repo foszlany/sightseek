@@ -115,14 +115,14 @@ public class ActivityActivity extends AppCompatActivity {
         TextView titleTextView = findViewById(R.id.activity_title);
         titleTextView.setText(activity.getName());
 
-        String startTime = activity.getStarttime().replace("T", ". ").replace("-", ".");
+        String startTime = activity.getStartTime().replace("T", ". ").replace("-", ".");
         TextView dateTextView = findViewById(R.id.activity_date);
         dateTextView.setText(startTime);
 
         TextView categoryTextView = findViewById(R.id.activity_category);
         categoryTextView.setText(activity.getCategory().toShortString());
 
-        double elapsedTime = activity.getElapsedtime();
+        double elapsedTime = activity.getElapsedTime();
         int hours = (int) elapsedTime / 3600;
         int minutes = ((int) elapsedTime % 3600) / 60;
         int seconds = (int) elapsedTime % 60;
