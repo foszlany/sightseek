@@ -148,7 +148,7 @@ public class IdeaManagerActivity extends AppCompatActivity {
     }
 
     private void initFilterPopup(View menuItemView) {
-        View popupView = LayoutInflater.from(this).inflate(R.layout.filter_idea, null);
+        View popupView = LayoutInflater.from(this).inflate(R.layout.filter_idea, (ViewGroup) menuItemView.getParent(), false);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popupWindow.showAsDropDown(menuItemView);
 

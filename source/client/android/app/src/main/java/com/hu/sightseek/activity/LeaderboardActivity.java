@@ -223,8 +223,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                     // Setup overlay
                     if(noEntriesOverlayView == null) {
                         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        noEntriesOverlayView = inflater.inflate(R.layout.overlay_noleaderboard, null);
-
+                        noEntriesOverlayView = inflater.inflate(R.layout.overlay_noleaderboard, noEntryOverlayContainer, false);
                         noEntryOverlayContainer.addView(noEntriesOverlayView);
                     }
 
@@ -402,7 +401,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         super.onStart();
 
         regionFilterButton.setOnClickListener(v -> {
-            View popupView = LayoutInflater.from(this).inflate(R.layout.filter_region, null);
+            View popupView = LayoutInflater.from(this).inflate(R.layout.filter_region, (ViewGroup) v.getParent(), false);
             PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
             popupWindow.showAsDropDown(v);
 
