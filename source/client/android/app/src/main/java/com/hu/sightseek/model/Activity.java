@@ -1,5 +1,7 @@
 package com.hu.sightseek.model;
 
+import androidx.annotation.NonNull;
+
 import com.hu.sightseek.enums.TravelCategory;
 
 import java.util.Arrays;
@@ -95,6 +97,7 @@ public class Activity {
 
     public void setVectorizedData(byte[] vectorizedData) { this.vectorizedData = vectorizedData; }
 
+    @NonNull
     @Override
     public String toString() {
         return "Activity{" +

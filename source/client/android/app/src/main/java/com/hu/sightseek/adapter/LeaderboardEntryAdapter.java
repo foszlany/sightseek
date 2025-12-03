@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class LeaderboardEntryAdapter extends RecyclerView.Adapter<LeaderboardEntryAdapter.LeaderboardCellEntryViewHolder> {
     private final Context context;
     private final ArrayList<LeaderboardEntry> entryList;
-    private boolean isGridView;
+    final private boolean isGridView;
 
     public LeaderboardEntryAdapter(Context context, ArrayList<LeaderboardEntry> entries, boolean isGridView) {
         this.context = context;
@@ -76,7 +76,7 @@ public class LeaderboardEntryAdapter extends RecyclerView.Adapter<LeaderboardEnt
     }
 
     public static class LeaderboardCellEntryViewHolder extends RecyclerView.ViewHolder {
-        TextView placing, username, value;
+        final TextView placing, username, value;
 
         public LeaderboardCellEntryViewHolder(@NonNull View itemView) {
             super(itemView);

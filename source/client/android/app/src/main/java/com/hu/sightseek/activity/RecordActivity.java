@@ -144,7 +144,7 @@ public class RecordActivity extends AppCompatActivity {
     };
 
     // Cancel when clicking outside
-    MapEventsReceiver mapEventsReceiver = new MapEventsReceiver() {
+    final MapEventsReceiver mapEventsReceiver = new MapEventsReceiver() {
         @Override
         public boolean singleTapConfirmedHelper(GeoPoint p) {
             InfoWindow.closeAllInfoWindowsOn(mapView);

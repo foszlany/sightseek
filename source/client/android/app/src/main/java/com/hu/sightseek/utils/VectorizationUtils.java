@@ -151,11 +151,11 @@ public final class VectorizationUtils {
         return results;
     }
     private static class RouteData {
-        int position;
-        Polyline route;
-        LineString lineString;
-        Set<String> countryCodes;
-        Envelope envelope;
+        final int position;
+        final Polyline route;
+        final LineString lineString;
+        final Set<String> countryCodes;
+        final Envelope envelope;
 
         RouteData(int position, Polyline route, LineString lineString, Set<String> countryCodes) {
             this.position = position;

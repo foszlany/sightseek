@@ -73,6 +73,7 @@ import okhttp3.RequestBody;
 
 public class StravaImportActivity extends AppCompatActivity {
     private final int ACTIVITIES_PER_PAGE = 200;
+
     private RecyclerView consoleRecyclerView;
     private ConsoleAdapter consoleAdapter;
 

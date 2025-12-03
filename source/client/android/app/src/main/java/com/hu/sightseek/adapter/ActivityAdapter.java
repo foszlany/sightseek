@@ -45,7 +45,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     private static final int w = 400, h = 400;
 
     private final ArrayList<Activity> activityListFull;
-    private ArrayList<Activity> activityListFilteredByCategory;
+    private final ArrayList<Activity> activityListFilteredByCategory;
     private ArrayList<Activity> activityListFiltered;
     private String searchQuery;
 
@@ -160,9 +160,9 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     }
 
     public static class ActivityViewHolder extends RecyclerView.ViewHolder {
-        TextView name, category, startTime, distance, elapsedTime;
-        ImageView map;
-        View card;
+        final TextView name, category, startTime, distance, elapsedTime;
+        final ImageView map;
+        final View card;
 
         public ActivityViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -26,7 +26,7 @@ public class ConsoleAdapter extends RecyclerView.Adapter<ConsoleAdapter.ConsoleV
     }
 
     public static class ConsoleViewHolder extends RecyclerView.ViewHolder {
-        TextView logTextView;
+        final TextView logTextView;
 
         ConsoleViewHolder(View itemView) {
             super(itemView);

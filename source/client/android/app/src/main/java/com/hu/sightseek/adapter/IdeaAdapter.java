@@ -27,7 +27,7 @@ import java.util.List;
 
 public class IdeaAdapter extends RecyclerView.Adapter<IdeaAdapter.IdeaViewHolder> implements Filterable {
     private final ArrayList<Idea> ideaListFull;
-    private ArrayList<Idea> ideaListFilteredByCategory;
+    private final ArrayList<Idea> ideaListFilteredByCategory;
     private ArrayList<Idea> ideaListFiltered;
     private String searchQuery;
 

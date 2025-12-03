@@ -24,7 +24,6 @@ import com.hu.sightseek.activity.MainActivity;
 import java.util.Objects;
 
 public class DeleteAccountFragment extends DialogFragment {
-    private FirebaseAuth auth;
     private FirebaseUser user;
 
     @Override
@@ -32,7 +31,7 @@ public class DeleteAccountFragment extends DialogFragment {
         Context ctx = inflater.getContext();
         View view = inflater.inflate(R.layout.fragment_delete_account, container, false);
 
-        auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         if(user == null) {
             dismiss();
