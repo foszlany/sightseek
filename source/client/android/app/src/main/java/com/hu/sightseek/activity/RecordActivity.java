@@ -410,9 +410,6 @@ public class RecordActivity extends AppCompatActivity {
                         }
                     }
                 }
-                else {
-                    System.out.println("NULL LOCATION"); // TODO: Bad connection?
-                }
 
                 if(mapView != null) {
                     mapView.invalidate();

@@ -24,7 +24,7 @@ import com.hu.sightseek.R;
 import org.osmdroid.config.Configuration;
 
 public class LoginActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +37,8 @@ public class LoginActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Auth
-        mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() != null) {
+        auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() != null) {
             finish();
         }
 
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
                 if(task.isSuccessful()) {
                     errorTextView.setVisibility(INVISIBLE);
                     Toast.makeText(LoginActivity.this, "Successful login!", Toast.LENGTH_LONG).show();

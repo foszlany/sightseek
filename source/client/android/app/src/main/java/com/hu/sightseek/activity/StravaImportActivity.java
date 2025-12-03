@@ -76,7 +76,7 @@ public class StravaImportActivity extends AppCompatActivity {
     private RecyclerView consoleRecyclerView;
     private ConsoleAdapter consoleAdapter;
 
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private SharedPreferences prefs;
     private ArrayList<Activity> activities;
     private HashSet<Long> stravaIds;
@@ -97,8 +97,8 @@ public class StravaImportActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Check if user is logged in
-        mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() == null) {
+        auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() == null) {
             runOnUiThread(() -> {
                 startActivity(new Intent(this, BannerActivity.class));
                 finish();
@@ -181,7 +181,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 String responseBody = response.body().string();
                                 JSONObject json = new JSONObject(responseBody);
 
-                                String uid = Objects.requireNonNull(mAuth.getUid());
+                                String uid = Objects.requireNonNull(auth.getUid());
                                 DocumentReference userDocument = FirebaseFirestore.getInstance()
                                         .collection("users")
                                         .document(uid);
@@ -418,7 +418,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                             dao.addActivities(activities);
                                             dao.close();
 
-                                            updateCellsInFirebase(mAuth, visitedCells, false);
+                                            updateCellsInFirebase(auth, visitedCells, false);
 
                                             if("after".equals(mode)) {
                                                 prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();

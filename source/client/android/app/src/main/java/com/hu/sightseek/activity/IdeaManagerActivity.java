@@ -62,8 +62,8 @@ public class IdeaManagerActivity extends AppCompatActivity {
         isVisitedChecked = true;
 
         // Auth
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() == null) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() == null) {
             finish();
         }
 

@@ -85,8 +85,8 @@ public class StatisticsActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Check if user is logged in
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() == null) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() == null) {
             runOnUiThread(() -> {
                 startActivity(new Intent(this, BannerActivity.class));
                 finish();

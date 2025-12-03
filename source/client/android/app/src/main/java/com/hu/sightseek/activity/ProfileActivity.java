@@ -60,8 +60,8 @@ public class ProfileActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Check if user is logged in
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
         if(user == null) {
             runOnUiThread(() -> {
                 startActivity(new Intent(this, BannerActivity.class));
@@ -193,7 +193,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 prefs.edit().remove("StravaLatestImportDate").apply();
                             }
 
-                            String uid = Objects.requireNonNull(mAuth.getUid());
+                            String uid = Objects.requireNonNull(auth.getUid());
                             DocumentReference userDocument = FirebaseFirestore.getInstance()
                                     .collection("users")
                                     .document(uid);
@@ -215,7 +215,7 @@ public class ProfileActivity extends AppCompatActivity {
                                         dao2.close();
 
                                         HashMap<String, Integer> cells = getVisitedCells(points);
-                                        updateCellsInFirebase(mAuth, cells, true);
+                                        updateCellsInFirebase(auth, cells, true);
 
                                         userDocument.update("stravaId", -1);
 
@@ -248,7 +248,7 @@ public class ProfileActivity extends AppCompatActivity {
         // Logout
         Button logoutButton = findViewById(R.id.profile_logout);
         logoutButton.setOnClickListener(v -> {
-            mAuth.signOut();
+            auth.signOut();
 
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

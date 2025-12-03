@@ -57,7 +57,7 @@ import java.util.concurrent.Executors;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
 public class LeaderboardActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private FirebaseFirestore db;
     private RecyclerView leaderboardRecyclerView;
     private String folderPath;
@@ -90,8 +90,8 @@ public class LeaderboardActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Check if user is logged in
-        mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() == null) {
+        auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() == null) {
             startActivity(new Intent(this, BannerActivity.class));
             finish();
             return;
@@ -346,7 +346,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void setupRegionalLeaderboard(String queryStr) {
-        String currentUid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        String currentUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
 
         // Top 100
         Task<QuerySnapshot> leaderboardTask = db.collection("leaderboard_regional")

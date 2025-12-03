@@ -109,8 +109,8 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Check if user is logged in
         Executors.newSingleThreadExecutor().execute(() -> {
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            if(mAuth.getCurrentUser() == null) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            if(auth.getCurrentUser() == null) {
                 startActivity(new Intent(this, BannerActivity.class));
                 finish();
             }

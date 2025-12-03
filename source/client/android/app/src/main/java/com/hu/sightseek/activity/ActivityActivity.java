@@ -177,9 +177,9 @@ public class ActivityActivity extends AppCompatActivity {
                     .setTitle("Confirmation")
                     .setMessage("Are you sure you want to delete this activity? This cannot be undone!")
                     .setPositiveButton("Yes", (d, which) -> {
-                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                        FirebaseAuth auth = FirebaseAuth.getInstance();
 
-                        if(mAuth.getCurrentUser() == null) {
+                        if(auth.getCurrentUser() == null) {
                             if(activity.getStravaId() != -1) {
                                 Toast.makeText(this, "Imported activities cannot be deleted while offline.", Toast.LENGTH_LONG).show();
                                 return;
@@ -187,7 +187,7 @@ public class ActivityActivity extends AppCompatActivity {
                         }
                         else {
                             HashMap<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
-                            FirebaseUtils.updateCellsInFirebase(mAuth, cells, true);
+                            FirebaseUtils.updateCellsInFirebase(auth, cells, true);
                         }
 
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);

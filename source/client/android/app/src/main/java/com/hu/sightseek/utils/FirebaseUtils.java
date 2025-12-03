@@ -11,8 +11,8 @@ import java.util.Map;
 public final class FirebaseUtils {
     private FirebaseUtils() {}
 
-    public static void updateCellsInFirebase(FirebaseAuth mAuth, HashMap<String, Integer> cells, boolean isRemoval) {
-        String uid = mAuth.getUid();
+    public static void updateCellsInFirebase(FirebaseAuth auth, HashMap<String, Integer> cells, boolean isRemoval) {
+        String uid = auth.getUid();
         if(uid == null || cells == null || cells.isEmpty()) {
             return;
         }
@@ -95,8 +95,8 @@ public final class FirebaseUtils {
 
     public static void updateRegionalLeaderboard(Map<String, Double> distanceMap) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String uid = mAuth.getUid();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String uid = auth.getUid();
 
         if(uid == null) {
             return;

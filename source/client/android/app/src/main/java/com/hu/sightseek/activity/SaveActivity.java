@@ -60,7 +60,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class SaveActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private VectorizedDataRecord vectorizedDataRecord;
 
     private String title;
@@ -105,7 +105,7 @@ public class SaveActivity extends AppCompatActivity {
         double totalDist = extras.getDouble("dist");
         categoryIndex = TravelCategory.LOCOMOTOR;
 
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
         // Spinner
         Spinner spinner = findViewById(R.id.save_category);
@@ -157,7 +157,7 @@ public class SaveActivity extends AppCompatActivity {
         mapView.getOverlayManager().add(polyline);
 
         // Get vectorized dataset
-        if(mAuth.getCurrentUser() != null) {
+        if(auth.getCurrentUser() != null) {
             Future<VectorizedDataRecord> future = vectorExecutor.submit(() -> vectorize(this, polyline));
             new Thread(() -> {
                 try {
@@ -216,7 +216,7 @@ public class SaveActivity extends AppCompatActivity {
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
-            if(mAuth.getCurrentUser() != null && vectorizedDataRecord == null) {
+            if(auth.getCurrentUser() != null && vectorizedDataRecord == null) {
                 Toast.makeText(this, "Please wait for vectorization to finish!", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -235,9 +235,9 @@ public class SaveActivity extends AppCompatActivity {
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                 long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
 
-                if(mAuth.getCurrentUser() != null) {
+                if(auth.getCurrentUser() != null) {
                     HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
-                    updateCellsInFirebase(mAuth, visitedCells, false);
+                    updateCellsInFirebase(auth, visitedCells, false);
                 }
 
                 Intent intent = new Intent(this, ActivityActivity.class);

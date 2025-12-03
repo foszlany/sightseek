@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Patterns;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -19,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 import com.hu.sightseek.R;
@@ -34,7 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private FirebaseFirestore fireStoreDb;
 
     @Override
@@ -48,8 +46,8 @@ public class RegisterActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         // Auth
-        mAuth = FirebaseAuth.getInstance();
-        if(mAuth.getCurrentUser() != null) {
+        auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() != null) {
             finish();
         }
 
@@ -138,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                             // Username available
                             else {
-                                mAuth.createUserWithEmailAndPassword(email, password1)
+                                auth.createUserWithEmailAndPassword(email, password1)
                                         .addOnCompleteListener(this, registerTask -> {
                                             // Email available
                                             if(registerTask.isSuccessful()) {
