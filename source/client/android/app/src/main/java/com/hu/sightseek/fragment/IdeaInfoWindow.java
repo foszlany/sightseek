@@ -72,7 +72,6 @@ public class IdeaInfoWindow extends InfoWindow {
                 mMapView.postInvalidate();
 
                 if(points.size() >= 2000) {
-                    // TODO this is terrible
                     new Handler(Looper.getMainLooper()).postDelayed(() -> swapIcon(false), points.size() / 3);
                 }
             });

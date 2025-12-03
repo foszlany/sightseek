@@ -3,11 +3,11 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-import static com.hu.sightseek.providers.IdeaOverlayProvider.getIdeasOverlay;
-import static com.hu.sightseek.utils.GenericUtils.getBitmapFromVectorDrawable;
-import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
-import static com.hu.sightseek.utils.GenericUtils.defaultToBudapest;
-import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
+import static com.hu.sightseek.provider.IdeaOverlayProvider.getIdeasOverlay;
+import static com.hu.sightseek.util.GenericUtils.getBitmapFromVectorDrawable;
+import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
+import static com.hu.sightseek.util.GenericUtils.defaultToBudapest;
+import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
 
 import android.animation.ValueAnimator;
 import android.app.NotificationChannel;
@@ -64,7 +64,7 @@ import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.db.LocalDatabaseDAO;
-import com.hu.sightseek.providers.HeatmapOverlayProvider;
+import com.hu.sightseek.provider.HeatmapOverlayProvider;
 import com.hu.sightseek.service.RecordingService;
 
 import org.osmdroid.config.Configuration;

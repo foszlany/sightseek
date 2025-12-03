@@ -1,4 +1,4 @@
-package com.hu.sightseek.providers;
+package com.hu.sightseek.provider;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;

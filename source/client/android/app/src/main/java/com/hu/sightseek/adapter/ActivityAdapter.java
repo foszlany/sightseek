@@ -1,7 +1,7 @@
 package com.hu.sightseek.adapter;
 
-import static com.hu.sightseek.utils.SpatialUtils.getBoundingBox;
-import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
+import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
+import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hu.sightseek.activity.ActivityActivity;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
-import com.hu.sightseek.utils.SpatialUtils;
+import com.hu.sightseek.util.SpatialUtils;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;

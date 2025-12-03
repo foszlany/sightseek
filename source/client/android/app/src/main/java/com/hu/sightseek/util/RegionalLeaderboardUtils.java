@@ -1,11 +1,11 @@
-package com.hu.sightseek.utils;
+package com.hu.sightseek.util;
 
-import static com.hu.sightseek.helpers.CountryInfo.getContinent;
-import static com.hu.sightseek.helpers.CountryInfo.getCountry;
-import static com.hu.sightseek.helpers.RegionalDistanceAggregator.aggregateDistances;
-import static com.hu.sightseek.utils.FirebaseUtils.updateRegionalLeaderboard;
-import static com.hu.sightseek.utils.VectorizationUtils.TOLERANCE;
-import static com.hu.sightseek.utils.VectorizationUtils.copyShapefileToInternalStorage;
+import static com.hu.sightseek.helper.CountryInfo.getContinent;
+import static com.hu.sightseek.helper.CountryInfo.getCountry;
+import static com.hu.sightseek.helper.RegionalDistanceAggregator.aggregateDistances;
+import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
+import static com.hu.sightseek.util.VectorizationUtils.TOLERANCE;
+import static com.hu.sightseek.util.VectorizationUtils.copyShapefileToInternalStorage;
 
 import android.app.Activity;
 

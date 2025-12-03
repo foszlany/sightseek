@@ -1,4 +1,4 @@
-package com.hu.sightseek.utils;
+package com.hu.sightseek.util;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;

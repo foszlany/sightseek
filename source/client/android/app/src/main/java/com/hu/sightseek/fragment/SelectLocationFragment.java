@@ -1,6 +1,6 @@
 package com.hu.sightseek.fragment;
 
-import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
+import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -21,7 +21,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.hu.sightseek.R;
 import com.hu.sightseek.activity.IdeaActivity;
-import com.hu.sightseek.utils.GenericUtils;
+import com.hu.sightseek.util.GenericUtils;
 
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;

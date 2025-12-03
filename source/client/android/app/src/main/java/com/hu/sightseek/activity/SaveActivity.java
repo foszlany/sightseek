@@ -2,14 +2,14 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.helpers.WKConverter.convertGeometryToWKB;
-import static com.hu.sightseek.utils.FirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.utils.RegionalLeaderboardUtils.calculateRegionalDistance;
-import static com.hu.sightseek.utils.SpatialUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SpatialUtils.getVisitedCells;
-import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
-import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
-import static com.hu.sightseek.utils.VectorizationUtils.vectorize;
+import static com.hu.sightseek.helper.WKConverter.convertGeometryToWKB;
+import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.util.RegionalLeaderboardUtils.calculateRegionalDistance;
+import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
+import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
+import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
+import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
+import static com.hu.sightseek.util.VectorizationUtils.vectorize;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -42,7 +42,7 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.VectorizedDataRecord;
-import com.hu.sightseek.utils.SpatialUtils;
+import com.hu.sightseek.util.SpatialUtils;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;

@@ -1,4 +1,4 @@
-package com.hu.sightseek.utils;
+package com.hu.sightseek.util;
 
 import androidx.annotation.NonNull;
 

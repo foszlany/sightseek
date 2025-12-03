@@ -9,10 +9,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.enums.SavedIdeaStatus;
 import com.hu.sightseek.enums.TravelCategory;
-import com.hu.sightseek.helpers.WKConverter;
+import com.hu.sightseek.helper.WKConverter;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Idea;
-import com.hu.sightseek.utils.SpatialUtils;
+import com.hu.sightseek.util.SpatialUtils;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;

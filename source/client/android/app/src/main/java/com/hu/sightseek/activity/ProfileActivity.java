@@ -1,10 +1,10 @@
 package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.utils.FirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.utils.GenericUtils.STRAVA_CLIENT_ID;
-import static com.hu.sightseek.utils.SpatialUtils.getVisitedCells;
-import static com.hu.sightseek.utils.GenericUtils.hideKeyboard;
+import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.util.GenericUtils.STRAVA_CLIENT_ID;
+import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
+import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
 import android.content.Context;
 import android.content.Intent;

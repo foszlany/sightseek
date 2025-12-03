@@ -1,11 +1,11 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.utils.FirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.utils.GenericUtils.STRAVA_CLIENT_ID;
-import static com.hu.sightseek.utils.RegionalLeaderboardUtils.calculateRegionalDistance;
-import static com.hu.sightseek.utils.SpatialUtils.decode;
-import static com.hu.sightseek.utils.SpatialUtils.getVisitedCells;
-import static com.hu.sightseek.utils.VectorizationUtils.batchVectorize;
+import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.util.GenericUtils.STRAVA_CLIENT_ID;
+import static com.hu.sightseek.util.RegionalLeaderboardUtils.calculateRegionalDistance;
+import static com.hu.sightseek.util.SpatialUtils.decode;
+import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
+import static com.hu.sightseek.util.VectorizationUtils.batchVectorize;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,10 +34,10 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ConsoleAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.TravelCategory;
-import com.hu.sightseek.helpers.WKConverter;
+import com.hu.sightseek.helper.WKConverter;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.VectorizedDataRecord;
-import com.hu.sightseek.utils.SpatialUtils;
+import com.hu.sightseek.util.SpatialUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

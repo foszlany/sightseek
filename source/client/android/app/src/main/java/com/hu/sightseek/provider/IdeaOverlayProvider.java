@@ -1,4 +1,4 @@
-package com.hu.sightseek.providers;
+package com.hu.sightseek.provider;
 
 import android.content.Context;
 import android.graphics.Color;

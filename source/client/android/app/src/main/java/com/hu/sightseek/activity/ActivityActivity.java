@@ -1,12 +1,12 @@
 package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.helpers.WKConverter.convertWKBToPolylines;
-import static com.hu.sightseek.utils.GenericUtils.createScreenshot;
-import static com.hu.sightseek.utils.SpatialUtils.getBoundingBox;
-import static com.hu.sightseek.utils.SpatialUtils.getVisitedCells;
-import static com.hu.sightseek.utils.GenericUtils.setupRouteLine;
-import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
+import static com.hu.sightseek.helper.WKConverter.convertWKBToPolylines;
+import static com.hu.sightseek.util.GenericUtils.createScreenshot;
+import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
+import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
+import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
+import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -36,8 +36,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
-import com.hu.sightseek.utils.FirebaseUtils;
-import com.hu.sightseek.utils.SpatialUtils;
+import com.hu.sightseek.util.FirebaseUtils;
+import com.hu.sightseek.util.SpatialUtils;
 
 import org.locationtech.jts.io.ParseException;
 import org.osmdroid.config.Configuration;

@@ -1,4 +1,4 @@
-package com.hu.sightseek.helpers;
+package com.hu.sightseek.helper;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;

@@ -1,4 +1,4 @@
-package com.hu.sightseek.helpers;
+package com.hu.sightseek.helper;
 
 import com.hu.sightseek.model.RegionalEntry;
 

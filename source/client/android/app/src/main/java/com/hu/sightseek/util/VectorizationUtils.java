@@ -1,6 +1,6 @@
-package com.hu.sightseek.utils;
+package com.hu.sightseek.util;
 
-import static com.hu.sightseek.helpers.WKConverter.convertLineGeometryToPolyline;
+import static com.hu.sightseek.helper.WKConverter.convertLineGeometryToPolyline;
 
 import android.app.Activity;
 import android.content.Context;

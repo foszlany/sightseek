@@ -2,10 +2,10 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.utils.GenericUtils.defaultToBudapest;
-import static com.hu.sightseek.utils.GenericUtils.getLocationString;
-import static com.hu.sightseek.providers.StatisticsProvider.getMedianPoint;
-import static com.hu.sightseek.utils.GenericUtils.setupZoomSettings;
+import static com.hu.sightseek.util.GenericUtils.defaultToBudapest;
+import static com.hu.sightseek.util.GenericUtils.getLocationString;
+import static com.hu.sightseek.provider.StatisticsProvider.getMedianPoint;
+import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -41,7 +41,7 @@ import com.hu.sightseek.fragment.SelectLocationFragment;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Idea;
-import com.hu.sightseek.utils.SpatialUtils;
+import com.hu.sightseek.util.SpatialUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
