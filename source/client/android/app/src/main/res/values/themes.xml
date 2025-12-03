@@ -5,5 +5,5 @@
         <item name="android:textColorHint">@color/hint</item>
     </style>
 
-    <style name="Theme.Sightseek" parent="Base.Theme.Sightseek" />
+    <style name="Theme.Sightseek" parent="Base.Theme.Sightseek" ></style>
 </resources>

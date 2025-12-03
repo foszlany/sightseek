@@ -14,7 +14,6 @@
         tools:context=".activity.BannerActivity">
 
         <ImageView
-            android:id="@+id/banner_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:alpha="0.6"

@@ -54,7 +54,6 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/deleteaccountpopup_disclaimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/deleteaccountpopup_disclaimer"

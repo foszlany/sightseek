@@ -39,7 +39,6 @@
     <string name="register_error_password_1short">Password is too short!</string>
     <string name="register_error_password_2empty">Confirmation password cannot be empty!</string>
     <string name="register_error_password_1empty">Password cannot be empty!</string>
-    <string name="topmenu_home">Home</string>
     <string name="topmenu_statistics">Statistics</string>
     <string name="topmenu_profile">Profile</string>
     <string name="main_ideas">Ideas</string>
@@ -114,7 +113,6 @@
     <string name="record_lockdesc">Lock</string>
     <string name="card_activity_routedesc">Route</string>
     <string name="login_signin">Sign in</string>
-    <string name="activity_imgdesc">This image serves as a simple background for the activity page.</string>
     <string name="record_polylinedesc">Polyline</string>
     <string name="main_filtermenu_sortby">Sort by</string>
     <string name="main_filtermenu_categories">Categories</string>
@@ -135,7 +133,6 @@
     <string name="statistics_generalcard_medianpoint">Median point: %1$.4f %2$.4f (%3$s)</string>
     <string name="statistics_generalcard_importedactivities">Imported activities: %1$.0f</string>
     <string name="statistics_generalcard_visitedcells">Visited cells: %1$.0f</string>
-    <string name="statistics_generalcard_favouritecell">Favourite cell: %1$s (%2$s)</string>
     <string name="statistics_generalcard_totalpoints">Recorded points: %1$.0f</string>
     <string name="statistics_generalcard_averagespeed">Average speed: %1$.2f km/h</string>
     <string name="travelmethod_micro_short">Micro</string>
@@ -149,7 +146,6 @@
     <string name="statistics_percategory_totaltime">Total time: %1$.2f days</string>
     <string name="statistics_percategory_totaldistance">Total distance: %1$.2f km</string>
     <string name="save_manageideas">Manage your saved ideas</string>
-    <string name="ideamanager_title">Saved Attractions</string>
     <string name="ideamanager_searchhint">Search for ideas…</string>
     <string name="ideamanager_visited">Visited</string>
     <string name="ideamanager_remove">Remove</string>
@@ -163,9 +159,7 @@
     <string name="idea_motto">Use search to find something new</string>
     <string name="idea_defaulttitle">Search for ideas</string>
     <string name="profile_importfromstrava">Import from Strava</string>
-    <string name="strava_auth">Authenticate</string>
     <string name="strava_import">Import activities from Strava</string>
-    <string name="strava_startimport">Start importing</string>
     <string name="strava_importmissing">Import missing</string>
     <string name="strava_importlatest">Import latest</string>
     <string name="profile_unlink">Unlink Strava account</string>
@@ -192,19 +186,18 @@
     <string name="profile_password1hint">New password (8–32 characters)</string>
     <string name="profile_password2hint">Confirm new password</string>
     <string name="profile_error_password_oldempty">Current password cannot be empty!</string>
-    <string name="profile_error_password_oldshort">Current password is too short!</string>
     <string name="profile_error_password_incorrectcurrent">Incorrect current password.</string>
-    <string name="profile_deleteallactivities">Delete all my activities</string>
     <string name="profile_deleteaccount">Delete my account</string>
     <string name="save_creatingvectordata">Creating vectorized data, please wait…</string>
     <string name="activity_showprocesseddata">Show processed data</string>
     <string name="activity_hideprocesseddata">Hide processed data</string>
     <string name="leaderboard_entry_defaultplacing">∞</string>
     <string name="leaderboard_entry_defaultvalue">0</string>
-    <string name="leaderboard_entry_defaultuser">Fetching...</string>
+    <string name="leaderboard_entry_defaultuser">Fetching…</string>
     <string name="leaderboard_noentries">No entries were found.</string>
     <string name="leaderboard_motivationaltext">Perhaps you can change that.</string>
     <string name="deleteaccountpopup_title">If you wish to delete your account, confirm your password below.</string>
     <string name="deleteaccountpopup_confirmpassword">Confirm password</string>
     <string name="deleteaccountpopup_disclaimer">This action is irreversible.</string>
+    <string name="ideamanager_popup_changestatus">Change Status</string>
 </resources>

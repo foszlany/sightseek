@@ -82,6 +82,6 @@ public class DeleteAccountFragment extends DialogFragment {
     }
 
     private void deleteAccountRemains() {
-
+        // TODO
     }
 }

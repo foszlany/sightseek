@@ -227,9 +227,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         this.activityListFiltered.clear();
         this.activityListFiltered.addAll(newActivities);
 
-        this.activityListFiltered.clear();
-        this.activityListFiltered.addAll(newActivities);
-
         notifyDataSetChanged();
     }
 

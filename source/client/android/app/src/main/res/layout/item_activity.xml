@@ -78,7 +78,6 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/card_activity_timetext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -88,7 +87,6 @@
             android:textColor="@color/white" />
 
         <TextView
-            android:id="@+id/card_activity_distancetext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
