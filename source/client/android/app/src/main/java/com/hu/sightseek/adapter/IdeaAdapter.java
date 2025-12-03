@@ -60,7 +60,7 @@ public class IdeaAdapter extends RecyclerView.Adapter<IdeaAdapter.IdeaViewHolder
         // Status change button
         ImageButton statusChange1Button = holder.itemView.findViewById(R.id.ideamanager_statuschangebtn);
         statusChange1Button.setOnClickListener(v -> {
-            View popupView = LayoutInflater.from(v.getContext()).inflate(R.layout.ideastatuschange_popup, null);
+            View popupView = LayoutInflater.from(v.getContext()).inflate(R.layout.popup_ideastatuschange, null);
             AlertDialog popupDialog = new AlertDialog.Builder(v.getContext())
                     .setView(popupView)
                     .create();
