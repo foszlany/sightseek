@@ -15,15 +15,27 @@ import java.util.List;
 public class HeatmapOverlayProvider {
     private static final int RADIUS = 6;
     private static final double SIGMA = 3.0;
-    private static final int GRIDHEIGHT = 300;
-    private static final int GRIDHEIGHT_STRONG = 500;
+    private static final int minGridHeight = 250;
+    private static final int maxGridHeight = 1000;
 
     private static double[][] kernel;
 
     private HeatmapOverlayProvider() {}
 
     public static GroundOverlay createHeatmapOverlay(MapView mapView, List<LatLng> points, boolean isStrong) {
-        int gridHeight = isStrong ? GRIDHEIGHT_STRONG : GRIDHEIGHT;
+        double zoomLevel = mapView.getZoomLevelDouble();
+        double minZoomLevel = mapView.getMinZoomLevel();
+        double maxZoomLevel = mapView.getMaxZoomLevel();
+
+        // Calculate grid height based on zoom
+        double t = (zoomLevel - minZoomLevel) / (maxZoomLevel - minZoomLevel);
+        double exp = 0.5;
+
+        int gridHeight = (int)(maxGridHeight - Math.pow(t, exp) * (maxGridHeight - minGridHeight));
+
+        if(isStrong) {
+            gridHeight = (int)(gridHeight * 1.2);
+        }
 
         // Get dimensions
         BoundingBox box = mapView.getBoundingBox();
@@ -114,7 +126,8 @@ public class HeatmapOverlayProvider {
 
     private static int getHeatmapColor(float intensity, boolean isStrong) {
         if(isStrong) {
-            float k = 20;
+            float k = 12;
+            intensity = (float) Math.max(intensity, 0.01);
             intensity = (float)(Math.log(1 + intensity * k) / Math.log(1 + k));
         }
 
