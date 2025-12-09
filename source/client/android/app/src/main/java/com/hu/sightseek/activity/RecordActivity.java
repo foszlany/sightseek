@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -124,6 +125,7 @@ public class RecordActivity extends AppCompatActivity {
 
     private org.osmdroid.views.overlay.GroundOverlay heatmapOverlay;
     private boolean isHeatmapOn;
+    private boolean isHeatmapStrong;
 
     FolderOverlay polylineGroup;
     private boolean isPolylinesOverlayOn;
@@ -182,6 +184,7 @@ public class RecordActivity extends AppCompatActivity {
 
         isLocked = true;
         isHeatmapOn = false;
+        isHeatmapStrong = false;
         polylineGroup = new FolderOverlay();
         areIdeasOn = false;
         shouldRebuildIdeasOverlay = false;
@@ -545,12 +548,15 @@ public class RecordActivity extends AppCompatActivity {
                         mapView.getOverlays().remove(heatmapOverlay);
                     }
 
-                    heatmapOverlay = HeatmapOverlayProvider.createHeatmapOverlay(mapView, importedPoints);
+                    heatmapOverlay = HeatmapOverlayProvider.createHeatmapOverlay(mapView, importedPoints, isHeatmapStrong);
                     mapView.getOverlays().add(0, heatmapOverlay);
                     mapView.invalidate();
-                });
 
-                animateButton(heatmapButton, true, R.color.orange);
+                    runOnUiThread(() -> {
+                        ImageButton strongHeatmapButton = findViewById(R.id.record_strongheatmap_btn);
+                        strongHeatmapButton.setVisibility(VISIBLE);
+                    });
+                });
             }
             else {
                 // Remove overlay
@@ -559,8 +565,11 @@ public class RecordActivity extends AppCompatActivity {
                     mapView.invalidate();
                 });
 
-                animateButton(heatmapButton, false, R.color.orange);
+                ImageButton strongHeatmapButton = findViewById(R.id.record_strongheatmap_btn);
+                strongHeatmapButton.setVisibility(GONE);
             }
+
+            animateButton(heatmapButton, isHeatmapOn, R.color.orange);
         });
 
         // Refresh heatmap
@@ -569,11 +578,22 @@ public class RecordActivity extends AppCompatActivity {
             if(isHeatmapOn && importedPoints != null) {
                 mapView.getOverlays().remove(heatmapOverlay);
 
-                heatmapOverlay = HeatmapOverlayProvider.createHeatmapOverlay(mapView, importedPoints);
+                heatmapOverlay = HeatmapOverlayProvider.createHeatmapOverlay(mapView, importedPoints, isHeatmapStrong);
                 mapView.getOverlays().add(0, heatmapOverlay);
                 mapView.invalidate();
             }
         };
+
+        // Strong heatmap button
+        ImageButton strongHeatmapButton = findViewById(R.id.record_strongheatmap_btn);
+        strongHeatmapButton.setOnClickListener(v -> {
+            isHeatmapStrong = !isHeatmapStrong;
+
+            animateButton(strongHeatmapButton, isHeatmapStrong, R.color.yellow);
+
+            handler.removeCallbacks(refreshHeatmap);
+            handler.postDelayed(refreshHeatmap, 400);
+        });
 
         // Zoom / Move listener
         mapView.addMapListener(new MapListener() {

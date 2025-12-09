@@ -200,4 +200,5 @@
     <string name="deleteaccountpopup_confirmpassword">Confirm password</string>
     <string name="deleteaccountpopup_disclaimer">This action is irreversible.</string>
     <string name="ideamanager_popup_changestatus">Change Status</string>
+    <string name="record_strongheatmapdesc">Stronger colors</string>
 </resources>

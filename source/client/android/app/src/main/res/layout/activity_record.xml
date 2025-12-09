@@ -95,6 +95,20 @@
         app:srcCompat="@drawable/baseline_local_fire_department_24"/>
 
     <ImageButton
+        android:id="@+id/record_strongheatmap_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/circle_button_bg"
+        android:contentDescription="@string/record_strongheatmapdesc"
+        android:elevation="5dp"
+        android:padding="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/record_lockbtn"
+        app:layout_constraintEnd_toStartOf="@+id/record_heatmapbtn"
+        app:srcCompat="@drawable/baseline_remove_red_eye_24" />
+
+    <ImageButton
         android:id="@+id/record_lockbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
