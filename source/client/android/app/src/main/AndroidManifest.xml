@@ -74,7 +74,6 @@
             android:exported="false" />
         <activity
             android:name=".activity.SaveActivity"
-            android:configChanges="orientation|screenSize"
             android:exported="false" />
         <activity
             android:name=".activity.RecordActivity"

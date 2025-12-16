@@ -60,6 +60,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class SaveActivity extends AppCompatActivity {
+    public static final String KEY_POLYLINE_STRING = "polyline_string";
+    public static final String KEY_START_TIME = "start_time";
+    public static final String KEY_ELAPSED_TIME = "elapsed_time";
+    public static final String KEY_DIST = "dist";
+
+    private static final String KEY_TITLE = "title";
+    private static final String KEY_SPINNER_POS = "spinner_pos";
+    private static final String KEY_IS_VECTORIZATION_COMPLETED = "is_vectorization_completed";
+    private static final String KEY_IS_VECTORIZATION_STARTED = "is_vectorization_started";
+    private static final String KEY_VECTORIZED_DATA = "vectorized_data_record";
+
     private FirebaseAuth auth;
     private VectorizedDataRecord vectorizedDataRecord;
 
@@ -68,155 +79,64 @@ public class SaveActivity extends AppCompatActivity {
     private final ExecutorService daoExecutor = Executors.newSingleThreadExecutor();
     private final ExecutorService vectorExecutor = Executors.newSingleThreadExecutor();
 
+    private String polylineString;
+    private String startTime;
+    private double elapsedTime;
+    private double totalDist;
+    private boolean isVectorizationComplete = false;
+    private boolean isVectorizationStarted = false;
+    private List<GeoPoint> pointList;
+    private Polyline savedPolyline;
+    private String savedFormattedTime;
+    private int savedSpinnerPosition = -1;
+    private String savedTitleText = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save);
+
         Configuration.getInstance().load(
                 getApplicationContext(),
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         );
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
-        // Add Menu
-        Toolbar toolbar = findViewById(R.id.save_topmenu);
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        // Home button
-        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
-        toolbar.setNavigationOnClickListener(v -> createDiscardConfirmationDialog(new Intent(this, MainActivity.class)));
-
-        // Retrieve data
-        Bundle extras = getIntent().getExtras();
-
-        if(extras == null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            return;
-        }
-
-        String polylineString = extras.getString("polyline");
-        String startTime = extras.getString("starttime");
-        double elapsedTime = extras.getDouble("elapsedtime");
-        double totalDist = extras.getDouble("dist");
-        categoryIndex = TravelCategory.LOCOMOTOR;
-
         auth = FirebaseAuth.getInstance();
 
-        // Spinner
-        Spinner spinner = findViewById(R.id.save_category);
-        ArrayAdapter<String> adapter = getStringArrayAdapter();
-        spinner.setAdapter(adapter);
-
-        // Set default value based on average speed
-        double avgSpeed = totalDist / elapsedTime;
-        if(avgSpeed < 3.61) { // 13 km/h
-            spinner.setSelection(TravelCategory.LOCOMOTOR.getIndex());
-        }
-        else if(avgSpeed < 12.5) { // 45 km/h
-            spinner.setSelection(TravelCategory.MICROMOBILITY.getIndex());
+        // Restore saved state if available
+        if(savedInstanceState != null) {
+            restoreInstanceState(savedInstanceState);
         }
         else {
-            spinner.setSelection(TravelCategory.OTHER.getIndex());
-        }
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                TextView text = view.findViewById(R.id.spinneritem_category_text);
-                text.setTextColor(Color.WHITE);
-                categoryIndex = TravelCategory.values()[position];
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                return;
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
-        });
 
-        // Initialize mapview
-        MapView mapView = findViewById(R.id.save_map);
-        mapView.setBackgroundColor(Color.TRANSPARENT);
-        mapView.setUseDataConnection(true);
-
-        setupZoomSettings(mapView, 14.0);
-
-        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
-        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
-
-        // Setup polyline
-        assert polylineString != null : "Polyline string is null, unable to save activity!";
-        List<GeoPoint> pointList = SpatialUtils.decode(polylineString);
-        Polyline polyline = new Polyline();
-        for(GeoPoint point : pointList) {
-            polyline.addPoint(point);
+            polylineString = extras.getString(KEY_POLYLINE_STRING);
+            startTime = extras.getString(KEY_START_TIME);
+            elapsedTime = extras.getDouble(KEY_ELAPSED_TIME);
+            totalDist = extras.getDouble(KEY_DIST);
+            categoryIndex = TravelCategory.LOCOMOTOR;
         }
 
-        setupRouteLine(polyline, false);
-        mapView.getOverlayManager().add(polyline);
+        initializeUI();
 
-        // Get vectorized dataset
-        if(auth.getCurrentUser() != null) {
-            Future<VectorizedDataRecord> future = vectorExecutor.submit(() -> vectorize(this, polyline));
-            new Thread(() -> {
-                try {
-                    TextView loadingText = findViewById(R.id.save_loadingtext);
-                    runOnUiThread(() -> loadingText.setVisibility(VISIBLE));
-
-                    vectorizedDataRecord = future.get();
-
-                    runOnUiThread(() -> loadingText.setVisibility(GONE));
-
-                    Paint paint = new Paint();
-                    paint.setColor(Color.parseColor("#FF0000"));
-                    paint.setStrokeWidth(4.0f);
-                    paint.setAntiAlias(false);
-
-                    if(vectorizedDataRecord.getVectorizedDataPolylines() == null) {
-                        return;
-                    }
-
-                    for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
-                        p.getOutlinePaint().set(paint);
-                        mapView.getOverlays().add(p);
-                    }
-                    mapView.invalidate();
-                }
-                catch(ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
+        if(pointList == null && polylineString != null) {
+            setupMapAndPolyline();
         }
-
-        // Calculate bounding box
-        BoundingBox box = getBoundingBox(pointList);
-
-        // Set zoom based on bounding box
-        mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
-            }
-        });
-
-        // Set time and distance
-        int hours = (int) elapsedTime / 3600;
-        int minutes = ((int) elapsedTime % 3600) / 60;
-        int seconds = (int) elapsedTime % 60;
-
-        String formattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
-        TextView timeText = findViewById(R.id.save_time);
-        timeText.setText(formattedTime);
-
-        TextView distanceText = findViewById(R.id.save_distance);
-        distanceText.setText(getString(R.string.main_distancevalue, totalDist / 1000.0));
+        else if(pointList != null) {
+            setupMapWithExistingPolyline();
+        }
 
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
-            if(auth.getCurrentUser() != null && vectorizedDataRecord == null) {
+            if(auth.getCurrentUser() != null && isVectorizationStarted && !isVectorizationComplete) {
                 Toast.makeText(this, "Please wait for vectorization to finish!", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -228,26 +148,28 @@ public class SaveActivity extends AppCompatActivity {
             }
 
             daoExecutor.execute(() -> {
-                calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord.getVectorizedDataGeometry(), vectorizedDataRecord.getCountryCodes());
+                if(vectorizedDataRecord != null) {
+                    calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord.getVectorizedDataGeometry(), vectorizedDataRecord.getCountryCodes());
 
-                byte[] vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
+                    byte[] vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
 
-                LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
+                    LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+                    long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
 
-                if(auth.getCurrentUser() != null) {
-                    HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
-                    updateCellsInFirebase(auth, visitedCells, false);
+                    if(auth.getCurrentUser() != null) {
+                        HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
+                        updateCellsInFirebase(auth, visitedCells, false);
+                    }
+
+                    Intent intent = new Intent(this, ActivityActivity.class);
+                    Bundle bundle = new Bundle();
+
+                    bundle.putInt("id", (int) id);
+                    intent.putExtras(bundle);
+
+                    startActivity(intent);
+                    finish();
                 }
-
-                Intent intent = new Intent(this, ActivityActivity.class);
-                Bundle bundle = new Bundle();
-
-                bundle.putInt("id", (int) id);
-                intent.putExtras(bundle);
-
-                startActivity(intent);
-                finish();
             });
         });
 
@@ -265,12 +187,265 @@ public class SaveActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
+    private void initializeUI() {
+        // Add Menu
+        Toolbar toolbar = findViewById(R.id.save_topmenu);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        // Home button
+        toolbar.setNavigationIcon(R.drawable.baseline_home_24);
+        toolbar.setNavigationOnClickListener(v -> createDiscardConfirmationDialog(new Intent(this, MainActivity.class)));
+
+        // Spinner
+        Spinner spinner = findViewById(R.id.save_category);
+        ArrayAdapter<String> adapter = getStringArrayAdapter();
+        spinner.setAdapter(adapter);
+
+        if(savedSpinnerPosition >= 0) {
+            spinner.setSelection(savedSpinnerPosition);
+            categoryIndex = TravelCategory.values()[savedSpinnerPosition];
+        }
+        else {
+            // Set default value based on average speed
+            double avgSpeed = totalDist / elapsedTime;
+            int selection;
+
+            if(avgSpeed < 3.61) { // 13 km/h
+                selection = TravelCategory.LOCOMOTOR.getIndex();
+            }
+            else if(avgSpeed < 12.5) { // 45 km/h
+                selection = TravelCategory.MICROMOBILITY.getIndex();
+            }
+            else {
+                selection = TravelCategory.OTHER.getIndex();
+            }
+            spinner.setSelection(selection);
+            categoryIndex = TravelCategory.values()[selection];
+        }
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(view != null) {
+                    TextView text = view.findViewById(R.id.spinneritem_category_text);
+                    if(text != null) {
+                        text.setTextColor(Color.WHITE);
+                    }
+                }
+                categoryIndex = TravelCategory.values()[position];
+                savedSpinnerPosition = position;
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Set time and distance
+        if(savedFormattedTime != null) {
+            TextView timeText = findViewById(R.id.save_time);
+            timeText.setText(savedFormattedTime);
+        }
+        else if(elapsedTime > 0) {
+            int hours = (int) elapsedTime / 3600;
+            int minutes = ((int) elapsedTime % 3600) / 60;
+            int seconds = (int) elapsedTime % 60;
+
+            savedFormattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
+            TextView timeText = findViewById(R.id.save_time);
+            timeText.setText(savedFormattedTime);
+        }
+
+        TextView distanceText = findViewById(R.id.save_distance);
+        if(totalDist > 0) {
+            distanceText.setText(getString(R.string.main_distancevalue, totalDist / 1000.0));
+        }
+
+        EditText titleEditText = findViewById(R.id.save_edittext_title);
+        if(!savedTitleText.isEmpty()) {
+            titleEditText.setText(savedTitleText);
+        }
+    }
+
+    private void setupMapAndPolyline() {
+        MapView mapView = findViewById(R.id.save_map);
+        mapView.setBackgroundColor(Color.TRANSPARENT);
+        mapView.setUseDataConnection(true);
+
+        setupZoomSettings(mapView, 14.0);
+
+        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+        // Setup polyline
+        pointList = SpatialUtils.decode(polylineString);
+        savedPolyline = new Polyline();
+        for(GeoPoint point : pointList) {
+            savedPolyline.addPoint(point);
+        }
+
+        setupRouteLine(savedPolyline, false);
+        mapView.getOverlayManager().add(savedPolyline);
+
+        // Calculate bounding box
+        BoundingBox box = getBoundingBox(pointList);
+
+        // Set zoom based on bounding box
+        mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
+            }
+        });
+
+        // Start vectorization if needed
+        if(auth.getCurrentUser() != null && !isVectorizationStarted) {
+            startVectorization(mapView);
+        }
+    }
+
+    private void setupMapWithExistingPolyline() {
+        MapView mapView = findViewById(R.id.save_map);
+        mapView.setBackgroundColor(Color.TRANSPARENT);
+        mapView.setUseDataConnection(true);
+
+        setupZoomSettings(mapView, 14.0);
+
+        TilesOverlay tilesOverlay = mapView.getOverlayManager().getTilesOverlay();
+        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
+        tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
+
+        if(savedPolyline != null) {
+            mapView.getOverlayManager().add(savedPolyline);
+
+            // Calculate bounding box
+            BoundingBox box = getBoundingBox(pointList);
+
+            // Set zoom based on bounding box
+            mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
+                }
+            });
+        }
+
+        // If vectorization was started but not complete, restart it
+        if(auth.getCurrentUser() != null && isVectorizationStarted && !isVectorizationComplete) {
+            startVectorization(mapView);
+        }
+    }
+
+    private void startVectorization(MapView mapView) {
+        isVectorizationStarted = true;
+
+        Future<VectorizedDataRecord> future = vectorExecutor.submit(() -> vectorize(this, savedPolyline));
+        new Thread(() -> {
+            try {
+                TextView loadingText = findViewById(R.id.save_loadingtext);
+                runOnUiThread(() -> {
+                    if(loadingText != null) {
+                        loadingText.setVisibility(VISIBLE);
+                    }
+                });
+
+                vectorizedDataRecord = future.get();
+                isVectorizationComplete = true;
+
+                runOnUiThread(() -> {
+                    if(loadingText != null) {
+                        loadingText.setVisibility(GONE);
+                    }
+                });
+
+                Paint paint = new Paint();
+                paint.setColor(Color.parseColor("#FF0000"));
+                paint.setStrokeWidth(4.0f);
+                paint.setAntiAlias(false);
+
+                if(vectorizedDataRecord != null && vectorizedDataRecord.getVectorizedDataPolylines() != null) {
+                    for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
+                        p.getOutlinePaint().set(paint);
+                        mapView.getOverlays().add(p);
+                    }
+                    mapView.invalidate();
+                }
+            }
+            catch(ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    private void restoreInstanceState(Bundle savedInstanceState) {
+        polylineString = savedInstanceState.getString(KEY_POLYLINE_STRING);
+        startTime = savedInstanceState.getString(KEY_START_TIME);
+        elapsedTime = savedInstanceState.getDouble(KEY_ELAPSED_TIME);
+        totalDist = savedInstanceState.getDouble(KEY_DIST);
+        savedTitleText = savedInstanceState.getString(KEY_TITLE, "");
+        savedSpinnerPosition = savedInstanceState.getInt(KEY_SPINNER_POS, -1);
+        isVectorizationComplete = savedInstanceState.getBoolean(KEY_IS_VECTORIZATION_COMPLETED, false);
+        isVectorizationStarted = savedInstanceState.getBoolean(KEY_IS_VECTORIZATION_STARTED, false);
+        vectorizedDataRecord = (VectorizedDataRecord) savedInstanceState.getSerializable(KEY_VECTORIZED_DATA);
+
+        if(savedSpinnerPosition >= 0) {
+            categoryIndex = TravelCategory.values()[savedSpinnerPosition];
+        }
+        else {
+            categoryIndex = TravelCategory.LOCOMOTOR;
+        }
+
+        if(polylineString != null) {
+            pointList = SpatialUtils.decode(polylineString);
+            savedPolyline = new Polyline();
+            for(GeoPoint point : pointList) {
+                savedPolyline.addPoint(point);
+            }
+            setupRouteLine(savedPolyline, false);
+        }
+
+        if(elapsedTime > 0) {
+            int hours = (int) elapsedTime / 3600;
+            int minutes = ((int) elapsedTime % 3600) / 60;
+            int seconds = (int) elapsedTime % 60;
+            savedFormattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(KEY_POLYLINE_STRING, polylineString);
+        outState.putString(KEY_START_TIME, startTime);
+        outState.putDouble(KEY_ELAPSED_TIME, elapsedTime);
+        outState.putDouble(KEY_DIST, totalDist);
+        outState.putBoolean(KEY_IS_VECTORIZATION_COMPLETED, isVectorizationComplete);
+        outState.putBoolean(KEY_IS_VECTORIZATION_STARTED, isVectorizationStarted);
+
+        if(categoryIndex != null) {
+            outState.putInt(KEY_SPINNER_POS, categoryIndex.ordinal());
+        }
+
+        EditText titleEditText = findViewById(R.id.save_edittext_title);
+        if(titleEditText != null) {
+            outState.putString(KEY_TITLE, titleEditText.getText().toString());
+        }
+
+        if(vectorizedDataRecord != null) {
+            outState.putSerializable(KEY_VECTORIZED_DATA, vectorizedDataRecord);
+        }
+    }
+
     @NonNull
     private ArrayAdapter<String> getStringArrayAdapter() {
         String[] categories = {
-            TravelCategory.LOCOMOTOR.toString(),
-            TravelCategory.MICROMOBILITY.toString(),
-            TravelCategory.OTHER.toString()
+                TravelCategory.LOCOMOTOR.toString(),
+                TravelCategory.MICROMOBILITY.toString(),
+                TravelCategory.OTHER.toString()
         };
 
         // Custom icons
@@ -341,5 +516,18 @@ public class SaveActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(!daoExecutor.isShutdown()) {
+            daoExecutor.shutdown();
+        }
+
+        if(!vectorExecutor.isShutdown()) {
+            vectorExecutor.shutdown();
+        }
     }
 }

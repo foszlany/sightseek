@@ -4,6 +4,10 @@ import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import static com.hu.sightseek.activity.SaveActivity.KEY_DIST;
+import static com.hu.sightseek.activity.SaveActivity.KEY_ELAPSED_TIME;
+import static com.hu.sightseek.activity.SaveActivity.KEY_POLYLINE_STRING;
+import static com.hu.sightseek.activity.SaveActivity.KEY_START_TIME;
 import static com.hu.sightseek.provider.IdeaOverlayProvider.getIdeasOverlay;
 import static com.hu.sightseek.util.GenericUtils.getBitmapFromVectorDrawable;
 import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
@@ -784,11 +788,10 @@ public class RecordActivity extends AppCompatActivity {
                     Intent intent = new Intent(this, SaveActivity.class);
                     Bundle bundle = new Bundle();
 
-                    bundle.putString("polyline", PolyUtil.encode(recordedPoints));
-                    bundle.putString("starttime", startTime);
-                    bundle.putDouble("elapsedtime", Math.floor(elapsedTime / 1000.0));
-                    bundle.putDouble("dist", totalDist);
-                    bundle.putDouble("type", totalDist);
+                    bundle.putString(KEY_POLYLINE_STRING, PolyUtil.encode(recordedPoints));
+                    bundle.putString(KEY_START_TIME, startTime);
+                    bundle.putDouble(KEY_ELAPSED_TIME, Math.floor(elapsedTime / 1000.0));
+                    bundle.putDouble(KEY_DIST, totalDist);
                     intent.putExtras(bundle);
 
                     if(recordedPoints.size() >= MINIMUM_REQUIRED_POINTS_PER_ACTIVITY) {

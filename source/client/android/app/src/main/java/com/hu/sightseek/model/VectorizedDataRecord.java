@@ -3,10 +3,13 @@ package com.hu.sightseek.model;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-public class VectorizedDataRecord {
+public class VectorizedDataRecord implements Serializable {
+    private static final long serialVersionUID = 1;
+
     List<Polyline> vectorizedDataPolylines;
     Geometry vectorizedDataGeometry;
     Set<String> countryCodes;

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".activity.SaveActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/save_topmenu"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:background="@color/theme_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.27"
+        android:contentDescription="@string/save_imgdesc"
+        android:scaleType="centerCrop"
+        android:src="@drawable/save_bg"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/left_panel"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:gravity="top|center"
+        android:padding="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save_topmenu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/right_panel"
+        app:layout_constraintWidth_percent="0.6">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/save_title"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+
+        <EditText
+            android:id="@+id/save_edittext_title"
+            android:layout_width="320dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/edittext_outline"
+            android:ems="10"
+            android:hint="@string/save_titlehint"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLength="32"
+            android:padding="11dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/hint_light" />
+
+        <Spinner
+            android:id="@+id/save_category"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:minHeight="48dp"
+            android:background="@drawable/edittext_outline" />
+
+        <TextView
+            android:id="@+id/save_loadingtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:text="@string/save_creatingvectordata"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/save_savebtn"
+                android:layout_width="160dp"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/save_button_bg"
+                android:text="@string/save_save"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                app:backgroundTint="@color/theme_main" />
+
+            <Button
+                android:id="@+id/save_discardbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:padding="0dp"
+                android:text="@string/save_discard"
+                android:textColor="@color/red"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/right_panel"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="20dp"
+        app:layout_constraintStart_toEndOf="@+id/left_panel"
+        app:layout_constraintTop_toBottomOf="@+id/save_topmenu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.4">
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/save_map"
+            android:layout_width="280dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="60dp"
+            android:layout_gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:padding="10dp"
+            android:layout_marginBottom="40dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/save_time"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/save_distance"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="28sp" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:text="@string/main_time"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/save_distance"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </GridLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
