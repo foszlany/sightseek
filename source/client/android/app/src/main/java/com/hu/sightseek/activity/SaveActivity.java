@@ -154,7 +154,7 @@ public class SaveActivity extends AppCompatActivity {
                     byte[] vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
 
                     LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                    long id = dao.addActivity(title, categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
+                    long id = dao.addActivity(title.strip(), categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
 
                     if(auth.getCurrentUser() != null) {
                         HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
