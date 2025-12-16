@@ -117,7 +117,7 @@ public class SaveActivity extends AppCompatActivity {
                 return;
             }
 
-            polylineString = extras.getString(KEY_POLYLINE_STRING);
+            polylineString = "qnhyGe{~yBxEkQ`DqP"; // extras.getString(KEY_POLYLINE_STRING); TODO
             startTime = extras.getString(KEY_START_TIME);
             elapsedTime = extras.getDouble(KEY_ELAPSED_TIME);
             totalDist = extras.getDouble(KEY_DIST);
@@ -238,7 +238,8 @@ public class SaveActivity extends AppCompatActivity {
                 categoryIndex = TravelCategory.values()[position];
                 savedSpinnerPosition = position;
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         // Set time and distance
@@ -317,26 +318,49 @@ public class SaveActivity extends AppCompatActivity {
         tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
         tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
-        if(savedPolyline != null) {
-            mapView.getOverlayManager().add(savedPolyline);
+        mapView.getOverlays().clear();
 
-            // Calculate bounding box
-            BoundingBox box = getBoundingBox(pointList);
+        // Setup polyline
+        if(savedPolyline == null) {
+            savedPolyline = new Polyline();
+            for(GeoPoint point : pointList) {
+                savedPolyline.addPoint(point);
+            }
+        }
 
-            // Set zoom based on bounding box
-            mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
+        setupRouteLine(savedPolyline, false);
+        mapView.getOverlays().add(savedPolyline);
+
+        // Restart vectorization if not completed before layout change
+        if(auth.getCurrentUser() != null) {
+            if(isVectorizationStarted && !isVectorizationComplete) {
+                startVectorization(mapView);
+            }
+            else {
+                Paint paint = new Paint();
+                paint.setColor(Color.parseColor("#FF0000"));
+                paint.setStrokeWidth(4.0f);
+                paint.setAntiAlias(false);
+
+                for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
+                    p.getOutlinePaint().set(paint);
+                    mapView.getOverlays().add(p);
                 }
-            });
+                mapView.invalidate();
+            }
         }
 
-        // If vectorization was started but not complete, restart it
-        if(auth.getCurrentUser() != null && isVectorizationStarted && !isVectorizationComplete) {
-            startVectorization(mapView);
-        }
+        // Calculate bounding box
+        BoundingBox box = getBoundingBox(pointList);
+
+        // Set zoom based on bounding box
+        mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mapView.zoomToBoundingBox(box.increaseByScale(1.4f), false);
+            }
+        });
     }
 
     private void startVectorization(MapView mapView) {
@@ -366,13 +390,11 @@ public class SaveActivity extends AppCompatActivity {
                 paint.setStrokeWidth(4.0f);
                 paint.setAntiAlias(false);
 
-                if(vectorizedDataRecord != null && vectorizedDataRecord.getVectorizedDataPolylines() != null) {
-                    for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
-                        p.getOutlinePaint().set(paint);
-                        mapView.getOverlays().add(p);
-                    }
-                    mapView.invalidate();
+                for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
+                    p.getOutlinePaint().set(paint);
+                    mapView.getOverlays().add(p);
                 }
+                mapView.invalidate();
             }
             catch(ExecutionException | InterruptedException e) {
                 throw new RuntimeException(e);
