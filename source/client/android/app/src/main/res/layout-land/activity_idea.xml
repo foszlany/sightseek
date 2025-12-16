@@ -274,7 +274,6 @@
                         app:layout_constraintHorizontal_bias="0.114"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/idea_radiusbar" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
