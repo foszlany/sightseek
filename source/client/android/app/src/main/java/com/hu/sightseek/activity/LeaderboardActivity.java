@@ -444,40 +444,44 @@ public class LeaderboardActivity extends AppCompatActivity {
             Spinner continentSpinner = popupView.findViewById(R.id.leaderboard_narrowsearch_continentspinner);
             ArrayAdapter<String> continentAdapter = new ArrayAdapter<>(
                     this,
-                    android.R.layout.simple_spinner_item,
+                    R.layout.spinneritem_region,
+                    R.id.spinneritem_region_regiontext,
                     continentOptions
             );
-            continentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            continentAdapter.setDropDownViewResource(R.layout.spinneritem_region);
             continentSpinner.setAdapter(continentAdapter);
 
             // Country
             Spinner countrySpinner = popupView.findViewById(R.id.leaderboard_narrowsearch_countryspinner);
             ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(
                     this,
-                    android.R.layout.simple_spinner_item,
+                    R.layout.spinneritem_region,
+                    R.id.spinneritem_region_regiontext,
                     countryOptions
             );
-            countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            countryAdapter.setDropDownViewResource(R.layout.spinneritem_region);
             countrySpinner.setAdapter(countryAdapter);
 
             // Region
             Spinner regionSpinner = popupView.findViewById(R.id.leaderboard_narrowsearch_regionspinner);
             ArrayAdapter<String> regionAdapter = new ArrayAdapter<>(
                     this,
-                    android.R.layout.simple_spinner_item,
+                    R.layout.spinneritem_region,
+                    R.id.spinneritem_region_regiontext,
                     new ArrayList<>(regionOptions)
             );
-            regionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            regionAdapter.setDropDownViewResource(R.layout.spinneritem_region);
             regionSpinner.setAdapter(regionAdapter);
 
             // Subregion
             Spinner subRegionSpinner = popupView.findViewById(R.id.leaderboard_narrowsearch_subregionspinner);
             ArrayAdapter<String> subRegionAdapter = new ArrayAdapter<>(
                     this,
-                    android.R.layout.simple_spinner_item,
+                    R.layout.spinneritem_region,
+                    R.id.spinneritem_region_regiontext,
                     subRegionOptions
             );
-            subRegionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            subRegionAdapter.setDropDownViewResource(R.layout.spinneritem_region);
             subRegionSpinner.setAdapter(subRegionAdapter);
 
             // Continent listener
@@ -564,10 +568,11 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                         ArrayAdapter<String> regionAdapter = new ArrayAdapter<>(
                                 LeaderboardActivity.this,
-                                android.R.layout.simple_spinner_item,
+                                R.layout.spinneritem_region,
+                                R.id.spinneritem_region_regiontext,
                                 new ArrayList<>(regionOptions)
                         );
-                        regionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        regionAdapter.setDropDownViewResource(R.layout.spinneritem_region);
                         regionSpinner.setAdapter(regionAdapter);
                     }
                     catch(Exception e) {

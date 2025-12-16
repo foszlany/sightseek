@@ -127,7 +127,7 @@ public class SaveActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                TextView text = view.findViewById(R.id.text);
+                TextView text = view.findViewById(R.id.spinneritem_category_text);
                 text.setTextColor(Color.WHITE);
                 categoryIndex = TravelCategory.values()[position];
             }
@@ -280,12 +280,12 @@ public class SaveActivity extends AppCompatActivity {
                 R.drawable.baseline_directions_car_24
         };
 
-        return new ArrayAdapter<>(SaveActivity.this, R.layout.spinneritem_category, R.id.text, categories) {
+        return new ArrayAdapter<>(SaveActivity.this, R.layout.spinneritem_category, R.id.spinneritem_category_text, categories) {
             @NonNull
             @Override
             public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
-                ImageView icon = view.findViewById(R.id.icon);
+                ImageView icon = view.findViewById(R.id.spinneritem_category_icon);
                 icon.setImageResource(icons[position]);
                 return view;
             }
@@ -293,7 +293,7 @@ public class SaveActivity extends AppCompatActivity {
             @Override
             public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
                 View view = super.getDropDownView(position, convertView, parent);
-                ImageView icon = view.findViewById(R.id.icon);
+                ImageView icon = view.findViewById(R.id.spinneritem_category_icon);
                 icon.setImageResource(icons[position]);
                 return view;
             }
