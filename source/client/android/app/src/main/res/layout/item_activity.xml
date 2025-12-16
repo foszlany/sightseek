@@ -24,10 +24,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
-        <!-- please test further -->
         <TextView
             android:id="@+id/card_activity_title"
-            android:layout_width="150dp"
+            android:layout_width="175dp"
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
             android:layout_marginBottom="2dp"
@@ -63,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:text="@string/example_value"
             android:textColor="@color/white"
             android:textSize="20sp" />
@@ -81,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:text="@string/main_time"
             android:textAlignment="center"
             android:textColor="@color/white" />
@@ -105,6 +104,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/card_leftpanel"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintVertical_bias="0.5" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,7 +20,7 @@ playServicesLocation = "21.3.0"
 firebaseAuth = "24.0.1"
 navigationFragment = "2.9.3"
 navigationUi = "2.9.3"
-swiperefreshlayout = "1.1.0"
+swiperefreshlayout = "1.2.0"
 
 [libraries]
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
