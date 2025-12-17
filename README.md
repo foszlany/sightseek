@@ -2,9 +2,9 @@
 Sightseek is a mobile application that motivates you to visit new places.
 
 <p align="center">
-  <img src="https://i.ibb.co/67nRjZM3/1.png" alt="1" width="250"/>
-  <img src="https://i.ibb.co/yBpLtgQg/2.png" alt="2" width="250"/>
-  <img src="https://i.ibb.co/5gnWXDr5/3.png" alt="3" width="250"/>
+  <img src="https://i.ibb.co/67nRjZM3/1.png" alt="Main Menu" width="250"/>
+  <img src="https://i.ibb.co/yBpLtgQg/2.png" alt="Map with heatmap and attractions turned on" width="250"/>
+  <img src="https://i.ibb.co/5gnWXDr5/3.png" alt="Activity showing processed street data" width="250"/>
 </p>
 
 ## Features
