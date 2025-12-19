@@ -2,12 +2,14 @@ package com.hu.sightseek.provider;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.GroundOverlay;
 
 import java.util.List;
@@ -23,41 +25,61 @@ public class HeatmapOverlayProvider {
     private HeatmapOverlayProvider() {}
 
     public static GroundOverlay createHeatmapOverlay(MapView mapView, List<LatLng> points, boolean isStrong) {
-        double zoomLevel = mapView.getZoomLevelDouble();
-        double minZoomLevel = mapView.getMinZoomLevel();
-        double maxZoomLevel = mapView.getMaxZoomLevel();
-
-        // Calculate grid height based on zoom
-        double t = (zoomLevel - minZoomLevel) / (maxZoomLevel - minZoomLevel);
-        double exp = 0.5;
-
-        int gridHeight = (int)(maxGridHeight - Math.pow(t, exp) * (maxGridHeight - minGridHeight));
-
-        if(isStrong) {
-            gridHeight = (int)(gridHeight * 1.2);
-        }
-
-        // Get dimensions
-        BoundingBox box = mapView.getBoundingBox();
-
-        double lonSpan = box.getLongitudeSpanWithDateLine();
-        double latSpan = box.getLatitudeSpan();
-        double midLat = (box.getLatNorth() + box.getLatSouth()) / 2.0;
-        double lonSpanMeters = lonSpan * Math.cos(Math.toRadians(midLat));
-        double aspect = lonSpanMeters / latSpan;
-
-        int gridWidth = (int)(gridHeight * aspect);
-        int[][] density = new int[gridHeight][gridWidth];
-
-        // Get kernel
         if(kernel == null) {
             setKernel();
         }
 
+        // Setup projection
+        Projection projection = mapView.getProjection();
+        BoundingBox box = mapView.getBoundingBox();
+
+        Point topLeftPixel = new Point();
+        Point bottomRightPixel = new Point();
+
+        GeoPoint topLeftGeo = new GeoPoint(box.getLatNorth(), box.getLonWest());
+        GeoPoint bottomRightGeo = new GeoPoint(box.getLatSouth(), box.getLonEast());
+
+        projection.toPixels(topLeftGeo, topLeftPixel);
+        projection.toPixels(bottomRightGeo, bottomRightPixel);
+
+        // Grid height
+        double zoomLevel = mapView.getZoomLevelDouble();
+        double minZoomLevel = mapView.getMinZoomLevel();
+        double maxZoomLevel = mapView.getMaxZoomLevel();
+        double t = (zoomLevel - minZoomLevel) / (maxZoomLevel - minZoomLevel);
+
+        int gridHeight = (int) (maxGridHeight - Math.pow(t, 0.5) * (maxGridHeight - minGridHeight));
+        if(isStrong) {
+            gridHeight = (int) (gridHeight * 1.2);
+        }
+
+        // Pixel dimensions
+        int pixelHeight = bottomRightPixel.y - topLeftPixel.y;
+        int pixelWidth = bottomRightPixel.x - topLeftPixel.x;
+
+        // Grid width
+        int gridWidth = (int)(gridHeight * ((double) pixelWidth / pixelHeight));
+
         // Create density grid
+        int[][] density = new int[gridHeight][gridWidth];
         for(LatLng p : points) {
-            int cx = (int) (((p.longitude - box.getLonWest()) / box.getLongitudeSpanWithDateLine()) * gridWidth);
-            int cy = (int) (((box.getLatNorth() - p.latitude) / box.getLatitudeSpan()) * gridHeight);
+            GeoPoint geoPoint = new GeoPoint(p.latitude, p.longitude);
+            if(!box.contains(geoPoint)) {
+                continue;
+            }
+
+            Point pixelPoint = new Point();
+            projection.toPixels(geoPoint, pixelPoint);
+
+            double xRatio = ((double) (pixelPoint.x - topLeftPixel.x) / pixelWidth);
+            double yRatio = ((double) (pixelPoint.y - topLeftPixel.y) / pixelHeight);
+            xRatio = Math.max(0, Math.min(1, xRatio));
+            yRatio = Math.max(0, Math.min(1, yRatio));
+
+            int cx = (int) (xRatio * gridWidth);
+            int cy = (int) (yRatio * gridHeight);
+            cx = Math.max(0, Math.min(cx, gridWidth - 1));
+            cy = Math.max(0, Math.min(cy, gridHeight - 1));
 
             for(int dy = -RADIUS; dy <= RADIUS; dy++) {
                 for(int dx = -RADIUS; dx <= RADIUS; dx++) {
@@ -71,7 +93,7 @@ public class HeatmapOverlayProvider {
             }
         }
 
-        // Get highest density
+        // Highest density
         int maxDensity = 0;
         for(int[] row : density) {
             for(int val : row) {
@@ -91,7 +113,7 @@ public class HeatmapOverlayProvider {
                     pixels[y * gridWidth + x] = Color.TRANSPARENT;
                 }
                 else {
-                    float intensity = (float) val / maxDensity;
+                    float intensity = (float) val / Math.max(maxDensity, 1);
                     pixels[y * gridWidth + x] = getHeatmapColor(intensity, isStrong);
                 }
             }
@@ -128,13 +150,12 @@ public class HeatmapOverlayProvider {
         if(isStrong) {
             float k = 12;
             intensity = (float) Math.max(intensity, 0.01);
-            intensity = (float)(Math.log(1 + intensity * k) / Math.log(1 + k));
+            intensity = (float) (Math.log(1 + intensity * k) / Math.log(1 + k));
         }
 
         float hue = (1f - intensity) * 240f;
-        int alpha = (int)(Math.min(1f, intensity * (isStrong ? 2f : 1.2f)) * 255);
+        int alpha = (int)(Math.min(1f, intensity * 1.2f) * 255);
 
         return Color.HSVToColor(alpha, new float[]{hue, 1f, 1f});
     }
-
 }
