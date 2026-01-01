@@ -93,12 +93,23 @@ public class HeatmapOverlayProvider {
             }
         }
 
-        // Highest density
+        // Get max/local density value(s)
+        int[][] localMax = null;
         int maxDensity = 0;
-        for(int[] row : density) {
-            for(int val : row) {
-                if(val > maxDensity) {
-                    maxDensity = val;
+
+        if(isStrong) {
+            double zoomFactor = (zoomLevel - minZoomLevel) / (maxZoomLevel - minZoomLevel);
+            zoomFactor = Math.max(0, Math.min(1, zoomFactor));
+            int radius = (int)(10 + zoomFactor * (40 - 10));
+
+            localMax = computeLocalMax(density, radius);
+        }
+        else {
+            for(int[] row : density) {
+                for(int val : row) {
+                    if(val > maxDensity) {
+                        maxDensity = val;
+                    }
                 }
             }
         }
@@ -113,8 +124,15 @@ public class HeatmapOverlayProvider {
                     pixels[y * gridWidth + x] = Color.TRANSPARENT;
                 }
                 else {
-                    float intensity = (float) val / Math.max(maxDensity, 1);
-                    pixels[y * gridWidth + x] = getHeatmapColor(intensity, isStrong);
+                    if(isStrong) {
+                        int lm = localMax[y][x];
+                        float intensity = (float) val / Math.max(lm, 1);
+                        pixels[y * gridWidth + x] = getHeatmapColor(intensity, true);
+                    }
+                    else {
+                        float intensity = (float) val / Math.max(maxDensity, 1);
+                        pixels[y * gridWidth + x] = getHeatmapColor(intensity, false);
+                    }
                 }
             }
         }
@@ -132,6 +150,101 @@ public class HeatmapOverlayProvider {
         overlay.setPosition(topLeft, bottomRight);
 
         return overlay;
+    }
+
+    private static int[][] maxFilterHorizontal(int[][] src, int radius) {
+        int h = src.length;
+        int w = src[0].length;
+        int[][] out = new int[h][w];
+
+        int window = radius * 2 + 1;
+
+        for(int y = 0; y < h; y++) {
+            int[] row = src[y];
+            int[] left = new int[w];
+            int[] right = new int[w];
+
+            // Left max
+            for(int i = 0; i < w; i++) {
+                if(i % window == 0) {
+                    left[i] = row[i];
+                }
+                else {
+                    left[i] = Math.max(left[i - 1], row[i]);
+                }
+            }
+
+            // Right max
+            for(int i = w - 1; i >= 0; i--) {
+                if(i == w - 1 || (i + 1) % window == 0) {
+                    right[i] = row[i];
+                }
+                else {
+                    right[i] = Math.max(right[i + 1], row[i]);
+                }
+            }
+
+            // Combine
+            for(int i = 0; i < w; i++) {
+                int r = Math.min(i + radius, w - 1);
+                int l = Math.max(i - radius, 0);
+                out[y][i] = Math.max(right[l], left[r]);
+            }
+        }
+
+        return out;
+    }
+
+    private static int[][] maxFilterVertical(int[][] src, int radius) {
+        int h = src.length;
+        int w = src[0].length;
+        int[][] out = new int[h][w];
+
+        int window = radius * 2 + 1;
+
+        for(int x = 0; x < w; x++) {
+            int[] col = new int[h];
+            for(int y = 0; y < h; y++) {
+                col[y] = src[y][x];
+            }
+
+            int[] left = new int[h];
+            int[] right = new int[h];
+
+            // Top-down max
+            for(int i = 0; i < h; i++) {
+                if(i % window == 0) {
+                    left[i] = col[i];
+                }
+                else {
+                    left[i] = Math.max(left[i - 1], col[i]);
+                }
+            }
+
+            // Bottom-up max
+            for(int i = h - 1; i >= 0; i--) {
+                if(i == h - 1 || (i + 1) % window == 0) {
+                    right[i] = col[i];
+                }
+                else {
+                    right[i] = Math.max(right[i + 1], col[i]);
+                }
+            }
+
+            // Combine
+            for(int i = 0; i < h; i++) {
+                int r = Math.min(i + radius, h - 1);
+                int l = Math.max(i - radius, 0);
+                out[i][x] = Math.max(right[l], left[r]);
+            }
+        }
+
+        return out;
+    }
+
+    private static int[][] computeLocalMax(int[][] density, int radius) {
+        int[][] h = maxFilterHorizontal(density, radius);
+        return maxFilterVertical(h, radius);
     }
 
     private static void setKernel() {
