@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
@@ -394,6 +395,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
                                         List<VectorizedDataRecord> vectorizedDataRecords = batchVectorize(StravaImportActivity.this, polylines, msg -> logIntoConsole(msg));
                                         List<Geometry> geometries = new ArrayList<>();
+                                        List<Polygon> routePolygons = new ArrayList<>();
                                         Set<String> countryCodes = new HashSet<>();
                                         for(int i = 0; i < activities.size(); i++) {
                                             Geometry vectorizedDataGeometry = vectorizedDataRecords.get(i).getVectorizedDataGeometry();
@@ -403,15 +405,18 @@ public class StravaImportActivity extends AppCompatActivity {
 
                                             geometries.add(vectorizedDataGeometry);
                                             countryCodes.addAll(vectorizedDataRecords.get(i).getCountryCodes());
+
+                                            routePolygons.add(vectorizedDataRecords.get(i).getRoutePolygon());
                                         }
 
                                         runOnUiThread(() -> {
                                             logIntoConsole("Vectorization has been completed!\n\n");
-                                            logIntoConsole("Saving to database...");
+                                            logIntoConsole("Saving...");
                                         });
 
                                         Geometry mergedVectorizedData = UnaryUnionOp.union(geometries);
-                                        calculateRegionalDistance(StravaImportActivity.this, mergedVectorizedData, countryCodes);
+                                        Polygon mergedRoutePolygons = (Polygon) UnaryUnionOp.union(routePolygons);
+                                        calculateRegionalDistance(StravaImportActivity.this, mergedVectorizedData, mergedRoutePolygons, countryCodes);
 
                                         runOnUiThread(() -> {
                                             isImporting = false;

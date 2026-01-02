@@ -91,7 +91,7 @@ public final class VectorizationUtils {
         Map<String, List<LineString>> roadPolylinesPerCountry = getPerCountryRoadPolylines(activity, geometryFactory, countryCodes);
 
         // Process
-        List<Future<Geometry>> vectorFutures = new ArrayList<>();
+        List<Future<RouteResult>> vectorFutures = new ArrayList<>();
         for(RouteData routeData : routeDataset) {
             vectorFutures.add(executor.submit(() -> {
                 // Convert route to polygon
@@ -124,7 +124,7 @@ public final class VectorizationUtils {
                 Geometry reducedVectorizedData = GeometryPrecisionReducer.reduce(vectorizedData, precisionModel);
 
                 if(reducedVectorizedData instanceof LineString || reducedVectorizedData instanceof MultiLineString) {
-                    return reducedVectorizedData;
+                    return new RouteResult(reducedVectorizedData, routePolygon);
                 }
                 else if(reducedVectorizedData instanceof Polygon || reducedVectorizedData instanceof GeometryCollection) {
                     throw new RuntimeException("Vectorized data has 2 dimensional elements.");
@@ -136,7 +136,7 @@ public final class VectorizationUtils {
         }
 
         // Create polyline string
-        for(Future<Geometry> future : vectorFutures) {
+        for(Future<RouteResult> future : vectorFutures) {
             try {
                 if(logger != null) {
                     activity.runOnUiThread(() -> {
@@ -144,7 +144,8 @@ public final class VectorizationUtils {
                     });
                 }
 
-                results.add(new VectorizedDataRecord(null, future.get(), countryCodes));
+                RouteResult routeResult = future.get();
+                results.add(new VectorizedDataRecord(null, routeResult.geometry, routeResult.routePolygon, countryCodes));
             }
             catch(Exception e) {
                 throw new RuntimeException(e);
@@ -172,6 +173,16 @@ public final class VectorizationUtils {
         }
     }
 
+    private static class RouteResult {
+        final Geometry geometry;
+        final Polygon routePolygon;
+
+        private RouteResult(Geometry geometry, Polygon routePolygon) {
+            this.geometry = geometry;
+            this.routePolygon = routePolygon;
+        }
+    }
+
     public static VectorizedDataRecord vectorize(Activity activity, Polyline route) {
         GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -188,7 +199,7 @@ public final class VectorizationUtils {
         Polygon routePolygon = createPolygonFromLineString(lineString);
 
         // Filtered roads
-        List<LineString> roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
+        List<LineString> roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon);
 
         // Calculate intersection
         PreparedGeometry preparedRoutePolygon = PreparedGeometryFactory.prepare(routePolygon);
@@ -206,7 +217,7 @@ public final class VectorizationUtils {
         // Create polyline(s)
         List<Polyline> vectorizedDataPolylines = convertLineGeometryToPolyline(reducedVectorizedDataGeometry);
 
-        return new VectorizedDataRecord(vectorizedDataPolylines, reducedVectorizedDataGeometry, countryCodes);
+        return new VectorizedDataRecord(vectorizedDataPolylines, reducedVectorizedDataGeometry, routePolygon, countryCodes);
     }
 
     private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {
@@ -275,7 +286,7 @@ public final class VectorizationUtils {
         }
     }
 
-    private static List<LineString> getRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes, Envelope filterEnvelope) {
+    private static List<LineString> getRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes, Polygon routePolygon) {
         List<LineString> lineStringList = new ArrayList<>();
 
         for(String code : countryCodes) {
@@ -296,7 +307,7 @@ public final class VectorizationUtils {
 
                     LineString segment = geometryFactory.createLineString(coordinates);
 
-                    if(segment.getEnvelopeInternal().intersects(filterEnvelope)) {
+                    if(segment.intersects(routePolygon)) {
                         lineStringList.add(segment);
                     }
                 }

@@ -1,6 +1,7 @@
 package com.hu.sightseek.model;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
@@ -14,9 +15,10 @@ public class VectorizedDataRecord implements Serializable {
 
     private List<List<GeoPoint>> vectorizedPoints;
     private Geometry vectorizedDataGeometry;
+    private Polygon routePolygon;
     private Set<String> countryCodes;
 
-    public VectorizedDataRecord(List<Polyline> vectorizedDataPolylines, Geometry vectorizedDataGeometry, Set<String> countryCodes) {
+    public VectorizedDataRecord(List<Polyline> vectorizedDataPolylines, Geometry vectorizedDataGeometry, Polygon routePolygon, Set<String> countryCodes) {
         this.vectorizedPoints = new ArrayList<>();
 
         if(vectorizedDataPolylines != null) {
@@ -26,6 +28,7 @@ public class VectorizedDataRecord implements Serializable {
         }
 
         this.vectorizedDataGeometry = vectorizedDataGeometry;
+        this.routePolygon = routePolygon;
         this.countryCodes = countryCodes;
     }
 
@@ -45,6 +48,10 @@ public class VectorizedDataRecord implements Serializable {
 
     public Set<String> getCountryCodes() {
         return countryCodes;
+    }
+
+    public Polygon getRoutePolygon() {
+        return routePolygon;
     }
 
     public Geometry getVectorizedDataGeometry() {

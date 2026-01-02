@@ -19,10 +19,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
-import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,23 +38,24 @@ public final class RegionalLeaderboardUtils {
 
     private RegionalLeaderboardUtils() {}
 
-    public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Set<String> countryCodes) {
+    public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Polygon routePolygon, Set<String> countryCodes) {
         if(newRoads == null || newRoads.isEmpty()) {
             return;
         }
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        Geometry bufferedNewRoads = newRoads.buffer(ROAD_PRECISION);
-
         // Load all vectors from activities
-        MultiLineString allRoads = getAllRoads(activity, geometryFactory, bufferedNewRoads);
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon);
+        System.out.println("roaded");
 
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
+        System.out.println("shapefiles");
 
         // Get unique roads
-        Geometry uniqueRoads = OverlayOp.overlayOp(newRoads, allRoads.buffer(ROAD_PRECISION), OverlayOp.DIFFERENCE);
+        Geometry uniqueRoads = OverlayNG.overlay(newRoads, allRoads.buffer(ROAD_PRECISION), OverlayNG.DIFFERENCE);
+        System.out.println("uniqued");
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
@@ -116,6 +116,8 @@ public final class RegionalLeaderboardUtils {
     private static ArrayList<RegionalEntry> getDistances(Activity activity, GeometryFactory geometryFactory, Geometry uniqueRoads, List<String> shapefiles) {
         ArrayList<RegionalEntry> regionalEntries = new ArrayList<>();
 
+        uniqueRoads = GeometryFixer.fix(uniqueRoads);
+
         for(String shpFilename : shapefiles) {
             try {
                 // Read shapefile
@@ -157,15 +159,12 @@ public final class RegionalLeaderboardUtils {
                             entry.setSmallRegion(shp.getSmallRegion());
                         }
 
-                        if(!uniqueRoads.isValid()) {
-                            uniqueRoads = GeometryFixer.fix(uniqueRoads);
-                        }
                         if(!regionPolygon.isValid()) {
                             regionPolygon = GeometryFixer.fix(regionPolygon);
                         }
 
                         Geometry newRoadsCleaned = GeometryFixer.fix(uniqueRoads);
-                        Geometry clippedRoads = OverlayNGRobust.overlay(newRoadsCleaned, regionPolygon, OverlayNG.INTERSECTION);
+                        Geometry clippedRoads = OverlayNG.overlay(newRoadsCleaned, regionPolygon, OverlayNG.INTERSECTION);
                         entry.setDistance(getGeodesicLength(clippedRoads));
 
                         System.out.println("New entry: " + entry);
