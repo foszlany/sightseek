@@ -191,9 +191,9 @@ public final class VectorizationUtils {
         List<LineString> roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
 
         // Calculate intersection
-        PreparedGeometry prepared = PreparedGeometryFactory.prepare(routePolygon);
+        PreparedGeometry preparedRoutePolygon = PreparedGeometryFactory.prepare(routePolygon);
         List<Geometry> intersectionLines = roadPolylines.parallelStream()
-                            .map(ls -> prepared.intersects(ls) ? ls.intersection(routePolygon) : null)
+                            .map(ls -> preparedRoutePolygon.intersects(ls) ? ls.intersection(routePolygon) : null)
                             .filter(g -> (g != null && !g.isEmpty()))
                             .collect(Collectors.toList());
 

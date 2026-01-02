@@ -35,6 +35,7 @@ import diewald_shapeFile.shapeFile.ShapeFile;
 
 public final class RegionalLeaderboardUtils {
     private static final ArrayList<String> regionTypes = new ArrayList<>(Arrays.asList("smallregion", "largeregion", "country"));
+    private static final double ROAD_PRECISION = 0.00006;
 
     private RegionalLeaderboardUtils() {}
 
@@ -45,7 +46,7 @@ public final class RegionalLeaderboardUtils {
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        Geometry bufferedNewRoads = newRoads.buffer(0.00006);
+        Geometry bufferedNewRoads = newRoads.buffer(ROAD_PRECISION);
 
         // Load all vectors from activities
         MultiLineString allRoads = getAllRoads(activity, geometryFactory, bufferedNewRoads);
@@ -54,7 +55,7 @@ public final class RegionalLeaderboardUtils {
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
         // Get unique roads
-        Geometry uniqueRoads = OverlayOp.overlayOp(newRoads, allRoads.buffer(0.00006), OverlayOp.DIFFERENCE);
+        Geometry uniqueRoads = OverlayOp.overlayOp(newRoads, allRoads.buffer(ROAD_PRECISION), OverlayOp.DIFFERENCE);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
