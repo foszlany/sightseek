@@ -18,7 +18,10 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
@@ -38,6 +41,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolyLine;
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
@@ -177,7 +181,6 @@ public final class VectorizationUtils {
         // Calculate countries
         Set<String> countryCodes = getTouchedCountries(lineString, activity, null);
         if(countryCodes.isEmpty()) {
-            System.out.println("No countries have been detected, halting.");
             return new VectorizedDataRecord();
         }
 
@@ -185,10 +188,16 @@ public final class VectorizationUtils {
         Polygon routePolygon = createPolygonFromLineString(lineString);
 
         // Filtered roads
-        MultiLineString roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
+        List<LineString> roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon.getEnvelopeInternal());
 
         // Calculate intersection
-        Geometry vectorizedDataGeometry = roadPolylines.intersection(routePolygon);
+        PreparedGeometry prepared = PreparedGeometryFactory.prepare(routePolygon);
+        List<Geometry> intersectionLines = roadPolylines.parallelStream()
+                            .map(ls -> prepared.intersects(ls) ? ls.intersection(routePolygon) : null)
+                            .filter(g -> (g != null && !g.isEmpty()))
+                            .collect(Collectors.toList());
+
+        Geometry vectorizedDataGeometry = UnaryUnionOp.union(intersectionLines);
 
         // Reduce
         PrecisionModel precisionModel = new PrecisionModel(1e6);
@@ -266,8 +275,8 @@ public final class VectorizationUtils {
         }
     }
 
-    private static MultiLineString getRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes, Envelope filterEnvelope) {
-        ArrayList<LineString> lineStringList = new ArrayList<>();
+    private static List<LineString> getRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes, Envelope filterEnvelope) {
+        List<LineString> lineStringList = new ArrayList<>();
 
         for(String code : countryCodes) {
             copyShapefileToInternalStorage(activity, code + "_roads");
@@ -297,7 +306,7 @@ public final class VectorizationUtils {
             }
         }
 
-        return new MultiLineString(lineStringList.toArray(new LineString[0]), geometryFactory);
+        return lineStringList;
     }
 
     private static HashMap<String, List<LineString>> getPerCountryRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes) {
