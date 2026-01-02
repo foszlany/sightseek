@@ -4,7 +4,6 @@ import static com.hu.sightseek.helper.CountryInfo.getContinent;
 import static com.hu.sightseek.helper.CountryInfo.getCountry;
 import static com.hu.sightseek.helper.RegionalDistanceAggregator.aggregateDistances;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
-import static com.hu.sightseek.util.VectorizationUtils.TOLERANCE;
 import static com.hu.sightseek.util.VectorizationUtils.copyShapefileToInternalStorage;
 
 import android.app.Activity;
@@ -15,14 +14,13 @@ import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.RegionalEntry;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.util.GeometryFixer;
-import org.locationtech.jts.operation.overlay.snap.SnapOverlayOp;
+import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
@@ -41,20 +39,22 @@ public final class RegionalLeaderboardUtils {
     private RegionalLeaderboardUtils() {}
 
     public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Set<String> countryCodes) {
-        if(newRoads == null) {
+        if(newRoads == null || newRoads.isEmpty()) {
             return;
         }
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
+        Geometry bufferedNewRoads = newRoads.buffer(0.00006);
+
         // Load all vectors from activities
-        MultiLineString allRoads = getAllRoads(activity, geometryFactory, newRoads);
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, bufferedNewRoads);
 
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
         // Get unique roads
-        Geometry uniqueRoads = SnapOverlayOp.difference(newRoads, allRoads);
+        Geometry uniqueRoads = OverlayOp.overlayOp(newRoads, allRoads.buffer(0.00006), OverlayOp.DIFFERENCE);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
@@ -63,7 +63,9 @@ public final class RegionalLeaderboardUtils {
         Map<String, Double> distanceMap = aggregateDistances(entries);
 
         // Update leaderboard
-        updateRegionalLeaderboard(distanceMap);
+        if(!distanceMap.isEmpty()) {
+            updateRegionalLeaderboard(distanceMap);
+        }
     }
 
     private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Geometry newRoads) {
@@ -73,11 +75,8 @@ public final class RegionalLeaderboardUtils {
 
         List<LineString> usableLines = new ArrayList<>();
 
-        Envelope newRoadsEnvelope = new Envelope(newRoads.getEnvelopeInternal());
-        newRoadsEnvelope.expandBy(TOLERANCE);
-
         for(Geometry g : allRoads) {
-            if(newRoadsEnvelope.intersects(g.getEnvelopeInternal())) {
+            if(newRoads.intersects(g)) {
                 if(g instanceof LineString) {
                     usableLines.add((LineString) g);
                 }

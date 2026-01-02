@@ -49,8 +49,7 @@ public class RegionalDistanceAggregator {
             distanceMap.put(key, newDistance);
         }
         else {
-            Double oldDistance = distanceMap.get(key);
-            distanceMap.put(key, (oldDistance == null ? newDistance : oldDistance + newDistance));
+            distanceMap.compute(key, (k, oldDistance) -> (oldDistance == null ? newDistance : oldDistance + newDistance));
         }
     }
 }
