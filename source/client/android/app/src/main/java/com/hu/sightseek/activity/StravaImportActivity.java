@@ -2,7 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
 import static com.hu.sightseek.util.GenericUtils.STRAVA_CLIENT_ID;
-import static com.hu.sightseek.util.RegionalLeaderboardUtils.calculateRegionalDistance;
+import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.decode;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.VectorizationUtils.batchVectorize;
@@ -43,8 +43,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
@@ -375,6 +373,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                     logIntoConsole("Nothing new was found.\n" +
                                                    "Use \"Import missing\" if you wish to restore deleted activities.\n");
 
+                                    isImporting = false;
                                     return;
                                 }
 
@@ -394,19 +393,13 @@ public class StravaImportActivity extends AppCompatActivity {
                                         }
 
                                         List<VectorizedDataRecord> vectorizedDataRecords = batchVectorize(StravaImportActivity.this, polylines, msg -> logIntoConsole(msg));
-                                        List<Geometry> geometries = new ArrayList<>();
-                                        List<Polygon> routePolygons = new ArrayList<>();
                                         Set<String> countryCodes = new HashSet<>();
                                         for(int i = 0; i < activities.size(); i++) {
                                             Geometry vectorizedDataGeometry = vectorizedDataRecords.get(i).getVectorizedDataGeometry();
                                             byte[] vectorizedDataBlob = WKConverter.convertGeometryToWKB(vectorizedDataGeometry);
-
                                             activities.get(i).setVectorizedData(vectorizedDataBlob);
 
-                                            geometries.add(vectorizedDataGeometry);
                                             countryCodes.addAll(vectorizedDataRecords.get(i).getCountryCodes());
-
-                                            routePolygons.add(vectorizedDataRecords.get(i).getRoutePolygon());
                                         }
 
                                         runOnUiThread(() -> {
@@ -414,9 +407,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                             logIntoConsole("Saving...");
                                         });
 
-                                        Geometry mergedVectorizedData = UnaryUnionOp.union(geometries);
-                                        Polygon mergedRoutePolygons = (Polygon) UnaryUnionOp.union(routePolygons);
-                                        calculateRegionalDistance(StravaImportActivity.this, mergedVectorizedData, mergedRoutePolygons, countryCodes);
+                                        batchCalculateRegionalDistance(StravaImportActivity.this, vectorizedDataRecords, countryCodes);
 
                                         runOnUiThread(() -> {
                                             isImporting = false;

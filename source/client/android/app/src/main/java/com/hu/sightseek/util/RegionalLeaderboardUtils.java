@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.RegionalEntry;
+import com.hu.sightseek.model.VectorizedDataRecord;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -22,6 +23,7 @@ import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,24 +40,30 @@ public final class RegionalLeaderboardUtils {
 
     private RegionalLeaderboardUtils() {}
 
-    public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Polygon routePolygon, Set<String> countryCodes) {
-        if(newRoads == null || newRoads.isEmpty()) {
+    public static void batchCalculateRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
+        if(vectorizedDataRecords == null || vectorizedDataRecords.isEmpty()) {
             return;
         }
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
+        List<Geometry> newRoads = new ArrayList<>();
+        List<Polygon> routePolygons = new ArrayList<>();
+        for(VectorizedDataRecord v : vectorizedDataRecords) {
+            newRoads.add(v.getVectorizedDataGeometry());
+            routePolygons.add(v.getRoutePolygon());
+        }
+
+        Geometry mergedNewRoads = UnaryUnionOp.union(newRoads);
+
         // Load all vectors from activities
-        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon);
-        System.out.println("roaded");
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygons);
 
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
-        System.out.println("shapefiles");
 
         // Get unique roads
-        Geometry uniqueRoads = OverlayNG.overlay(newRoads, allRoads.buffer(ROAD_PRECISION), OverlayNG.DIFFERENCE);
-        System.out.println("uniqued");
+        Geometry uniqueRoads = OverlayNG.overlay(mergedNewRoads, allRoads.buffer(ROAD_PRECISION), OverlayNG.DIFFERENCE);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
@@ -69,7 +77,35 @@ public final class RegionalLeaderboardUtils {
         }
     }
 
-    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Geometry newRoads) {
+    public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Polygon routePolygon, Set<String> countryCodes) {
+        if(newRoads == null || newRoads.isEmpty()) {
+            return;
+        }
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        // Load all vectors from activities
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon);
+
+        // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
+        List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
+
+        // Get unique roads
+        Geometry uniqueRoads = OverlayNG.overlay(newRoads, allRoads.buffer(ROAD_PRECISION), OverlayNG.DIFFERENCE);
+
+        // Calculate the distance per region along with the containing geometries
+        List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
+
+        // Convert distances to map
+        Map<String, Double> distanceMap = aggregateDistances(entries);
+
+        // Update leaderboard
+        if(!distanceMap.isEmpty()) {
+            updateRegionalLeaderboard(distanceMap);
+        }
+    }
+
+    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Polygon routePolygon) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
         List<Geometry> allRoads = dao.getAllVectorizedRoads();
         dao.close();
@@ -77,7 +113,7 @@ public final class RegionalLeaderboardUtils {
         List<LineString> usableLines = new ArrayList<>();
 
         for(Geometry g : allRoads) {
-            if(newRoads.intersects(g)) {
+            if(routePolygon.intersects(g)) {
                 if(g instanceof LineString) {
                     usableLines.add((LineString) g);
                 }
@@ -94,6 +130,37 @@ public final class RegionalLeaderboardUtils {
         }
 
         return geometryFactory.createMultiLineString(usableLines.toArray(new LineString[0]));
+    }
+
+    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, List<Polygon> routePolygons) {
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
+        List<Geometry> allRoads = dao.getAllVectorizedRoads();
+        dao.close();
+
+        return geometryFactory.createMultiLineString(
+                allRoads.parallelStream().flatMap(g -> {
+                    List<LineString> lines = new ArrayList<>();
+
+                    for(Polygon routePolygon : routePolygons) {
+                        if(routePolygon.intersects(g)) {
+                            if(g instanceof LineString) {
+                                lines.add((LineString) g);
+                            }
+                            else if(g instanceof MultiLineString) {
+                                MultiLineString mls = (MultiLineString) g;
+                                for(int i = 0; i < mls.getNumGeometries(); i++) {
+                                    lines.add((LineString) mls.getGeometryN(i));
+                                }
+                            }
+                            else {
+                                throw new IllegalArgumentException("Unexpected geometry: " + g.getGeometryType());
+                            }
+                            break;
+                        }
+                    }
+
+                    return lines.stream();
+                }).toArray(LineString[]::new));
     }
 
     private static ArrayList<String> getSmallestAvailableRegionFilenames(Activity activity, Set<String> countryCodes) {
