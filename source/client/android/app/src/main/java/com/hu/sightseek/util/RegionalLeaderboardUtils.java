@@ -36,7 +36,7 @@ import diewald_shapeFile.shapeFile.ShapeFile;
 
 public final class RegionalLeaderboardUtils {
     private static final ArrayList<String> regionTypes = new ArrayList<>(Arrays.asList("smallregion", "largeregion", "country"));
-    private static final double ROAD_PRECISION = 0.00006;
+    private static final double ROAD_PRECISION = 0.00004;
 
     private RegionalLeaderboardUtils() {}
 
@@ -47,6 +47,7 @@ public final class RegionalLeaderboardUtils {
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
+        // Merge roads
         List<Geometry> newRoads = new ArrayList<>();
         List<Polygon> routePolygons = new ArrayList<>();
         for(VectorizedDataRecord v : vectorizedDataRecords) {
