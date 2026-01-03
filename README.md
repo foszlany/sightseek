@@ -23,4 +23,8 @@ Sightseek has two leaderboards available:
     - Want to be the very best in your region? Walk on unique paths and the distance will determine your placing.
 
 ## Limitations
-The application is a proof of concept. As such, it runs locally on your phone. To prevent the application's file size from reaching into the terabyte range, only *Liechtenstein*, *Mauritius* and *Hungary (Csongrád-Csanád vármegye)* are available.
+The application is a proof of concept created for my Bachelor thesis.
+
+The spatial algorithms run entirely locally and are restricted to a select few locations to prevent the application's file size from skyrocketing.
+
+Documentation is not yet available.
