@@ -359,9 +359,9 @@ public final class VectorizationUtils {
         for(String extension : fileExtensions) {
             try {
                 File outFile = new File(context.getFilesDir(), fileName + extension);
-                //if(outFile.exists()) { TODO remove when done
-                //    return true;
-                //}
+                if(outFile.exists()) {
+                    return true;
+                }
 
                 try(InputStream in = context.getAssets().open("shapefiles/" + fileName + extension);
                     OutputStream out = new FileOutputStream(outFile)) {
