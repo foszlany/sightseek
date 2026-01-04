@@ -91,8 +91,10 @@ public final class RegionalLeaderboardUtils {
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
+        Polygon bufferedAllRoads = (Polygon) allRoads.buffer(ROAD_PRECISION);
+
         // Get unique roads
-        Geometry uniqueRoads = OverlayNG.overlay(newRoads, allRoads.buffer(ROAD_PRECISION), OverlayNG.DIFFERENCE);
+        Geometry uniqueRoads = OverlayNG.overlay(newRoads, bufferedAllRoads, OverlayNG.DIFFERENCE);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
