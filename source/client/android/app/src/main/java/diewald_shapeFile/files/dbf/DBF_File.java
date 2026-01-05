@@ -29,7 +29,6 @@ package diewald_shapeFile.files.dbf;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;

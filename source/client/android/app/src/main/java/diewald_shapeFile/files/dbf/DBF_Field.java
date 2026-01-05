@@ -26,10 +26,8 @@
 
 package diewald_shapeFile.files.dbf;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * class DBF_Field.<br><br>
