@@ -5,11 +5,11 @@ import androidx.annotation.NonNull;
 import com.hu.sightseek.enums.SavedIdeaStatus;
 
 public class Idea {
-    private long id;
-    private String name;
-    private String place;
-    private double latitude;
-    private double longitude;
+    private final long id;
+    private final String name;
+    private final String place;
+    private final double latitude;
+    private final double longitude;
     private SavedIdeaStatus status;
 
     public Idea(long id, String name, String place, double latitude, double longitude, SavedIdeaStatus status) {

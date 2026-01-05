@@ -23,7 +23,7 @@ public class VectorizedDataRecord implements Serializable {
 
         if(vectorizedDataPolylines != null) {
             for(Polyline polyline : vectorizedDataPolylines) {
-                this.vectorizedPoints.add(new ArrayList<>(polyline.getPoints()));
+                this.vectorizedPoints.add(new ArrayList<>(polyline.getActualPoints()));
             }
         }
 
