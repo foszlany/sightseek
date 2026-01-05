@@ -22,6 +22,11 @@ Sightseek has two leaderboards available:
 - Region based
     - Want to be the very best in your region? Walk on unique paths and the distance will determine your placing.
 
+<div align="center">
+  <img src="https://i.ibb.co/fdg0ghQc/image.png" alt="Cell based leaderboard" width="250" hspace="10"/>
+  <img src="https://i.ibb.co/b5mYPY78/image.png" alt="Regional leaderboard" width="250" hspace="10"/>
+</div>
+
 ## Limitations
 The application is a proof of concept created for my Bachelor thesis.
 
