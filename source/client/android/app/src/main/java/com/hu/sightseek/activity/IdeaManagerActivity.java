@@ -35,7 +35,6 @@ import com.hu.sightseek.model.Idea;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class IdeaManagerActivity extends AppCompatActivity {
     private IdeaAdapter adapter;
@@ -170,16 +169,16 @@ public class IdeaManagerActivity extends AppCompatActivity {
         applyButton.setOnClickListener(v -> {
             // Sort by
             if(checkedSortByMethod == R.id.ideamanager_filtermenu_nameaz) {
-                Collections.sort(ideas, (a1, a2) -> a1.getName().compareTo(a2.getName()));
+                ideas.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
             }
             else if(checkedSortByMethod == R.id.ideamanager_filtermenu_nameza) {
-                Collections.sort(ideas, (a1, a2) -> a2.getName().compareTo(a1.getName()));
+                ideas.sort((a1, a2) -> a2.getName().compareTo(a1.getName()));
             }
             else if(checkedSortByMethod == R.id.ideamanager_filtermenu_placeaz) {
-                Collections.sort(ideas, (a1, a2) -> a1.getPlace().compareToIgnoreCase(a2.getPlace()));
+                ideas.sort((a1, a2) -> a1.getPlace().compareToIgnoreCase(a2.getPlace()));
             }
             else if(checkedSortByMethod == R.id.ideamanager_filtermenu_placeza) {
-                Collections.sort(ideas, (a1, a2) -> a2.getPlace().compareToIgnoreCase(a1.getPlace()));
+                ideas.sort((a1, a2) -> a2.getPlace().compareToIgnoreCase(a1.getPlace()));
             }
 
             // Categories
