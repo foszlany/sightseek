@@ -43,14 +43,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/** Generic utilities */
 public final class GenericUtils {
     /** Default latitude (Hungary, Budapest) */
     public static final double DEFAULT_LATITUDE = 47.499;
     /** Default longitude (Hungary, Budapest) */
     public static final double DEFAULT_LONGITUDE = 19.044;
 
+    /** Private constructor */
     private GenericUtils() {}
 
+    /**
+     * Sets up default route appearance.
+     * @param route Polyline to apply
+     * @param isLight Determines whether route should be optimized for better performance without sacrificing accuracy.
+     */
     public static void setupRouteLine(Polyline route, boolean isLight) {
         if(isLight) {
             route.getOutlinePaint().setColor(Color.parseColor("#40A7FF"));
@@ -72,6 +79,11 @@ public final class GenericUtils {
         }
     }
 
+    /**
+     * Sets up default zoom settings for a map.
+     * @param mapView Map
+     * @param zoom New zoom value
+     */
     public static void setupZoomSettings(MapView mapView, double zoom) {
         mapView.getController().setZoom(zoom);
         mapView.setMinZoomLevel(3.0);
@@ -87,6 +99,13 @@ public final class GenericUtils {
         ));
     }
 
+    /**
+     * Gets the most specific location available as a String.
+     * @param ctx Context
+     * @param latitude Latitude
+     * @param longitude Longitude
+     * @return Name of the location. Returns "Unknown location" when nothing was found.
+     */
     public static String getLocationString(Context ctx, double latitude, double longitude) {
         String locationString = "";
 
@@ -114,6 +133,13 @@ public final class GenericUtils {
         return locationString;
     }
 
+    /**
+     * Creates a screenshot of the current view.
+     * @param ctx Context
+     * @param view View
+     * @param name Name of the file before timestamp
+     * @param excludedView View to exclude from the screenshot. Set to null when not needed.
+     */
     public static void createScreenshot(Context ctx, View view, String name, View excludedView) {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -195,11 +221,21 @@ public final class GenericUtils {
         }
     }
 
+    /**
+     * Moves the map to the default location.
+     * @param mapView Map
+     */
     public static void moveToDefaultLocation(MapView mapView) {
         GeoPoint point = new GeoPoint(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
         mapView.getController().setCenter(point);
     }
 
+    /**
+     * Creates a Bitmap from a Vector Drawable file.
+     * @param context Context
+     * @param drawableId Drawable ID
+     * @return Bitmap
+     */
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if(drawable == null) {
@@ -216,6 +252,10 @@ public final class GenericUtils {
         return bitmap;
     }
 
+    /**
+     * Hides the keyboard.
+     * @param activity Activity
+     */
     public static void hideKeyboard(Activity activity) {
         View view = activity.getCurrentFocus();
         if(view != null) {
