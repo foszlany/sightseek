@@ -2,7 +2,6 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.util.GenericUtils.STRAVA_CLIENT_ID;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
@@ -36,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.DeleteAccountFragment;
@@ -169,7 +169,7 @@ public class ProfileActivity extends AppCompatActivity {
         stravaButton.setOnClickListener(v -> {
             Uri uri = Uri.parse("https://www.strava.com/oauth/mobile/authorize")
                     .buildUpon()
-                    .appendQueryParameter("client_id", STRAVA_CLIENT_ID)
+                    .appendQueryParameter("client_id", BuildConfig.STRAVA_CLIENT_ID)
                     .appendQueryParameter("response_type", "code")
                     .appendQueryParameter("redirect_uri", "sightseek://strava-auth")
                     .appendQueryParameter("approval_prompt", "auto")

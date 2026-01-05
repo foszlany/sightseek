@@ -26,6 +26,9 @@ android {
 
         val stravaApiKey = keysProperties["STRAVA_API_KEY"]?.toString() ?: ""
         buildConfigField("String", "STRAVA_API_KEY", "\"$stravaApiKey\"")
+
+        val stravaClientID = keysProperties["STRAVA_CLIENT_ID"]?.toString() ?: ""
+        buildConfigField("String", "STRAVA_CLIENT_ID", "\"$stravaClientID\"")
     }
 
     buildTypes {

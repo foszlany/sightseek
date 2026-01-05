@@ -1,7 +1,6 @@
 package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
-import static com.hu.sightseek.util.GenericUtils.STRAVA_CLIENT_ID;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.decode;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
@@ -157,7 +156,7 @@ public class StravaImportActivity extends AppCompatActivity {
             }
 
             RequestBody body = new FormBody.Builder()
-                    .add("client_id", STRAVA_CLIENT_ID)
+                    .add("client_id", BuildConfig.STRAVA_CLIENT_ID)
                     .add("client_secret", BuildConfig.STRAVA_API_KEY)
                     .add("code", code)
                     .add("grant_type", "authorization_code")
