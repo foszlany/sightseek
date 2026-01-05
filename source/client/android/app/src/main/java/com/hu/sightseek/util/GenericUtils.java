@@ -171,8 +171,9 @@ public final class GenericUtils {
 
             File picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File appDir = new File(picturesDir, "SightSeek");
-            if(!appDir.exists()) {
-                appDir.mkdir();
+            if(!appDir.exists() && !appDir.mkdir()) {
+                Toast.makeText(ctx, "An error has occurred while trying to save the screenshot (Failed creating folder)", Toast.LENGTH_LONG).show();
+                return;
             }
 
             File imageFile = new File(appDir, fileName);
@@ -188,7 +189,7 @@ public final class GenericUtils {
                 Toast.makeText(ctx, "Saved: " + imageFile, Toast.LENGTH_LONG).show();
             }
             catch(IOException e) {
-                Toast.makeText(ctx, "An error has occurred while trying to save the screenshot: Failed creation", Toast.LENGTH_LONG).show();
+                Toast.makeText(ctx, "An error has occurred while trying to save the screenshot.", Toast.LENGTH_LONG).show();
             }
         }
     }
