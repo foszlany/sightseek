@@ -186,9 +186,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         leaderboardRecyclerView.setAdapter(null);
         regionFilterButton.setVisibility(VISIBLE);
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            setupRegionalLeaderboard("Global");
-        });
+        Executors.newSingleThreadExecutor().execute(() -> setupRegionalLeaderboard("Global"));
     }
 
     private void setupLeaderboardViews(Task<QuerySnapshot> leaderboardTask, Task<DocumentSnapshot> userTask, String valueStr, String regionalQueryStr) {

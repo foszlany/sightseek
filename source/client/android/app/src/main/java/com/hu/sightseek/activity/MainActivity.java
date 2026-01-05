@@ -37,7 +37,6 @@ import com.hu.sightseek.db.LocalDatabaseDAO;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -217,28 +216,28 @@ public class MainActivity extends AppCompatActivity {
         applyButton.setOnClickListener(v -> {
             // Sort by
             if(checkedSortByMethod == R.id.main_filtermenu_date_recent) {
-                Collections.sort(activities, (a1, a2) -> a2.getStartTime().compareTo(a1.getStartTime()));
+                activities.sort((a1, a2) -> a2.getStartTime().compareTo(a1.getStartTime()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_date_old) {
-                Collections.sort(activities, (a1, a2) -> a1.getStartTime().compareTo(a2.getStartTime()));
+                activities.sort((a1, a2) -> a1.getStartTime().compareTo(a2.getStartTime()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_alpha_az) {
-                Collections.sort(activities, (a1, a2) -> a1.getName().compareToIgnoreCase(a2.getName()));
+                activities.sort((a1, a2) -> a1.getName().compareToIgnoreCase(a2.getName()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_alpha_za) {
-                Collections.sort(activities, (a1, a2) -> a2.getName().compareToIgnoreCase(a1.getName()));
+                activities.sort((a1, a2) -> a2.getName().compareToIgnoreCase(a1.getName()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_dist_lth) {
-                Collections.sort(activities, (a1, a2) -> Double.compare(a1.getDistance(), a2.getDistance()));
+                activities.sort((a1, a2) -> Double.compare(a1.getDistance(), a2.getDistance()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_dist_htl) {
-                Collections.sort(activities, (a1, a2) -> Double.compare(a2.getDistance(), a1.getDistance()));
+                activities.sort((a1, a2) -> Double.compare(a2.getDistance(), a1.getDistance()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_time_lth) {
-                Collections.sort(activities, (a1, a2) -> Double.compare(a1.getElapsedTime(), a2.getElapsedTime()));
+                activities.sort((a1, a2) -> Double.compare(a1.getElapsedTime(), a2.getElapsedTime()));
             }
             else if(checkedSortByMethod == R.id.main_filtermenu_time_htl) {
-                Collections.sort(activities, (a1, a2) -> Double.compare(a2.getElapsedTime(), a1.getElapsedTime()));
+                activities.sort((a1, a2) -> Double.compare(a2.getElapsedTime(), a1.getElapsedTime()));
             }
 
             // Categories
