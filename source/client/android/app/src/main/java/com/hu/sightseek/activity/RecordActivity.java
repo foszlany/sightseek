@@ -823,11 +823,7 @@ public class RecordActivity extends AppCompatActivity {
                     totalDist = 0;
 
                     // Clear map
-                    for(Overlay i : mapView.getOverlays()) {
-                        if(!(i instanceof MyLocationNewOverlay)) {
-                            mapView.getOverlays().remove(i);
-                        }
-                    }
+                    mapView.getOverlays().removeIf(i -> !(i instanceof MyLocationNewOverlay));
                 }
 
                 return true;
