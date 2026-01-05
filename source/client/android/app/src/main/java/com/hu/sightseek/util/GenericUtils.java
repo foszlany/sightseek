@@ -122,13 +122,15 @@ public final class GenericUtils {
                         locationString = addresses.get(0).getCountryName();
 
                         if(locationString == null || "null".equals(locationString)) {
-                            locationString = "Unknown location";
+                            return "Unknown location";
                         }
                     }
                 }
             }
         }
-        catch(IOException ignored) {}
+        catch(IOException e) {
+            return "Unknown location";
+        }
 
         return locationString;
     }
