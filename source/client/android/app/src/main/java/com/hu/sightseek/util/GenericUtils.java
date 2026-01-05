@@ -44,8 +44,10 @@ import java.util.List;
 import java.util.Locale;
 
 public final class GenericUtils {
-    public static final double BUDAPEST_LATITUDE = 47.499;
-    public static final double BUDAPEST_LONGITUDE = 19.044;
+    /** Default latitude (Hungary, Budapest) */
+    public static final double DEFAULT_LATITUDE = 47.499;
+    /** Default longitude (Hungary, Budapest) */
+    public static final double DEFAULT_LONGITUDE = 19.044;
 
     private GenericUtils() {}
 
@@ -193,8 +195,8 @@ public final class GenericUtils {
         }
     }
 
-    public static void defaultToBudapest(MapView mapView) {
-        GeoPoint point = new GeoPoint(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE);
+    public static void moveToDefaultLocation(MapView mapView) {
+        GeoPoint point = new GeoPoint(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
         mapView.getController().setCenter(point);
     }
 

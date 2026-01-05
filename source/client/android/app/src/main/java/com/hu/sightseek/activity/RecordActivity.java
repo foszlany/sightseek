@@ -11,7 +11,7 @@ import static com.hu.sightseek.activity.SaveActivity.KEY_START_TIME;
 import static com.hu.sightseek.provider.IdeaOverlayProvider.getIdeasOverlay;
 import static com.hu.sightseek.util.GenericUtils.getBitmapFromVectorDrawable;
 import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
-import static com.hu.sightseek.util.GenericUtils.defaultToBudapest;
+import static com.hu.sightseek.util.GenericUtils.moveToDefaultLocation;
 import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
 
 import android.animation.ValueAnimator;
@@ -329,7 +329,7 @@ public class RecordActivity extends AppCompatActivity {
         // Check for permissions
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Default to Budapest
-            defaultToBudapest(mapView);
+            moveToDefaultLocation(mapView);
 
             Toast.makeText(this, "Fine location data is required for accurate tracking!", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
@@ -337,7 +337,7 @@ public class RecordActivity extends AppCompatActivity {
         }
         else if(!isLocationEnabled(this)) {
             // Default to Budapest
-            defaultToBudapest(mapView);
+            moveToDefaultLocation(mapView);
         }
         else {
             centerToCurrentLocation();

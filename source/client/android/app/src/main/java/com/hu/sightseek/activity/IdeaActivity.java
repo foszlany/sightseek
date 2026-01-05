@@ -2,7 +2,7 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.util.GenericUtils.defaultToBudapest;
+import static com.hu.sightseek.util.GenericUtils.moveToDefaultLocation;
 import static com.hu.sightseek.util.GenericUtils.getLocationString;
 import static com.hu.sightseek.provider.StatisticsProvider.getMedianPoint;
 import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
@@ -148,7 +148,7 @@ public class IdeaActivity extends AppCompatActivity {
             tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
             tilesOverlay.setLoadingLineColor(Color.TRANSPARENT);
 
-            defaultToBudapest(mapView);
+            moveToDefaultLocation(mapView);
             setupZoomSettings(mapView, 14.0);
         });
 

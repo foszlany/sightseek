@@ -67,7 +67,7 @@ public class SelectLocationFragment extends DialogFragment {
                 || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
                 || ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
 
-            referencePoint = new GeoPoint(GenericUtils.BUDAPEST_LATITUDE, GenericUtils.BUDAPEST_LONGITUDE);
+            referencePoint = new GeoPoint(GenericUtils.DEFAULT_LATITUDE, GenericUtils.DEFAULT_LONGITUDE);
             mapView.getController().setCenter(referencePoint);
             refreshMarker(referencePoint);
         }
