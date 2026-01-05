@@ -65,6 +65,7 @@ import java.util.concurrent.Executors;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 public class IdeaActivity extends AppCompatActivity {
     private Idea currentIdea;
@@ -323,7 +324,12 @@ public class IdeaActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
                     if(!response.isSuccessful() || response.body() == null) {
-                        initErrorViews("Could not fetch data. Try again later");
+                        if(response.code() == 504) {
+                            initErrorViews("Server failed to respond. Try again later.");
+                        }
+                        else {
+                            initErrorViews("Could not fetch data. Try again later.");
+                        }
                     }
                     else {
                         try {
