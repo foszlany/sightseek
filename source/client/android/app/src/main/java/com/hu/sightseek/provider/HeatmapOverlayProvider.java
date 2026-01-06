@@ -18,7 +18,7 @@ public class HeatmapOverlayProvider {
     private static final int RADIUS = 6;
     private static final double SIGMA = 3.0;
     private static final int minGridHeight = 250;
-    private static final int maxGridHeight = 1000;
+    private static final int maxGridHeight = 850;
 
     private static double[][] kernel;
 
