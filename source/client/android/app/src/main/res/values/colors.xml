@@ -25,12 +25,12 @@
     <color name="light_pink">#F1B3FF</color>
     <color name="light_green">#96FFB1</color>
     <color name="orange">#FF7700</color>
-    <color name="strava">#FC5200</color>
+    <color name="strava">#D54200</color>
     <color name="light_purple">#9734FF</color>
     <color name="green">#00FF14</color>
     <color name="gold">#E98C25</color>
     <color name="silver">#8E8E8E</color>
     <color name="bronze">#87673E</color>
     <color name="faint_blue">#5F5F75</color>
-    <color name="desaturated_blue">#508CA6</color>
+    <color name="desaturated_blue">#3D7287</color>
 </resources>
