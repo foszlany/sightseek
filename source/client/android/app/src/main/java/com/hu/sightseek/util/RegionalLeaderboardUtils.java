@@ -35,11 +35,22 @@ import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
 public final class RegionalLeaderboardUtils {
+    /** File postfixes for region types */
     private static final ArrayList<String> regionTypes = new ArrayList<>(Arrays.asList("smallregion", "largeregion", "country"));
+    /** Precision for road comparision */
     private static final double ROAD_PRECISION = 0.00004;
+    /** Radius of the Earth in kilometers */
+    private static final double R = 6371;
 
+    /** Private constructor */
     private RegionalLeaderboardUtils() {}
 
+    /**
+     * Batch version of calculateRegionalDistance()
+     * @param activity Activity
+     * @param vectorizedDataRecords Data records of the vectorized activities
+     * @param countryCodes Country codes of the touched countries
+     */
     public static void batchCalculateRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
         if(vectorizedDataRecords == null || vectorizedDataRecords.isEmpty()) {
             return;
@@ -78,6 +89,13 @@ public final class RegionalLeaderboardUtils {
         }
     }
 
+    /**
+     * Calculates unique distances per region and uploads it to the database.
+     * @param activity Activity
+     * @param newRoads New roads
+     * @param routePolygon Buffered polygon of the roads
+     * @param countryCodes Country codes of the touched countries
+     */
     public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Polygon routePolygon, Set<String> countryCodes) {
         if(newRoads == null || newRoads.isEmpty()) {
             return;
@@ -108,6 +126,13 @@ public final class RegionalLeaderboardUtils {
         }
     }
 
+    /**
+     * Gets all relevant roads from the database based on the buffered polygon.
+     * @param activity Activity
+     * @param geometryFactory Geometry factory
+     * @param routePolygon Buffered polygon of the roads
+     * @return Roads as a MultiLineString
+     */
     private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Polygon routePolygon) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
         List<Geometry> allRoads = dao.getAllVectorizedRoads();
@@ -135,6 +160,13 @@ public final class RegionalLeaderboardUtils {
         return geometryFactory.createMultiLineString(usableLines.toArray(new LineString[0]));
     }
 
+    /**
+     * Gets all relevant roads from the database based on a list of buffered polygons.
+     * @param activity Activity
+     * @param geometryFactory Geometry factory
+     * @param routePolygons List of the buffered polygons of the roads
+     * @return Roads as a MultiLineString
+     */
     private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, List<Polygon> routePolygons) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
         List<Geometry> allRoads = dao.getAllVectorizedRoads();
@@ -166,6 +198,12 @@ public final class RegionalLeaderboardUtils {
                 }).toArray(LineString[]::new));
     }
 
+    /**
+     * Gets the list of shapefiles to be opened based on available region divisions.
+     * @param activity Activity
+     * @param countryCodes Country codes of the touched countries
+     * @return List of shapefile names.
+     */
     private static ArrayList<String> getSmallestAvailableRegionFilenames(Activity activity, Set<String> countryCodes) {
         ArrayList<String> shapeFiles = new ArrayList<>();
 
@@ -183,6 +221,14 @@ public final class RegionalLeaderboardUtils {
         return shapeFiles;
     }
 
+    /**
+     * Calculates the distance inside the smallest available regions.
+     * @param activity Activity
+     * @param geometryFactory Geometry factory
+     * @param uniqueRoads Unique roads
+     * @param shapefiles Shapefiles to open
+     * @return List of RegionalEntries holding the distances.
+     */
     private static ArrayList<RegionalEntry> getDistances(Activity activity, GeometryFactory geometryFactory, Geometry uniqueRoads, List<String> shapefiles) {
         ArrayList<RegionalEntry> regionalEntries = new ArrayList<>();
 
@@ -250,6 +296,12 @@ public final class RegionalLeaderboardUtils {
         return regionalEntries;
     }
 
+    /**
+     * Gets the shapefile polygons from a shapefile.
+     * @param activity Activity
+     * @param shpFilename Shapefile name
+     * @return List of polygons
+     */
     @NonNull
     private static ArrayList<ShpPolygon> getShpPolygons(Activity activity, String shpFilename) {
         try {
@@ -279,6 +331,11 @@ public final class RegionalLeaderboardUtils {
         }
     }
 
+    /**
+     * Gets the geodesic length of all LineStrings within a Geometry.
+     * @param geometry Geometry
+     * @return Length
+     */
     private static double getGeodesicLength(Geometry geometry) {
         double totalLength = 0.0;
 
@@ -300,9 +357,14 @@ public final class RegionalLeaderboardUtils {
         return totalLength;
     }
 
+    /** Calculates the spherical distance between two points
+     * @param lat1 Latitude of the first point
+     * @param lon1 Longitude of the first point
+     * @param lat2 Latitude of the second point
+     * @param lon2 Longitude of the second point
+     * @return Distance
+     */
     private static double haversine(double lat1, double lon1, double lat2, double lon2) {
-        final double R = 6371;
-
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
 
