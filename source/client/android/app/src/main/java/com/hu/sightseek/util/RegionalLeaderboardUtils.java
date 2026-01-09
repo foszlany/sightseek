@@ -204,8 +204,8 @@ public final class RegionalLeaderboardUtils {
      * @param countryCodes Country codes of the touched countries
      * @return List of shapefile names.
      */
-    private static ArrayList<String> getSmallestAvailableRegionFilenames(Activity activity, Set<String> countryCodes) {
-        ArrayList<String> shapeFiles = new ArrayList<>();
+    private static List<String> getSmallestAvailableRegionFilenames(Activity activity, Set<String> countryCodes) {
+        List<String> shapeFiles = new ArrayList<>();
 
         for(String code : countryCodes) {
             for(String region : regionTypes) {
@@ -229,20 +229,20 @@ public final class RegionalLeaderboardUtils {
      * @param shapefiles Shapefiles to open
      * @return List of RegionalEntries holding the distances.
      */
-    private static ArrayList<RegionalEntry> getDistances(Activity activity, GeometryFactory geometryFactory, Geometry uniqueRoads, List<String> shapefiles) {
-        ArrayList<RegionalEntry> regionalEntries = new ArrayList<>();
+    private static List<RegionalEntry> getDistances(Activity activity, GeometryFactory geometryFactory, Geometry uniqueRoads, List<String> shapefiles) {
+        List<RegionalEntry> regionalEntries = new ArrayList<>();
 
         uniqueRoads = GeometryFixer.fix(uniqueRoads);
 
         for(String shpFilename : shapefiles) {
             try {
                 // Read shapefile
-                ArrayList<ShpPolygon> shapes = getShpPolygons(activity, shpFilename);
+                List<ShpPolygon> shapes = getShpPolygons(activity, shpFilename);
 
                 // Detect necessary regions using route with contains operation
                 for(ShpPolygon shp : shapes) {
                     // Convert to Coordinate
-                    ArrayList<Coordinate> shapeCoords = new ArrayList<>();
+                    List<Coordinate> shapeCoords = new ArrayList<>();
                     double[][] shapePoints = shp.getPoints();
                     for(int j = 0; j < shp.getNumberOfPoints(); j++) {
                         shapeCoords.add(new Coordinate(shapePoints[j][0], shapePoints[j][1]));
@@ -303,12 +303,12 @@ public final class RegionalLeaderboardUtils {
      * @return List of polygons
      */
     @NonNull
-    private static ArrayList<ShpPolygon> getShpPolygons(Activity activity, String shpFilename) {
+    private static List<ShpPolygon> getShpPolygons(Activity activity, String shpFilename) {
         try {
             ShapeFile shapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), shpFilename);
             shapefile.READ();
 
-            ArrayList<ShpPolygon> shapes = new ArrayList<>();
+            List<ShpPolygon> shapes = new ArrayList<>();
             for(int i = 0; i < shapefile.getSHP_shapeCount(); i++) {
                 ShpPolygon poly = shapefile.getSHP_shape(i);
                 poly.setCountryCode(shpFilename.substring(0, 2));
