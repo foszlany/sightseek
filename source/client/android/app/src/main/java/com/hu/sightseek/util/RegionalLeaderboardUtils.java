@@ -37,7 +37,7 @@ import diewald_shapeFile.shapeFile.ShapeFile;
 public final class RegionalLeaderboardUtils {
     /** File postfixes for region types */
     private static final ArrayList<String> regionTypes = new ArrayList<>(Arrays.asList("smallregion", "largeregion", "country"));
-    /** Precision for road comparision */
+    /** Precision for road comparison */
     private static final double ROAD_PRECISION = 0.00004;
     /** Radius of the Earth in kilometers */
     private static final double R = 6371;
@@ -49,7 +49,7 @@ public final class RegionalLeaderboardUtils {
      * Batch version of calculateRegionalDistance()
      * @param activity Activity
      * @param vectorizedDataRecords Data records of the vectorized activities
-     * @param countryCodes Country codes of the touched countries
+     * @param countryCodes Merged country codes of the touched countries
      */
     public static void batchCalculateRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
         if(vectorizedDataRecords == null || vectorizedDataRecords.isEmpty()) {
@@ -92,12 +92,14 @@ public final class RegionalLeaderboardUtils {
     /**
      * Calculates unique distances per region and uploads it to the database.
      * @param activity Activity
-     * @param newRoads New roads
-     * @param routePolygon Buffered polygon of the roads
-     * @param countryCodes Country codes of the touched countries
+     * @param vectorizedDataRecord Data records of the vectorized activity
      */
-    public static void calculateRegionalDistance(Activity activity, Geometry newRoads, Polygon routePolygon, Set<String> countryCodes) {
-        if(newRoads == null || newRoads.isEmpty()) {
+    public static void calculateRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
+        Geometry newRoads = vectorizedDataRecord.getVectorizedDataGeometry();
+        Polygon routePolygon = vectorizedDataRecord.getRoutePolygon();
+        Set<String> countryCodes = vectorizedDataRecord.getCountryCodes();
+
+        if(vectorizedDataRecord.getVectorizedDataGeometry() == null || newRoads.isEmpty()) {
             return;
         }
 

@@ -149,7 +149,7 @@ public class SaveActivity extends AppCompatActivity {
 
             daoExecutor.execute(() -> {
                 if(vectorizedDataRecord != null) {
-                    calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord.getVectorizedDataGeometry(), vectorizedDataRecord.getRoutePolygon(), vectorizedDataRecord.getCountryCodes());
+                    calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord);
 
                     byte[] vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
 
