@@ -11,7 +11,7 @@ import java.util.Map;
 public final class FirebaseUtils {
     private FirebaseUtils() {}
 
-    public static void updateCellsInFirebase(FirebaseAuth auth, HashMap<String, Integer> cells, boolean isRemoval) {
+    public static void updateCellsInFirebase(FirebaseAuth auth, Map<String, Integer> cells, boolean isRemoval) {
         String uid = auth.getUid();
         if(uid == null || cells == null || cells.isEmpty()) {
             return;

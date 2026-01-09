@@ -44,7 +44,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
@@ -214,7 +214,7 @@ public class ProfileActivity extends AppCompatActivity {
                                         dao2.deleteImportedActivities();
                                         dao2.close();
 
-                                        HashMap<String, Integer> cells = getVisitedCells(points);
+                                        Map<String, Integer> cells = getVisitedCells(points);
                                         updateCellsInFirebase(auth, cells, true);
 
                                         userDocument.update("stravaId", -1);

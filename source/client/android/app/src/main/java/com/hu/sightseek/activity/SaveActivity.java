@@ -51,9 +51,9 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -157,7 +157,7 @@ public class SaveActivity extends AppCompatActivity {
                     long id = dao.addActivity(title.strip(), categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
 
                     if(auth.getCurrentUser() != null) {
-                        HashMap<String, Integer> visitedCells = getVisitedCells(pointList);
+                        Map<String, Integer> visitedCells = getVisitedCells(pointList);
                         updateCellsInFirebase(auth, visitedCells, false);
                     }
 

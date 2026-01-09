@@ -51,6 +51,7 @@ import org.osmdroid.views.overlay.TilesOverlay;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class ActivityActivity extends AppCompatActivity {
@@ -186,7 +187,7 @@ public class ActivityActivity extends AppCompatActivity {
                             }
                         }
                         else {
-                            HashMap<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
+                            Map<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
                             FirebaseUtils.updateCellsInFirebase(auth, cells, true);
                         }
 

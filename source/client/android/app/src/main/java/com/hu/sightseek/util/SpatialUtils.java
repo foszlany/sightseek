@@ -11,15 +11,25 @@ import org.osmdroid.util.GeoPoint;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SpatialUtils {
+    /** The precision used for geohashes throughout the program */
+    private static final int GEOHASH_PRECISION = 3;
+
+    /** Private constructor */
     private SpatialUtils() {}
 
-    public static HashMap<String, Integer> getVisitedCells(List<GeoPoint> pointList) {
-        HashMap<String, Integer> visitedCells = new HashMap<>();
+    /**
+     * Encodes the points into precision 3 geohashes.
+     * @param pointList List of GeoPoints to evaluate
+     * @return A map containing the encoded locations with their respective occurrences
+     */
+    public static Map<String, Integer> getVisitedCells(List<GeoPoint> pointList) {
+        Map<String, Integer> visitedCells = new HashMap<>();
 
         for(GeoPoint p : pointList) {
-            String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.getLatitude(), p.getLongitude()), 3);
+            String hash = GeoFireUtils.getGeoHashForLocation(new GeoLocation(p.getLatitude(), p.getLongitude()), GEOHASH_PRECISION);
 
             Integer count = visitedCells.get(hash);
             if(count == null) {
@@ -31,6 +41,11 @@ public class SpatialUtils {
         return visitedCells;
     }
 
+    /**
+     * Gets the bounding box of a list of points.
+     * @param pointList List of GeoPoints to evaluate
+     * @return Bounding box
+     */
     @NonNull
     public static BoundingBox getBoundingBox(List<GeoPoint> pointList) {
         double minLat = Double.MAX_VALUE;
@@ -56,7 +71,13 @@ public class SpatialUtils {
         return new BoundingBox(maxLat, maxLon, minLat, minLon);
     }
 
-    // From Google Maps API Library's PolyUtil class modified for OSMDroid's GeoPoint
+    /**
+     * Decodes an encoded polyline.
+     * <p>
+     * Modified version of the Google Maps API Library's PolyUtil class
+     * @param encodedPath Encoded string
+     * @return List of GeoPoints
+     */
     public static List<GeoPoint> decode(final String encodedPath) {
         int len = encodedPath.length();
 

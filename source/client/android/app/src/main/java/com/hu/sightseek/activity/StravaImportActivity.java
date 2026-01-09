@@ -457,7 +457,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                 activities.add(a);
 
                                 List<GeoPoint> pointList = decode(polyline);
-                                HashMap<String, Integer> newCells = getVisitedCells(pointList);
+                                Map<String, Integer> newCells = getVisitedCells(pointList);
 
                                 for(HashMap.Entry<String, Integer> entry : newCells.entrySet()) {
                                     String key = entry.getKey();
