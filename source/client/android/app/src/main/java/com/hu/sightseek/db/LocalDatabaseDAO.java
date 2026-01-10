@@ -206,7 +206,7 @@ public class LocalDatabaseDAO {
             cursor.close();
             db.close();
 
-            return new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId, vectorizedData);
+            return new Activity(id, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData);
         }
         else {
             cursor.close();
@@ -248,7 +248,7 @@ public class LocalDatabaseDAO {
                 long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
                 byte[] vectorizedData = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
-                activities.add(new Activity(id, name, categoryIndex, polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
+                activities.add(new Activity(id, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
             } while(cursor.moveToNext());
         }
 

@@ -19,7 +19,15 @@ public class Idea {
     /** Status */
     private SavedIdeaStatus status;
 
-    /** Constructor */
+    /**
+     * Constructor
+     * @param id ID
+     * @param name Name
+     * @param place Place
+     * @param latitude Latitude
+     * @param longitude Longitude
+     * @param status Status
+     */
     public Idea(long id, String name, String place, double latitude, double longitude, SavedIdeaStatus status) {
         this.id = id;
         this.name = name;
