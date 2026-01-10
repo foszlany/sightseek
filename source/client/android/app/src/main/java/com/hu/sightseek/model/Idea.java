@@ -4,14 +4,22 @@ import androidx.annotation.NonNull;
 
 import com.hu.sightseek.enums.SavedIdeaStatus;
 
+/** Represents an Idea ("Attraction") */
 public class Idea {
+    /** ID */
     private final long id;
+    /** Name */
     private final String name;
+    /** Place (city or country) */
     private final String place;
+    /** Latitude */
     private final double latitude;
+    /** Longitude */
     private final double longitude;
+    /** Status */
     private SavedIdeaStatus status;
 
+    /** Constructor */
     public Idea(long id, String name, String place, double latitude, double longitude, SavedIdeaStatus status) {
         this.id = id;
         this.name = name;
