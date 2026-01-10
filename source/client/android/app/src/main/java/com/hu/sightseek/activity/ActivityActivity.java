@@ -232,8 +232,11 @@ public class ActivityActivity extends AppCompatActivity {
                                 vectorizedDataGroup.add(p);
                             }
                         }
+                        catch(NullPointerException e) {
+                            runOnUiThread(() -> Toast.makeText(this, "Activity does not contain road data.", Toast.LENGTH_LONG).show());
+                        }
                         catch(ParseException e) {
-                            throw new RuntimeException(e);
+                            throw new RuntimeException("Unable to parse WKB.");
                         }
 
                         mapView.getOverlays().add(1, vectorizedDataGroup);

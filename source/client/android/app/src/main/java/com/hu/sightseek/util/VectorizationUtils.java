@@ -210,6 +210,10 @@ public final class VectorizationUtils {
 
         Geometry vectorizedDataGeometry = UnaryUnionOp.union(intersectionLines);
 
+        if(vectorizedDataGeometry == null || vectorizedDataGeometry.isEmpty()) {
+            return new VectorizedDataRecord(new ArrayList<>(), vectorizedDataGeometry, routePolygon, countryCodes);
+        }
+
         // Reduce
         PrecisionModel precisionModel = new PrecisionModel(1e6);
         Geometry reducedVectorizedDataGeometry = GeometryPrecisionReducer.reduce(vectorizedDataGeometry, precisionModel);

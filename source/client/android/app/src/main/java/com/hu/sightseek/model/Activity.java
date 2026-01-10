@@ -74,9 +74,13 @@ public class Activity {
         return stravaId;
     }
 
-    public byte[] getVectorizedData() { return vectorizedData; }
+    public byte[] getVectorizedData() {
+        return vectorizedData;
+    }
 
-    public void setVectorizedData(byte[] vectorizedData) { this.vectorizedData = vectorizedData; }
+    public void setVectorizedData(byte[] vectorizedData) {
+        this.vectorizedData = vectorizedData;
+    }
 
     @NonNull
     @Override

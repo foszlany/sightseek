@@ -148,28 +148,29 @@ public class SaveActivity extends AppCompatActivity {
             }
 
             daoExecutor.execute(() -> {
-                if(vectorizedDataRecord != null) {
+                byte[] vectorizedDataBlob = null;
+
+                if(vectorizedDataRecord != null && vectorizedDataRecord.getVectorizedDataGeometry() != null && !vectorizedDataRecord.getVectorizedDataGeometry().isEmpty()) {
                     calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord);
-
-                    byte[] vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
-
-                    LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                    long id = dao.addActivity(title.strip(), categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
-
-                    if(auth.getCurrentUser() != null) {
-                        Map<String, Integer> visitedCells = getVisitedCells(pointList);
-                        updateCellsInFirebase(auth, visitedCells, false);
-                    }
-
-                    Intent intent = new Intent(this, ActivityActivity.class);
-                    Bundle bundle = new Bundle();
-
-                    bundle.putInt("id", (int) id);
-                    intent.putExtras(bundle);
-
-                    startActivity(intent);
-                    finish();
+                    vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
                 }
+
+                LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+                long id = dao.addActivity(title.strip(), categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
+
+                if(auth.getCurrentUser() != null) {
+                    Map<String, Integer> visitedCells = getVisitedCells(pointList);
+                    updateCellsInFirebase(auth, visitedCells, false);
+                }
+
+                Intent intent = new Intent(this, ActivityActivity.class);
+                Bundle bundle = new Bundle();
+
+                bundle.putInt("id", (int) id);
+                intent.putExtras(bundle);
+
+                startActivity(intent);
+                finish();
             });
         });
 
