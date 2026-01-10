@@ -6,17 +6,30 @@ import com.hu.sightseek.enums.TravelCategory;
 
 import java.util.Arrays;
 
+/** The Activity class that represents a recorded or imported route along with its metadata. */
 public class Activity {
+    /** ID */
     private final int id;
+    /** Name */
     private final String name;
+    /** Travel category */
     private final TravelCategory category;
+    /** Route as an encoded polyline */
     private final String polyline;
+    /** Start time
+     * </p>
+     * Format: YYYY-MM-DDTHH:MM:SS*/
     private final String startTime;
+    /** Elapsed time in seconds */
     private final double elapsedTime;
+    /** Distance in meters */
     private final double distance;
+    /** Strava ID. -1 if activity is not imported */
     private final long stravaId;
+    /** Vectorized data as WKB (Well-known binary) format. */
     private byte[] vectorizedData;
 
+    /** Constructor */
     public Activity(int id, String name, int category, String polyline, String startTime, double elapsedTime, double distance, long stravaId, byte[] vectorizedData) {
         this.id = id;
         this.name = name;
