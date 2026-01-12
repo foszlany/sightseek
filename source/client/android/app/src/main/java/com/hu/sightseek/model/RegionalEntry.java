@@ -2,13 +2,20 @@ package com.hu.sightseek.model;
 
 import androidx.annotation.NonNull;
 
+/** A RegionalEntry represents a distance travelled inside a region. */
 public class RegionalEntry {
+    /** Continent */
     private String continent;
+    /** Country. */
     private String country;
+    /** Large region. */
     private String largeRegion;
+    /** Small region */
     private String smallRegion;
+    /** Distance travelled inside a region */
     private Double distance;
 
+    /** Default constructor */
     public RegionalEntry() {}
 
     public String getContinent() {
