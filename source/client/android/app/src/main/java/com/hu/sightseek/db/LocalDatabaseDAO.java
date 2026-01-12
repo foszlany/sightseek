@@ -401,13 +401,16 @@ public class LocalDatabaseDAO {
             do {
                 try {
                     byte[] vectorizedDataBlob = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
+                    if(vectorizedDataBlob == null || vectorizedDataBlob.length == 0) {
+                        continue;
+                    }
+
                     Geometry vectorizedDataGeometry = WKConverter.convertWKBToGeometry(vectorizedDataBlob);
                     roads.add(vectorizedDataGeometry);
                 }
                 catch(ParseException e) {
                     throw new RuntimeException(e);
                 }
-
             } while(cursor.moveToNext());
         }
 
