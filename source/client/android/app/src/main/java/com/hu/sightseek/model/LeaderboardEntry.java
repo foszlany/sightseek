@@ -1,19 +1,27 @@
 package com.hu.sightseek.model;
 
+/** A LeaderboardEntry represents an entry for the leaderboard with a username and a score value. */
 public class LeaderboardEntry {
+    /** Username */
     private final String username;
-    private final double value;
+    /** Score */
+    private final double score;
 
-    public LeaderboardEntry(String username, double value) {
+    /**
+     * Constructor
+     * @param username Username
+     * @param score Score
+     */
+    public LeaderboardEntry(String username, double score) {
         this.username = username;
-        this.value = value;
+        this.score = score;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public double getValue() {
-        return value;
+    public double getScore() {
+        return score;
     }
 }

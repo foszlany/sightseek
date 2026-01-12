@@ -63,10 +63,10 @@ public class LeaderboardEntryAdapter extends RecyclerView.Adapter<LeaderboardEnt
         holder.username.setText(entry.getUsername());
 
         if(isGridView) {
-            holder.value.setText(context.getString(R.string.leaderboard_entry_cellvalue, (int) entry.getValue()));
+            holder.value.setText(context.getString(R.string.leaderboard_entry_cellvalue, (int) entry.getScore()));
         }
         else {
-            holder.value.setText(context.getString(R.string.leaderboard_entry_distancevalue, entry.getValue()));
+            holder.value.setText(context.getString(R.string.leaderboard_entry_distancevalue, entry.getScore()));
         }
     }
 

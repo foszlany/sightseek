@@ -278,10 +278,10 @@ public class LeaderboardActivity extends AppCompatActivity {
 
                             TextView myValueTextView = findViewById(R.id.leaderboard_myvalue);
                             if("cellsVisited".equals(valueStr)) {
-                                myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getValue()));
+                                myValueTextView.setText(getString(R.string.leaderboard_entry_cellvalue, (int) myEntry.getScore()));
                             }
                             else {
-                                myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getValue()));
+                                myValueTextView.setText(getString(R.string.leaderboard_entry_distancevalue, myEntry.getScore()));
                             }
 
                             finalizeQuery(valueStr, regionalQueryStr);
