@@ -139,13 +139,11 @@ public final class VectorizationUtils {
         for(Future<RouteResult> future : vectorFutures) {
             try {
                 if(logger != null) {
-                    activity.runOnUiThread(() -> {
-                        logger.log("Vectorized [" + (count.incrementAndGet()) + "/" + routes.size() + "]");
-                    });
+                    activity.runOnUiThread(() -> logger.log("Vectorized [" + (count.incrementAndGet()) + "/" + routes.size() + "]"));
                 }
 
                 RouteResult routeResult = future.get();
-                results.add(new VectorizedDataRecord(null, routeResult.geometry, routeResult.routePolygon, countryCodes));
+                results.add(new VectorizedDataRecord(routeResult.geometry, routeResult.routePolygon, countryCodes));
             }
             catch(Exception e) {
                 throw new RuntimeException(e);
@@ -211,7 +209,7 @@ public final class VectorizationUtils {
         Geometry vectorizedDataGeometry = UnaryUnionOp.union(intersectionLines);
 
         if(vectorizedDataGeometry == null || vectorizedDataGeometry.isEmpty()) {
-            return new VectorizedDataRecord(new ArrayList<>(), vectorizedDataGeometry, routePolygon, countryCodes);
+            return new VectorizedDataRecord(vectorizedDataGeometry, routePolygon, countryCodes);
         }
 
         // Reduce
@@ -221,7 +219,7 @@ public final class VectorizationUtils {
         // Create polyline(s)
         List<Polyline> vectorizedDataPolylines = convertLineGeometryToPolyline(reducedVectorizedDataGeometry);
 
-        return new VectorizedDataRecord(vectorizedDataPolylines, reducedVectorizedDataGeometry, routePolygon, countryCodes);
+        return new VectorizedDataRecord(reducedVectorizedDataGeometry, routePolygon, countryCodes, vectorizedDataPolylines);
     }
 
     private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {
