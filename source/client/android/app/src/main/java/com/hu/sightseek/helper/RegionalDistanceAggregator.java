@@ -6,7 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Helper class for aggregating distance from smallest region */
 public class RegionalDistanceAggregator {
+    /**
+     * Aggregates distances based on smallest region.
+     * @param entries List of RegionalEntries. Continent and country must be given. If smallRegion is defined, then largeRegion must also exist.
+     * @return Map of regions and distances
+     */
     public static Map<String, Double> aggregateDistances(List<RegionalEntry> entries) {
         Map<String, Double> distanceMap = new HashMap<>();
 
@@ -40,6 +46,12 @@ public class RegionalDistanceAggregator {
         return distanceMap;
     }
 
+    /**
+     * Adds new distance to map, creates entry if key doesn't exist.
+     * @param distanceMap Map of regions and distances
+     * @param key Region
+     * @param newDistance Distance to add
+     */
     private static void addDistance(Map<String, Double> distanceMap, String key, double newDistance) {
         if(newDistance == 0) {
             return;
