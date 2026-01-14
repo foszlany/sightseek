@@ -675,12 +675,11 @@ public class RecordActivity extends AppCompatActivity {
                         // Import if necessary
                         if(ideaOverlay == null) {
                             mapView.getOverlays().add(new MapEventsOverlay(mapEventsReceiver));
-                            ideaOverlay = getIdeasOverlay(this, ideaButton, areIdeasOn, mapView);
-                            mapView.getOverlays().add(ideaOverlay);
+                            ideaOverlay = getIdeasOverlay(this, mapView, ideaButton);
                         }
 
                         runOnUiThread(() -> {
-                            ideaOverlay.setEnabled(true);
+                            mapView.getOverlays().add(ideaOverlay);
                             mapView.invalidate();
                         });
                     });
@@ -690,7 +689,7 @@ public class RecordActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         if(ideaOverlay != null) {
                             InfoWindow.closeAllInfoWindowsOn(mapView);
-                            ideaOverlay.setEnabled(false);
+                            mapView.getOverlays().remove(ideaOverlay);
                             mapView.invalidate();
                         }
                     });
@@ -898,7 +897,7 @@ public class RecordActivity extends AppCompatActivity {
             mapView.getOverlays().remove(ideaOverlay);
 
             Executors.newSingleThreadExecutor().execute(() -> {
-                SimpleFastPointOverlay newOverlay = getIdeasOverlay(this, null, areIdeasOn, mapView);
+                SimpleFastPointOverlay newOverlay = getIdeasOverlay(this, mapView);
 
                 runOnUiThread(() -> {
                     ideaOverlay = newOverlay;

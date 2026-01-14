@@ -22,10 +22,19 @@ import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Provides the idea overlay for a map */
 public class IdeaOverlayProvider {
+    /** Private constructor */
     private IdeaOverlayProvider() {}
 
-    public static SimpleFastPointOverlay getIdeasOverlay(Context ctx, ImageButton ideaButton, boolean areIdeasOn, MapView mapView) {
+    /**
+     * Returns the idea overlay
+     * @param ctx Context
+     * @param mapView Map
+     * @param ideaButton Button that toggles the overlay, used to show loading for exceptionally large idea count
+     * @return Overlay
+     */
+    public static SimpleFastPointOverlay getIdeasOverlay(Context ctx, MapView mapView, ImageButton ideaButton) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
         ArrayList<Idea> ideas = dao.getSavedIdeas();
         dao.close();
@@ -66,10 +75,6 @@ public class IdeaOverlayProvider {
 
         // Point listener
         ideaOverlay.setOnClickListener((point, i) -> {
-            if(!areIdeasOn) {
-                return;
-            }
-
             IdeaGeoPoint ideaPoint = (IdeaGeoPoint) point.get(i);
 
             InfoWindow.closeAllInfoWindowsOn(mapView);
@@ -79,5 +84,15 @@ public class IdeaOverlayProvider {
         });
 
         return ideaOverlay;
+    }
+
+    /**
+     * Returns the idea overlay
+     * @param ctx Context
+     * @param mapView Map
+     * @return Overlay
+     */
+    public static SimpleFastPointOverlay getIdeasOverlay(Context ctx, MapView mapView) {
+        return getIdeasOverlay(ctx, mapView, null);
     }
 }

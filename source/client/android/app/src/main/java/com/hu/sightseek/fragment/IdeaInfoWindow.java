@@ -106,6 +106,10 @@ public class IdeaInfoWindow extends InfoWindow {
     public void onClose() {}
 
     private void swapIcon(boolean loading) {
+        if(ideaButton == null) {
+            return;
+        }
+
         ((RecordActivity) mView.getContext()).runOnUiThread(() -> {
             Drawable icon;
 
