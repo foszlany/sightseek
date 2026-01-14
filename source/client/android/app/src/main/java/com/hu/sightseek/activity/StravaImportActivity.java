@@ -1,6 +1,6 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.decode;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
@@ -414,7 +414,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                             dao.addActivities(activities);
                                             dao.close();
 
-                                            updateCellsInFirebase(auth, visitedCells, false);
+                                            updateCells(visitedCells, false);
 
                                             if("after".equals(mode)) {
                                                 prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();

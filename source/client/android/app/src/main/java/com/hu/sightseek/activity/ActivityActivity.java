@@ -48,7 +48,6 @@ import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -188,7 +187,7 @@ public class ActivityActivity extends AppCompatActivity {
                         }
                         else {
                             Map<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
-                            FirebaseUtils.updateCellsInFirebase(auth, cells, true);
+                            FirebaseUtils.updateCells(cells, true);
                         }
 
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);

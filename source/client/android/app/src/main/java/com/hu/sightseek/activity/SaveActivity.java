@@ -3,7 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helper.WKConverter.convertGeometryToWKB;
-import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.calculateRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
@@ -160,7 +160,7 @@ public class SaveActivity extends AppCompatActivity {
 
                 if(auth.getCurrentUser() != null) {
                     Map<String, Integer> visitedCells = getVisitedCells(pointList);
-                    updateCellsInFirebase(auth, visitedCells, false);
+                    updateCells(visitedCells, false);
                 }
 
                 Intent intent = new Intent(this, ActivityActivity.class);

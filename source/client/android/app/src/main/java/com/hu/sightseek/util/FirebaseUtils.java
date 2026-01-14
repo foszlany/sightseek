@@ -8,10 +8,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Utilities to update cells in Firebase */
 public final class FirebaseUtils {
+    /** Private constructor */
     private FirebaseUtils() {}
 
-    public static void updateCellsInFirebase(FirebaseAuth auth, Map<String, Integer> cells, boolean isRemoval) {
+    /**
+     * Updates celldata for a user
+     * @param cells Map of cellindexes and their respective counts
+     * @param isRemoval Whether to subtract cellvalues
+     */
+    public static void updateCells(Map<String, Integer> cells, boolean isRemoval) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         String uid = auth.getUid();
         if(uid == null || cells == null || cells.isEmpty()) {
             return;
@@ -28,7 +36,7 @@ public final class FirebaseUtils {
 
             userDocRef.update(updates).addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
-                    updateCellLeaderboard(db, uid);
+                    updateCellLeaderboard(uid);
                 }
             });
 
@@ -62,14 +70,19 @@ public final class FirebaseUtils {
 
                 userDocRef.update(updates).addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
-                        updateCellLeaderboard(db, uid);
+                        updateCellLeaderboard(uid);
                     }
                 });
             });
         }
     }
 
-    public static void updateCellLeaderboard(FirebaseFirestore db, String uid) {
+    /**
+     * Updates cell leaderboard position for a user
+     * @param uid UID
+     */
+    private static void updateCellLeaderboard(String uid) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userDocRef = db.collection("users").document(uid);
 
         userDocRef.get().addOnSuccessListener(snapshot -> {
@@ -93,6 +106,10 @@ public final class FirebaseUtils {
         });
     }
 
+    /**
+     * Updates regional leaderboard for a user
+     * @param distanceMap Map of region name and distance to add
+     */
     public static void updateRegionalLeaderboard(Map<String, Double> distanceMap) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();

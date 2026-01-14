@@ -1,7 +1,7 @@
 package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
-import static com.hu.sightseek.util.FirebaseUtils.updateCellsInFirebase;
+import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
@@ -215,7 +215,7 @@ public class ProfileActivity extends AppCompatActivity {
                                         dao2.close();
 
                                         Map<String, Integer> cells = getVisitedCells(points);
-                                        updateCellsInFirebase(auth, cells, true);
+                                        updateCells(cells, true);
 
                                         userDocument.update("stravaId", -1);
 
