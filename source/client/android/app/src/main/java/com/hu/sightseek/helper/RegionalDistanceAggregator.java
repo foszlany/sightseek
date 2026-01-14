@@ -8,6 +8,9 @@ import java.util.Map;
 
 /** Helper class for aggregating distance from smallest region */
 public class RegionalDistanceAggregator {
+    /** Private constructor */
+    private RegionalDistanceAggregator() {}
+
     /**
      * Aggregates distances based on smallest region.
      * @param entries List of RegionalEntries. Continent and country must be given. If smallRegion is defined, then largeRegion must also exist.

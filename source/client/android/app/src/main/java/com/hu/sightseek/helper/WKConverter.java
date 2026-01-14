@@ -13,39 +13,68 @@ import org.osmdroid.views.overlay.Polyline;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Helper class for converting WKT/WKB (Well-known text representation of geometry) */
 public final class WKConverter {
+    /** Private constructor */
     private WKConverter() {}
 
+    /**
+     * Converts Geometry to WKB
+     * @param geometry Geometry
+     * @return WKB
+     */
     public static byte[] convertGeometryToWKB(Geometry geometry) {
         WKBWriter writer = new WKBWriter();
         return writer.write(geometry);
     }
 
+    /**
+     * Converts WKB to Geometry
+     * @param wkb WKB
+     * @return Geometry
+     * @throws ParseException Thrown when wkb is unreadable
+     */
     public static Geometry convertWKBToGeometry(byte[] wkb) throws ParseException {
         WKBReader reader = new WKBReader();
         return reader.read(wkb);
     }
 
+    /**
+     * Converts WKB to a list of Polylines
+     * @param wkb WKB
+     * @return List of Polylines
+     * @throws ParseException Thrown when wkb is unreadable
+     */
     public static List<Polyline> convertWKBToPolylines(byte[] wkb) throws ParseException {
         Geometry geometry = convertWKBToGeometry(wkb);
         return convertLineGeometryToPolyline(geometry);
     }
 
-    public static List<Polyline> convertLineGeometryToPolyline(Geometry vectorizedDataGeometry) {
-        List<Polyline> vectorizedDataPolylines = new ArrayList<>();
+    /**
+     * Converts LineString and MultiLineStrings into a list of Polylines, other geometries are ignored
+     * @param lines Geometry
+     * @return List of Polylines
+     */
+    public static List<Polyline> convertLineGeometryToPolyline(Geometry lines) {
+        List<Polyline> convertedPolylines = new ArrayList<>();
 
-        if(vectorizedDataGeometry instanceof LineString) {
-            Polyline polyline = convertLineStringToPolyline((LineString) vectorizedDataGeometry);
-            vectorizedDataPolylines.add(polyline);
+        if(lines instanceof LineString) {
+            Polyline polyline = convertLineStringToPolyline((LineString) lines);
+            convertedPolylines.add(polyline);
         }
-        else if(vectorizedDataGeometry instanceof MultiLineString) {
-            ArrayList<Polyline> polylines = convertMultiLineStringToPolyline((MultiLineString) vectorizedDataGeometry);
-            vectorizedDataPolylines.addAll(polylines);
+        else if(lines instanceof MultiLineString) {
+            ArrayList<Polyline> polylines = convertMultiLineStringToPolyline((MultiLineString) lines);
+            convertedPolylines.addAll(polylines);
         }
 
-        return vectorizedDataPolylines;
+        return convertedPolylines;
     }
 
+    /**
+     * Converts a LineString into a Polyline
+     * @param lineString LineString
+     * @return Polyline
+     */
     public static Polyline convertLineStringToPolyline(LineString lineString) {
         Coordinate[] coords = lineString.getCoordinates();
         ArrayList<GeoPoint> geoPoints = new ArrayList<>();
@@ -61,6 +90,11 @@ public final class WKConverter {
         return polyline;
     }
 
+    /**
+     * Converts a MultiLineString into a list of Polylines
+     * @param multiLineString MultiLineString
+     * @return Polyline
+     */
     public static ArrayList<Polyline> convertMultiLineStringToPolyline(MultiLineString multiLineString) {
         ArrayList<Polyline> polylines = new ArrayList<>();
 
