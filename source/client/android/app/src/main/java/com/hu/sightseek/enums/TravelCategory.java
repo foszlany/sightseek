@@ -19,8 +19,6 @@ public enum TravelCategory {
         return index;
     }
 
-
-
     @NonNull
     public String toShortString() {
         switch(this) {
