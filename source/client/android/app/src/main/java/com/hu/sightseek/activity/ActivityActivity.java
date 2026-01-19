@@ -190,6 +190,8 @@ public class ActivityActivity extends AppCompatActivity {
                             FirebaseUtils.updateCells(cells, true);
                         }
 
+
+
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
                         dao2.deleteActivity(activityId);
                         dao2.close();

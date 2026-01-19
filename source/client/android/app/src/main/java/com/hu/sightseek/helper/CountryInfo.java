@@ -13,7 +13,7 @@ public final class CountryInfo {
     /** Private constructor */
     private CountryInfo() {}
 
-    // Add basic info about countries here. Everything else is read from shapefiles.
+    // You can add basic info about countries here. Everything else is read will be read from the shapefiles.
     static {
         countryMap = new HashMap<>();
         continentMap = new HashMap<>();

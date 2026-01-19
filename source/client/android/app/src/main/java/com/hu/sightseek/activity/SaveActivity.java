@@ -4,6 +4,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helper.WKConverter.convertGeometryToWKB;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
+import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.calculateRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
@@ -151,7 +152,11 @@ public class SaveActivity extends AppCompatActivity {
                 byte[] vectorizedDataBlob = null;
 
                 if(vectorizedDataRecord != null && vectorizedDataRecord.getVectorizedDataGeometry() != null && !vectorizedDataRecord.getVectorizedDataGeometry().isEmpty()) {
-                    calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord);
+                    Map<String, Double> regionalDistances = calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord);
+                    if(regionalDistances != null && !regionalDistances.isEmpty()) {
+                        updateRegionalLeaderboard(regionalDistances, false);
+                    }
+
                     vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
                 }
 

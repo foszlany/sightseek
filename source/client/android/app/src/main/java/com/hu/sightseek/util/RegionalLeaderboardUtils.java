@@ -51,9 +51,9 @@ public final class RegionalLeaderboardUtils {
      * @param vectorizedDataRecords Data records of the vectorized activities
      * @param countryCodes Merged country codes of the touched countries
      */
-    public static void batchCalculateRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
+    public static Map<String, Double> batchCalculateRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
         if(vectorizedDataRecords == null || vectorizedDataRecords.isEmpty()) {
-            return;
+            return null;
         }
 
         GeometryFactory geometryFactory = new GeometryFactory();
@@ -81,26 +81,22 @@ public final class RegionalLeaderboardUtils {
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
 
         // Convert distances to map
-        Map<String, Double> distanceMap = aggregateDistances(entries);
-
-        // Update leaderboard
-        if(!distanceMap.isEmpty()) {
-            updateRegionalLeaderboard(distanceMap);
-        }
+        return aggregateDistances(entries);
     }
 
     /**
-     * Calculates unique distances per region and uploads it to the database.
-     * @param activity Activity
+     * Calculates unique distances per region
+     * @param activity             Activity
      * @param vectorizedDataRecord Data records of the vectorized activity
+     * @return Map containing regions with their unique distances
      */
-    public static void calculateRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
+    public static Map<String, Double> calculateRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
         Geometry newRoads = vectorizedDataRecord.getVectorizedDataGeometry();
         Polygon routePolygon = vectorizedDataRecord.getRoutePolygon();
         Set<String> countryCodes = vectorizedDataRecord.getCountryCodes();
 
         if(vectorizedDataRecord.getVectorizedDataGeometry() == null || newRoads.isEmpty()) {
-            return;
+            return null;
         }
 
         GeometryFactory geometryFactory = new GeometryFactory();
@@ -120,12 +116,7 @@ public final class RegionalLeaderboardUtils {
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
 
         // Convert distances to map
-        Map<String, Double> distanceMap = aggregateDistances(entries);
-
-        // Update leaderboard
-        if(!distanceMap.isEmpty()) {
-            updateRegionalLeaderboard(distanceMap);
-        }
+        return aggregateDistances(entries);
     }
 
     /**
