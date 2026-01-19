@@ -204,7 +204,7 @@ public final class RegionalLeaderboardUtils {
      */
     private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, List<Polygon> routePolygons) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
-        List<Geometry> allRoads = dao.getAllVectorizedRoads(-1);
+        List<Geometry> allRoads = dao.getAllVectorizedRoads();
         dao.close();
 
         return geometryFactory.createMultiLineString(
