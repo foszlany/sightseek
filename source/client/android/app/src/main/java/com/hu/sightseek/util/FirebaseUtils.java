@@ -108,9 +108,10 @@ public final class FirebaseUtils {
 
     /**
      * Updates regional leaderboard for a user
-     * @param distanceMap Map of region name and distance to add
+     * @param distanceMap Map of region name and distance to add or remove
+     * @param isRemoval Whether to subtract
      */
-    public static void updateRegionalLeaderboard(Map<String, Double> distanceMap) {
+    public static void updateRegionalLeaderboard(Map<String, Double> distanceMap, boolean isRemoval) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String uid = auth.getUid();
@@ -130,7 +131,7 @@ public final class FirebaseUtils {
 
             for(Map.Entry<String, Double> entry : distanceMap.entrySet()) {
                 String regionPath = entry.getKey();
-                double newDistance = entry.getValue();
+                double deltaDistance = entry.getValue();
 
                 DocumentReference userRegionDocument = db
                         .collection("leaderboard_regional")
@@ -139,13 +140,18 @@ public final class FirebaseUtils {
                         .document(uid);
 
                 userRegionDocument.get().addOnSuccessListener(docSnapshot -> {
-                    double totalDistance = newDistance;
+                    double totalDistance;
 
-                    if(docSnapshot.exists()) {
-                        Double oldDistance = docSnapshot.getDouble("distance");
-                        if(oldDistance != null) {
-                            totalDistance += oldDistance;
-                        }
+                    Double oldDistance = docSnapshot.getDouble("distance");
+                    if(oldDistance == null) {
+                        oldDistance = 0.0;
+                    }
+
+                    if(isRemoval) {
+                        totalDistance = Math.max(0, oldDistance - deltaDistance);
+                    }
+                    else {
+                        totalDistance = oldDistance + deltaDistance;
                     }
 
                     Map<String, Object> leaderboardEntry = new HashMap<>();

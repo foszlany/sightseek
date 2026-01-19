@@ -3,6 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helper.WKConverter.convertWKBToGeometry;
 import static com.hu.sightseek.helper.WKConverter.convertWKBToPolylines;
+import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
 import static com.hu.sightseek.util.GenericUtils.createScreenshot;
 import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
 import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
@@ -188,19 +189,22 @@ public class ActivityActivity extends AppCompatActivity {
                                 return;
                             }
                         }
-                        else {
-                            Map<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
-                            FirebaseUtils.updateCells(cells, true);
-                        }
 
+                        // Remove cells
+                        Map<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
+                        FirebaseUtils.updateCells(cells, true);
+
+                        // Remove regional distances
                         try {
                             Geometry vectorizedData = convertWKBToGeometry(activity.getVectorizedData());
-                            System.out.println(RegionalLeaderboardUtils.calculateCurrentRegionalDistance(this, vectorizedData, polyline, activityId));
+                            Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateCurrentRegionalDistance(this, vectorizedData, polyline, activityId);
+                            updateRegionalLeaderboard(regionalDistances, true);
                         }
                         catch(ParseException e) {
                             throw new RuntimeException("Unable to parse WKB.");
                         }
 
+                        // Delete from database
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
                         dao2.deleteActivity(activityId);
                         dao2.close();
