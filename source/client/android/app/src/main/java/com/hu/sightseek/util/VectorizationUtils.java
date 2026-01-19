@@ -47,13 +47,22 @@ import diewald_shapeFile.files.shp.shapeTypes.ShpPolyLine;
 import diewald_shapeFile.files.shp.shapeTypes.ShpPolygon;
 import diewald_shapeFile.shapeFile.ShapeFile;
 
+/** Utilities to vectorize (map streets onto) polylines */
 public final class VectorizationUtils {
+    /** Value used to create an extra buffer around polylines */
     static final double TOLERANCE = 0.0002;
 
+    /** Private constructor */
     private VectorizationUtils() {}
 
-    public static ArrayList<VectorizedDataRecord> batchVectorize(Activity activity, ArrayList<Polyline> routes, Logger logger) {
-        ArrayList<VectorizedDataRecord> results = new ArrayList<>();
+    /** Batch version of vectorize()
+     * @param activity Activity
+     * @param routes List of Polylines to process
+     * @param logger Logger to log progress, can be null
+     * @return A list of VectorizedDataRecord objects
+     */
+    public static List<VectorizedDataRecord> batchVectorize(Activity activity, List<Polyline> routes, Logger logger) {
+        List<VectorizedDataRecord> results = new ArrayList<>();
         Set<String> countryCodes = new HashSet<>();
         GeometryFactory geometryFactory = new GeometryFactory();
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -71,7 +80,7 @@ public final class VectorizationUtils {
                 ShapeFile countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
                 countryShapefile.READ();
 
-                Set<String> routeCountryCodes = getTouchedCountries(lineString, activity, countryShapefile);
+                Set<String> routeCountryCodes = getTouchedCountries(activity, lineString, countryShapefile);
                 countryCodes.addAll(routeCountryCodes);
 
                 return new RouteData(position, route, lineString, routeCountryCodes);
@@ -88,7 +97,7 @@ public final class VectorizationUtils {
         }
 
         // Get roads separately
-        Map<String, List<LineString>> roadPolylinesPerCountry = getPerCountryRoadPolylines(activity, geometryFactory, countryCodes);
+        Map<String, List<LineString>> roadPolylinesPerCountry = getPerCountryRoadPolylines(activity, countryCodes, geometryFactory);
 
         // Process
         List<Future<RouteResult>> vectorFutures = new ArrayList<>();
@@ -143,7 +152,7 @@ public final class VectorizationUtils {
                 }
 
                 RouteResult routeResult = future.get();
-                results.add(new VectorizedDataRecord(routeResult.geometry, routeResult.routePolygon, countryCodes));
+                results.add(new VectorizedDataRecord(routeResult.vectorizedGeometry, routeResult.routePolygon, countryCodes));
             }
             catch(Exception e) {
                 throw new RuntimeException(e);
@@ -153,16 +162,29 @@ public final class VectorizationUtils {
         executor.shutdown();
         return results;
     }
+
+    /** Holds extra data about a route */
     private static class RouteData {
+        /** Position inside the array */
         final int position;
-        final Polyline route;
+        /** Route as a Polyline */
+        final Polyline polyline;
+        /** Route as a LineString */
         final LineString lineString;
+        /** Country codes */
         final Set<String> countryCodes;
+        /** Envelope of the route */
         final Envelope envelope;
 
-        RouteData(int position, Polyline route, LineString lineString, Set<String> countryCodes) {
+        /** Constructor
+         * @param position Position inside the array
+         * @param polyline Route as a Polyline
+         * @param lineString Route as a LineString
+         * @param countryCodes Country codes
+         */
+        RouteData(int position, Polyline polyline, LineString lineString, Set<String> countryCodes) {
             this.position = position;
-            this.route = route;
+            this.polyline = polyline;
             this.lineString = lineString;
             this.countryCodes = countryCodes;
 
@@ -171,16 +193,30 @@ public final class VectorizationUtils {
         }
     }
 
+    /** Holds the result of a vectorization along with a buffered polyline */
     private static class RouteResult {
-        final Geometry geometry;
+        /** Vectorized data as a Geometry */
+        final Geometry vectorizedGeometry;
+        /** Route as a buffered Polygon */
         final Polygon routePolygon;
 
-        private RouteResult(Geometry geometry, Polygon routePolygon) {
-            this.geometry = geometry;
+        /**
+         * Constructor
+         * @param vectorizedGeometry Vectorized data as a Geometry
+         * @param routePolygon Route as a buffered Polygon
+         */
+        private RouteResult(Geometry vectorizedGeometry, Polygon routePolygon) {
+            this.vectorizedGeometry = vectorizedGeometry;
             this.routePolygon = routePolygon;
         }
     }
 
+    /**
+     * Maps street lines to a polyline
+     * @param activity Activity
+     * @param route Polyline to process
+     * @return VectorizedDataRecord object
+     */
     public static VectorizedDataRecord vectorize(Activity activity, Polyline route) {
         GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -188,7 +224,7 @@ public final class VectorizationUtils {
         LineString lineString = createLineStringFromPolyline(route, geometryFactory);
 
         // Calculate countries
-        Set<String> countryCodes = getTouchedCountries(lineString, activity, null);
+        Set<String> countryCodes = getTouchedCountries(activity, lineString, null);
         if(countryCodes.isEmpty()) {
             return new VectorizedDataRecord();
         }
@@ -197,7 +233,7 @@ public final class VectorizationUtils {
         Polygon routePolygon = createPolygonFromLineString(lineString);
 
         // Filtered roads
-        List<LineString> roadPolylines = getRoadPolylines(activity, geometryFactory, countryCodes, routePolygon);
+        List<LineString> roadPolylines = getRoadPolylines(activity, routePolygon, countryCodes, geometryFactory);
 
         // Calculate intersection
         PreparedGeometry preparedRoutePolygon = PreparedGeometryFactory.prepare(routePolygon);
@@ -222,7 +258,14 @@ public final class VectorizationUtils {
         return new VectorizedDataRecord(reducedVectorizedDataGeometry, routePolygon, countryCodes, vectorizedDataPolylines);
     }
 
-    private static Set<String> getTouchedCountries(LineString route, Activity activity, ShapeFile countryShapefile) {
+    /**
+     * Gets the countries touched by a polyline (a polyline touches a country when it has at least one point inside it)
+     * @param activity         Activity
+     * @param route            Route as a LineString
+     * @param countryShapefile Countries shapefile. If null, it will be opened.
+     * @return Set of countries a polyline touches.
+     */
+    private static Set<String> getTouchedCountries(Activity activity, LineString route, ShapeFile countryShapefile) {
         Set<String> touchedCountries = new HashSet<>();
 
         try {
@@ -240,7 +283,7 @@ public final class VectorizationUtils {
                 String isoCode = countryShapefile.getDBF_record(i)[1].trim();
 
                 // Convert to Coordinate
-                ArrayList<Coordinate> shapeCoords = new ArrayList<>();
+                List<Coordinate> shapeCoords = new ArrayList<>();
                 double[][] shapePoints = shape.getPoints();
                 for(int j = 0; j < shape.getNumberOfPoints(); j++) {
                     shapeCoords.add(new Coordinate(shapePoints[j][0], shapePoints[j][1]));
@@ -267,6 +310,12 @@ public final class VectorizationUtils {
         return touchedCountries;
     }
 
+    /**
+     * Converts a Polyline to a LineString
+     * @param route Route as a Polyline
+     * @param geometryFactory Geometry factory
+     * @return LineString
+     */
     private static LineString createLineStringFromPolyline(Polyline route, GeometryFactory geometryFactory) {
         List<GeoPoint> points = route.getActualPoints();
         Coordinate[] coordinates = new Coordinate[points.size()];
@@ -278,6 +327,11 @@ public final class VectorizationUtils {
         return geometryFactory.createLineString(coordinates);
     }
 
+    /**
+     * Converts a LineString to a buffered Polygon
+     * @param route Route as a LineString
+     * @return Polygon
+     */
     private static Polygon createPolygonFromLineString(LineString route) {
         Geometry buffered = BufferOp.bufferOp(route, TOLERANCE);
         if(buffered instanceof Polygon) {
@@ -288,7 +342,16 @@ public final class VectorizationUtils {
         }
     }
 
-    private static List<LineString> getRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes, Polygon routePolygon) {
+    /**
+     * Reads and filters the needed road polylines
+     *
+     * @param activity        Activity
+     * @param routePolygon    Route as a buffered polygon
+     * @param countryCodes    Country codes
+     * @param geometryFactory Geometry factory
+     * @return List of LineStrings holding the roads
+     */
+    private static List<LineString> getRoadPolylines(Activity activity, Polygon routePolygon, Set<String> countryCodes, GeometryFactory geometryFactory) {
         List<LineString> lineStringList = new ArrayList<>();
 
         for(String code : countryCodes) {
@@ -322,7 +385,14 @@ public final class VectorizationUtils {
         return lineStringList;
     }
 
-    private static HashMap<String, List<LineString>> getPerCountryRoadPolylines(Activity activity, GeometryFactory geometryFactory, Set<String> countryCodes) {
+    /**
+     * Reads and filters the needed road polylines and matches them with a country code.
+     * @param activity Activity
+     * @param countryCodes Country codes
+     * @param geometryFactory Geometry factory
+     * @return Map of country codes and their respective roads as a List of LineStrings
+     */
+    private static HashMap<String, List<LineString>> getPerCountryRoadPolylines(Activity activity, Set<String> countryCodes, GeometryFactory geometryFactory) {
         HashMap<String, List<LineString>> roadSegmentsByCountry = new HashMap<>();
 
         for(String code : countryCodes) {
@@ -355,6 +425,12 @@ public final class VectorizationUtils {
         return roadSegmentsByCountry;
     }
 
+    /**
+     * Copies a shapefile to the internal storage if needed
+     * @param context Context
+     * @param fileName File name without extension
+     * @return True if the operation succeeded (or file already existed), false if not
+     */
     public static boolean copyShapefileToInternalStorage(Context context, String fileName) {
         String[] fileExtensions = new String[]{".shp", ".dbf", ".shx"};
 
