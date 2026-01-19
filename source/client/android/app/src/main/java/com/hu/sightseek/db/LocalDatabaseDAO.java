@@ -384,12 +384,19 @@ public class LocalDatabaseDAO {
     }
 
     public List<Geometry> getAllVectorizedRoads() {
+        return getAllVectorizedRoads(-1);
+    }
+
+    public List<Geometry> getAllVectorizedRoads(long ignoredActivity) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Geometry> roads = new ArrayList<>();
 
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
-                new String[]{LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA},
+                new String[]{
+                        LocalDatabaseImpl.ACTIVITIES_ID,
+                        LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA
+                },
                 null,
                 null,
                 null,
@@ -400,8 +407,9 @@ public class LocalDatabaseDAO {
         if(cursor.moveToFirst()) {
             do {
                 try {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
                     byte[] vectorizedDataBlob = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
-                    if(vectorizedDataBlob == null || vectorizedDataBlob.length == 0) {
+                    if(vectorizedDataBlob == null || vectorizedDataBlob.length == 0 || id == ignoredActivity) {
                         continue;
                     }
 

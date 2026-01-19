@@ -37,6 +37,7 @@ import org.osmdroid.views.overlay.Polyline;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -264,5 +265,39 @@ public final class GenericUtils {
             InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    /**
+     * Copies a shapefile to the internal storage if needed
+     * @param context Context
+     * @param fileName File name without extension
+     * @return True if the operation succeeded (or file already existed), false if not
+     */
+    public static boolean copyShapefileToInternalStorage(Context context, String fileName) {
+        String[] fileExtensions = new String[]{".shp", ".dbf", ".shx"};
+
+        for(String extension : fileExtensions) {
+            try {
+                File outFile = new File(context.getFilesDir(), fileName + extension);
+                if(outFile.exists()) {
+                    return true;
+                }
+
+                try(InputStream in = context.getAssets().open("shapefiles/" + fileName + extension);
+                    OutputStream out = new FileOutputStream(outFile)) {
+                    byte[] buffer = new byte[1024];
+                    int read;
+
+                    while((read = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, read);
+                    }
+                }
+            }
+            catch(IOException e) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

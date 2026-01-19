@@ -2,8 +2,7 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-
-import static com.hu.sightseek.util.VectorizationUtils.copyShapefileToInternalStorage;
+import static com.hu.sightseek.util.GenericUtils.copyShapefileToInternalStorage;
 
 import android.content.Context;
 import android.content.Intent;

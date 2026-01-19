@@ -3,8 +3,11 @@ package com.hu.sightseek.util;
 import static com.hu.sightseek.helper.CountryInfo.getContinent;
 import static com.hu.sightseek.helper.CountryInfo.getCountry;
 import static com.hu.sightseek.helper.RegionalDistanceAggregator.aggregateDistances;
-import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
-import static com.hu.sightseek.util.VectorizationUtils.copyShapefileToInternalStorage;
+import static com.hu.sightseek.util.GenericUtils.copyShapefileToInternalStorage;
+import static com.hu.sightseek.util.GeometryUtils.BUFFER_TOLERANCE;
+import static com.hu.sightseek.util.GeometryUtils.createLineStringFromPolyline;
+import static com.hu.sightseek.util.GeometryUtils.createPolygonFromLineString;
+import static com.hu.sightseek.util.GeometryUtils.getTouchedCountries;
 
 import android.app.Activity;
 
@@ -24,6 +27,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,12 +50,12 @@ public final class RegionalLeaderboardUtils {
     private RegionalLeaderboardUtils() {}
 
     /**
-     * Batch version of calculateRegionalDistance()
+     * Batch version of calculateNewRegionalDistance()
      * @param activity Activity
      * @param vectorizedDataRecords Data records of the vectorized activities
      * @param countryCodes Merged country codes of the touched countries
      */
-    public static Map<String, Double> batchCalculateRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
+    public static Map<String, Double> batchCalculateNewRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
         if(vectorizedDataRecords == null || vectorizedDataRecords.isEmpty()) {
             return null;
         }
@@ -85,12 +89,13 @@ public final class RegionalLeaderboardUtils {
     }
 
     /**
-     * Calculates unique distances per region
-     * @param activity             Activity
+     * Calculates unique distances per region for a new activity
+     * @param activity Activity
      * @param vectorizedDataRecord Data records of the vectorized activity
-     * @return Map containing regions with their unique distances
+     * @param ignoredActivity ID of the activity the regional distance is being calculated for, set to a negative number if not needed
+     * @return Map containing regions with their unique distances or null if the vectorized road dataset is null
      */
-    public static Map<String, Double> calculateRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
+    private static Map<String, Double> calculateNewRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord, int ignoredActivity) {
         Geometry newRoads = vectorizedDataRecord.getVectorizedDataGeometry();
         Polygon routePolygon = vectorizedDataRecord.getRoutePolygon();
         Set<String> countryCodes = vectorizedDataRecord.getCountryCodes();
@@ -102,7 +107,7 @@ public final class RegionalLeaderboardUtils {
         GeometryFactory geometryFactory = new GeometryFactory();
 
         // Load all vectors from activities
-        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon);
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon, ignoredActivity);
 
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
@@ -120,15 +125,52 @@ public final class RegionalLeaderboardUtils {
     }
 
     /**
+     * Calculates unique distances per region for a new activity
+     * @param activity Activity
+     * @param vectorizedDataRecord Data records of the vectorized activity
+     * @return Map containing regions with their unique distances or null if the vectorized road dataset is null
+     */
+    public static Map<String, Double> calculateNewRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
+        return calculateNewRegionalDistance(activity, vectorizedDataRecord, -1);
+    }
+
+    /** Calculates unique distances per region for an already existing activity
+     * @param activity Activity
+     * @param vectorizedRoads Vectorized roads
+     * @param route Route polyline
+     * @param activityId ID of the activity
+     * @return Map containing regions with their unique distances or null if vectorizedRoads is null
+     */
+    public static Map<String, Double> calculateCurrentRegionalDistance(Activity activity, Geometry vectorizedRoads, Polyline route, int activityId) {
+        if(vectorizedRoads == null || vectorizedRoads.isEmpty()) {
+            return null;
+        }
+
+        // Convert route to LineString
+        GeometryFactory geometryFactory = new GeometryFactory();
+        LineString routeLineString = createLineStringFromPolyline(route, geometryFactory);
+
+        // Buffer route to Polygon
+        Polygon routePolygon = createPolygonFromLineString(routeLineString, BUFFER_TOLERANCE);
+
+        // Get country codes
+        Set<String> countryCodes = getTouchedCountries(activity, routeLineString);
+
+        // Calculate regional distance
+        VectorizedDataRecord vectorizedDataRecord = new VectorizedDataRecord(vectorizedRoads, routePolygon, countryCodes);
+        return calculateNewRegionalDistance(activity, vectorizedDataRecord, activityId);
+    }
+
+    /**
      * Gets all relevant roads from the database based on the buffered polygon.
      * @param activity Activity
      * @param geometryFactory Geometry factory
      * @param routePolygon Buffered polygon of the roads
      * @return Roads as a MultiLineString
      */
-    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Polygon routePolygon) {
+    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Polygon routePolygon, int ignoredActivity) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
-        List<Geometry> allRoads = dao.getAllVectorizedRoads();
+        List<Geometry> allRoads = dao.getAllVectorizedRoads(ignoredActivity);
         dao.close();
 
         List<LineString> usableLines = new ArrayList<>();
@@ -162,7 +204,7 @@ public final class RegionalLeaderboardUtils {
      */
     private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, List<Polygon> routePolygons) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
-        List<Geometry> allRoads = dao.getAllVectorizedRoads();
+        List<Geometry> allRoads = dao.getAllVectorizedRoads(-1);
         dao.close();
 
         return geometryFactory.createMultiLineString(

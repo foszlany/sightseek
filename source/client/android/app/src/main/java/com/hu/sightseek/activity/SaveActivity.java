@@ -5,7 +5,6 @@ import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helper.WKConverter.convertGeometryToWKB;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
-import static com.hu.sightseek.util.RegionalLeaderboardUtils.calculateRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
@@ -43,6 +42,7 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.VectorizedDataRecord;
+import com.hu.sightseek.util.RegionalLeaderboardUtils;
 import com.hu.sightseek.util.SpatialUtils;
 
 import org.osmdroid.config.Configuration;
@@ -152,7 +152,7 @@ public class SaveActivity extends AppCompatActivity {
                 byte[] vectorizedDataBlob = null;
 
                 if(vectorizedDataRecord != null && vectorizedDataRecord.getVectorizedDataGeometry() != null && !vectorizedDataRecord.getVectorizedDataGeometry().isEmpty()) {
-                    Map<String, Double> regionalDistances = calculateRegionalDistance(SaveActivity.this, vectorizedDataRecord);
+                    Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateNewRegionalDistance(SaveActivity.this, vectorizedDataRecord);
                     if(regionalDistances != null && !regionalDistances.isEmpty()) {
                         updateRegionalLeaderboard(regionalDistances, false);
                     }

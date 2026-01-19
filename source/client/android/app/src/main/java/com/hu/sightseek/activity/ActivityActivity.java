@@ -1,12 +1,13 @@
 package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.helper.WKConverter.convertWKBToGeometry;
 import static com.hu.sightseek.helper.WKConverter.convertWKBToPolylines;
 import static com.hu.sightseek.util.GenericUtils.createScreenshot;
-import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
-import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
 import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
+import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
+import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -37,8 +38,10 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.util.FirebaseUtils;
+import com.hu.sightseek.util.RegionalLeaderboardUtils;
 import com.hu.sightseek.util.SpatialUtils;
 
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.BoundingBox;
@@ -190,7 +193,13 @@ public class ActivityActivity extends AppCompatActivity {
                             FirebaseUtils.updateCells(cells, true);
                         }
 
-
+                        try {
+                            Geometry vectorizedData = convertWKBToGeometry(activity.getVectorizedData());
+                            System.out.println(RegionalLeaderboardUtils.calculateCurrentRegionalDistance(this, vectorizedData, polyline, activityId));
+                        }
+                        catch(ParseException e) {
+                            throw new RuntimeException("Unable to parse WKB.");
+                        }
 
                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
                         dao2.deleteActivity(activityId);

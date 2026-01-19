@@ -2,7 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
-import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateRegionalDistance;
+import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateNewRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.decode;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.VectorizationUtils.batchVectorize;
@@ -407,7 +407,7 @@ public class StravaImportActivity extends AppCompatActivity {
                                             logIntoConsole("Saving...");
                                         });
 
-                                        Map<String, Double> regionalDistances = batchCalculateRegionalDistance(StravaImportActivity.this, vectorizedDataRecords, countryCodes);
+                                        Map<String, Double> regionalDistances = batchCalculateNewRegionalDistance(StravaImportActivity.this, vectorizedDataRecords, countryCodes);
                                         if(regionalDistances != null && !regionalDistances.isEmpty()) {
                                             updateRegionalLeaderboard(regionalDistances, false);
                                         }
