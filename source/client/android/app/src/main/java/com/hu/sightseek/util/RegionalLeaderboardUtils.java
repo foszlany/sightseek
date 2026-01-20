@@ -44,8 +44,6 @@ import diewald_shapeFile.shapeFile.ShapeFile;
 public final class RegionalLeaderboardUtils {
     /** File postfixes for region types */
     private static final ArrayList<String> regionTypes = new ArrayList<>(Arrays.asList("smallregion", "largeregion", "country"));
-    /** Precision for road comparison */
-    private static final double ROAD_PRECISION = 0.00004;
     /** Radius of the Earth in kilometers */
     private static final double R = 6371;
 
