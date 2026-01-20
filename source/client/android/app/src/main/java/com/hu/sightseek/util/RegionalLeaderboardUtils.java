@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
@@ -112,7 +113,7 @@ public final class RegionalLeaderboardUtils {
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
-        Polygon bufferedAllRoads = (Polygon) allRoads.buffer(ROAD_PRECISION);
+        Geometry bufferedAllRoads = allRoads.buffer(ROAD_PRECISION);
 
         // Get unique roads
         Geometry uniqueRoads = OverlayNG.overlay(newRoads, bufferedAllRoads, OverlayNG.DIFFERENCE);
