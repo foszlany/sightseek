@@ -4,7 +4,7 @@ import static com.hu.sightseek.helper.CountryInfo.getContinent;
 import static com.hu.sightseek.helper.CountryInfo.getCountry;
 import static com.hu.sightseek.helper.RegionalDistanceAggregator.aggregateDistances;
 import static com.hu.sightseek.util.GenericUtils.copyShapefileToInternalStorage;
-import static com.hu.sightseek.util.GeometryUtils.BUFFER_TOLERANCE;
+import static com.hu.sightseek.util.GeometryUtils.TOLERANCE;
 import static com.hu.sightseek.util.GeometryUtils.createLineStringFromPolyline;
 import static com.hu.sightseek.util.GeometryUtils.createPolygonFromLineString;
 import static com.hu.sightseek.util.GeometryUtils.getTouchedCountries;
@@ -24,9 +24,12 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.distance.DistanceOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.osmdroid.views.overlay.Polyline;
@@ -110,7 +113,7 @@ public final class RegionalLeaderboardUtils {
             return null;
         }
 
-        GeometryFactory geometryFactory = new GeometryFactory();
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(1e4));
 
         // Load all vectors from activities
         MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon, ignoredActivity);
@@ -118,17 +121,60 @@ public final class RegionalLeaderboardUtils {
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
-        BufferParameters bufferParameters = new BufferParameters(2, BufferParameters.CAP_FLAT);
-        Geometry bufferedAllRoads = BufferOp.bufferOp(allRoads, ROAD_PRECISION, bufferParameters);
-
         // Get unique roads
-        Geometry uniqueRoads = OverlayNG.overlay(newRoads, bufferedAllRoads, OverlayNG.DIFFERENCE);
+        Geometry uniqueRoads = getUniqueRoads(newRoads, allRoads, geometryFactory);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
 
         // Convert distances to map
         return aggregateDistances(entries);
+    }
+
+    /**
+     * Calculates unique roads inside one geometry compared to another
+     * @param newRoads Roads to checked for uniqueness
+     * @param allRoads Roads to check uniqueness against
+     * @param geometryFactory Geometry factory
+     * @return Unique roads as a single Geometry
+     */
+    private static Geometry getUniqueRoads(Geometry newRoads, MultiLineString allRoads, GeometryFactory geometryFactory) {
+        List<Geometry> uniqueSegments = new ArrayList<>();
+
+        // Create spatial index for existing roads
+        STRtree index = new STRtree();
+        for(int i = 0; i < allRoads.getNumGeometries(); i++) {
+            LineString existing = (LineString) allRoads.getGeometryN(i);
+            index.insert(existing.getEnvelopeInternal(), existing);
+        }
+        index.build();
+
+        // Check each new road segment
+        if(newRoads instanceof MultiLineString) {
+            MultiLineString newRoadsMultiLineString = (MultiLineString) newRoads;
+
+            for(int i = 0; i < newRoadsMultiLineString.getNumGeometries(); i++) {
+                LineString newSegment = (LineString) newRoadsMultiLineString.getGeometryN(i);
+
+                // Find nearby roads
+                List<LineString> nearbyRoads = index.query(newSegment.getEnvelopeInternal());
+
+                // Check for uniqueness
+                boolean isUnique = true;
+                for(LineString road : nearbyRoads) {
+                    if(DistanceOp.distance(newSegment, road) <= TOLERANCE) {
+                        isUnique = false;
+                        break;
+                    }
+                }
+
+                if(isUnique) {
+                    uniqueSegments.add(newSegment);
+                }
+            }
+        }
+
+        return geometryFactory.buildGeometry(uniqueSegments);
     }
 
     /**
@@ -158,7 +204,7 @@ public final class RegionalLeaderboardUtils {
         LineString routeLineString = createLineStringFromPolyline(route, geometryFactory);
 
         // Buffer route to Polygon
-        Polygon routePolygon = createPolygonFromLineString(routeLineString, BUFFER_TOLERANCE);
+        Polygon routePolygon = createPolygonFromLineString(routeLineString, TOLERANCE);
 
         // Get country codes
         Set<String> countryCodes = getTouchedCountries(activity, routeLineString);

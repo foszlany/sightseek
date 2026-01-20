@@ -2,7 +2,7 @@ package com.hu.sightseek.util;
 
 import static com.hu.sightseek.helper.WKConverter.convertLineGeometryToPolyline;
 import static com.hu.sightseek.util.GenericUtils.copyShapefileToInternalStorage;
-import static com.hu.sightseek.util.GeometryUtils.BUFFER_TOLERANCE;
+import static com.hu.sightseek.util.GeometryUtils.TOLERANCE;
 import static com.hu.sightseek.util.GeometryUtils.createLineStringFromPolyline;
 import static com.hu.sightseek.util.GeometryUtils.createPolygonFromLineString;
 import static com.hu.sightseek.util.GeometryUtils.getTouchedCountries;
@@ -96,12 +96,12 @@ public final class VectorizationUtils {
         for(RouteData routeData : routeDataset) {
             vectorFutures.add(executor.submit(() -> {
                 // Convert route to polygon
-                Polygon routePolygon = createPolygonFromLineString(routeData.lineString, BUFFER_TOLERANCE);
+                Polygon routePolygon = createPolygonFromLineString(routeData.lineString, TOLERANCE);
 
                 // Filter segments
                 List<LineString> filteredRoads = new ArrayList<>();
                 Envelope envelope = routeData.lineString.getEnvelopeInternal();
-                envelope.expandBy(BUFFER_TOLERANCE);
+                envelope.expandBy(TOLERANCE);
 
                 for(String code : routeData.countryCodes) {
                     List<LineString> segments = roadPolylinesPerCountry.get(code);
@@ -181,7 +181,7 @@ public final class VectorizationUtils {
             this.countryCodes = countryCodes;
 
             this.envelope = lineString.getEnvelopeInternal();
-            this.envelope.expandBy(BUFFER_TOLERANCE);
+            this.envelope.expandBy(TOLERANCE);
         }
     }
 
@@ -222,7 +222,7 @@ public final class VectorizationUtils {
         }
 
         // Route polygon
-        Polygon routePolygon = createPolygonFromLineString(lineString, BUFFER_TOLERANCE);
+        Polygon routePolygon = createPolygonFromLineString(lineString, TOLERANCE);
 
         // Filtered roads
         List<LineString> roadPolylines = getRoadPolylines(activity, routePolygon, countryCodes, geometryFactory);

@@ -24,7 +24,10 @@ import diewald_shapeFile.shapeFile.ShapeFile;
 
 public final class GeometryUtils {
     /** Value used to create an extra buffer around polylines */
-    public static final double BUFFER_TOLERANCE = 0.0002;
+    public static final double TOLERANCE = 0.0002;
+
+    /** Default sublist size for partitioning */
+    public static final int DEFAULT_PARTITION_SIZE = 200;
 
     /** Private constructor */
     private GeometryUtils() {}
