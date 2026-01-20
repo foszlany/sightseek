@@ -23,9 +23,10 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.osmdroid.views.overlay.Polyline;
@@ -79,8 +80,12 @@ public final class RegionalLeaderboardUtils {
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
+        // Buffer roads
+        BufferParameters bufferParameters = new BufferParameters(2, BufferParameters.CAP_FLAT);
+        Geometry bufferedAllRoads = BufferOp.bufferOp(allRoads, ROAD_PRECISION, bufferParameters);
+
         // Get unique roads
-        Geometry uniqueRoads = OverlayNG.overlay(mergedNewRoads, allRoads.buffer(ROAD_PRECISION), OverlayNG.DIFFERENCE);
+        Geometry uniqueRoads = OverlayNG.overlay(mergedNewRoads, bufferedAllRoads, OverlayNG.DIFFERENCE);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
@@ -113,7 +118,8 @@ public final class RegionalLeaderboardUtils {
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
-        Geometry bufferedAllRoads = allRoads.buffer(ROAD_PRECISION);
+        BufferParameters bufferParameters = new BufferParameters(2, BufferParameters.CAP_FLAT);
+        Geometry bufferedAllRoads = BufferOp.bufferOp(allRoads, ROAD_PRECISION, bufferParameters);
 
         // Get unique roads
         Geometry uniqueRoads = OverlayNG.overlay(newRoads, bufferedAllRoads, OverlayNG.DIFFERENCE);
