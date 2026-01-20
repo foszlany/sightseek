@@ -27,8 +27,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.index.strtree.STRtree;
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.distance.DistanceOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
@@ -83,12 +81,8 @@ public final class RegionalLeaderboardUtils {
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
         List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
-        // Buffer roads
-        BufferParameters bufferParameters = new BufferParameters(2, BufferParameters.CAP_FLAT);
-        Geometry bufferedAllRoads = BufferOp.bufferOp(allRoads, ROAD_PRECISION, bufferParameters);
-
         // Get unique roads
-        Geometry uniqueRoads = OverlayNG.overlay(mergedNewRoads, bufferedAllRoads, OverlayNG.DIFFERENCE);
+        Geometry uniqueRoads = getUniqueRoads(mergedNewRoads, allRoads, geometryFactory);
 
         // Calculate the distance per region along with the containing geometries
         List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
