@@ -94,6 +94,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <ImageView
+                        android:id="@+id/activity_loadingicon"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:visibility="gone"
+                        android:src="@drawable/baseline_change_circle_24"
+                        android:contentDescription="@string/idea_loading" />
+
                     <ImageButton
                         android:id="@+id/activity_deletebtn"
                         android:layout_width="48dp"

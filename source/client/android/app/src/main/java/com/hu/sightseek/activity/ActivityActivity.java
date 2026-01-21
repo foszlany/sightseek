@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helper.WKConverter.convertWKBToGeometry;
 import static com.hu.sightseek.helper.WKConverter.convertWKBToPolylines;
@@ -22,8 +23,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -181,39 +185,51 @@ public class ActivityActivity extends AppCompatActivity {
                     .setTitle("Confirmation")
                     .setMessage("Are you sure you want to delete this activity? This cannot be undone!")
                     .setPositiveButton("Yes", (d, which) -> {
-                        FirebaseAuth auth = FirebaseAuth.getInstance();
+                        // Loading icon
+                        deleteButton.setVisibility(GONE);
 
-                        if(auth.getCurrentUser() == null) {
-                            if(activity.getStravaId() != -1) {
-                                Toast.makeText(this, "Imported activities cannot be deleted while offline.", Toast.LENGTH_LONG).show();
-                                return;
+                        ImageView loadingIcon = findViewById(R.id.activity_loadingicon);
+                        Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
+                        loadingIcon.setVisibility(VISIBLE);
+                        loadingIcon.startAnimation(rotate);
+
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            FirebaseAuth auth = FirebaseAuth.getInstance();
+
+                            if(auth.getCurrentUser() == null) {
+                                if(activity.getStravaId() != -1) {
+                                    runOnUiThread(() -> Toast.makeText(this, "Imported activities cannot be deleted while offline.", Toast.LENGTH_LONG).show());
+                                    return;
+                                }
                             }
-                        }
 
-                        // Remove cells
-                        Map<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
-                        FirebaseUtils.updateCells(cells, true);
+                            // Remove cells
+                            Map<String, Integer> cells = getVisitedCells(SpatialUtils.decode(polylineString));
+                            FirebaseUtils.updateCells(cells, true);
 
-                        // Remove regional distances
-                        try {
-                            if(activity.getVectorizedData() != null && activity.getVectorizedData().length != 0) {
-                                Geometry vectorizedData = convertWKBToGeometry(activity.getVectorizedData());
-                                Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateCurrentRegionalDistance(this, vectorizedData, polyline, activityId);
-                                updateRegionalLeaderboard(regionalDistances, true);
+                            // Remove regional distances
+                            try {
+                                if(activity.getVectorizedData() != null && activity.getVectorizedData().length != 0) {
+                                    Geometry vectorizedData = convertWKBToGeometry(activity.getVectorizedData());
+                                    Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateCurrentRegionalDistance(this, vectorizedData, polyline, activityId);
+                                    updateRegionalLeaderboard(regionalDistances, true);
+                                }
                             }
-                        }
-                        catch(ParseException e) {
-                            throw new RuntimeException("Unable to parse WKB.");
-                        }
+                            catch(ParseException e) {
+                                throw new RuntimeException("Unable to parse WKB.");
+                            }
 
-                        // Delete from database
-                        LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
-                        dao2.deleteActivity(activityId);
-                        dao2.close();
+                            // Delete from database
+                            LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
+                            dao2.deleteActivity(activityId);
+                            dao2.close();
 
-                        Intent intent = new Intent(this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                            runOnUiThread(loadingIcon::clearAnimation);
+
+                            Intent intent = new Intent(this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        });
                     })
                     .setNegativeButton("No", (d, which) -> d.dismiss())
                     .setCancelable(true)
