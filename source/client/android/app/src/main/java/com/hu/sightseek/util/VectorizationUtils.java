@@ -252,9 +252,9 @@ public final class VectorizationUtils {
 
     /**
      * Reads and filters the needed road polylines
-     * @param activity        Activity
-     * @param routePolygon    Route as a buffered polygon
-     * @param countryCodes    Country codes
+     * @param activity Activity
+     * @param routePolygon Route as a buffered polygon
+     * @param countryCodes Country codes
      * @param geometryFactory Geometry factory
      * @return List of LineStrings holding the roads
      */

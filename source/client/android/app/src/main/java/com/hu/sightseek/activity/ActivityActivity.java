@@ -196,9 +196,11 @@ public class ActivityActivity extends AppCompatActivity {
 
                         // Remove regional distances
                         try {
-                            Geometry vectorizedData = convertWKBToGeometry(activity.getVectorizedData());
-                            Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateCurrentRegionalDistance(this, vectorizedData, polyline, activityId);
-                            updateRegionalLeaderboard(regionalDistances, true);
+                            if(activity.getVectorizedData() != null && activity.getVectorizedData().length != 0) {
+                                Geometry vectorizedData = convertWKBToGeometry(activity.getVectorizedData());
+                                Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateCurrentRegionalDistance(this, vectorizedData, polyline, activityId);
+                                updateRegionalLeaderboard(regionalDistances, true);
+                            }
                         }
                         catch(ParseException e) {
                             throw new RuntimeException("Unable to parse WKB.");
