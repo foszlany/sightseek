@@ -2,7 +2,7 @@ package com.hu.sightseek.util;
 
 import static com.hu.sightseek.util.GenericUtils.copyShapefileToInternalStorage;
 
-import android.content.Context;
+import android.app.Activity;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -68,28 +68,28 @@ public final class GeometryUtils {
 
     /**
      * Gets the countries touched by a polyline (a polyline touches a country when it has at least one point inside it)
-     * @param context Context
+     * @param activity Activity
      * @param route Route as a LineString
      * @return Set of countries a polyline touches.
      */
-    public static Set<String> getTouchedCountries(Context context, LineString route) {
-        return getTouchedCountries(context, route, null);
+    public static Set<String> getTouchedCountries(Activity activity, LineString route) {
+        return getTouchedCountries(activity, route, null);
     }
 
     /**
      * Gets the countries touched by a polyline (a polyline touches a country when it has at least one point inside it)
-     * @param context Context
-     * @param route Route as a LineString
+     * @param activity         Activity
+     * @param route            Route as a LineString
      * @param countryShapefile Countries shapefile. If null, it will be opened.
      * @return Set of countries a polyline touches.
      */
-    public static Set<String> getTouchedCountries(Context context, LineString route, ShapeFile countryShapefile) {
+    public static Set<String> getTouchedCountries(Activity activity, LineString route, ShapeFile countryShapefile) {
         Set<String> touchedCountries = new HashSet<>();
 
         try {
             if(countryShapefile == null) {
-                copyShapefileToInternalStorage(context, "countries");
-                countryShapefile = new ShapeFile(context.getFilesDir().getAbsolutePath(), "countries");
+                copyShapefileToInternalStorage(activity, "countries");
+                countryShapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), "countries");
                 countryShapefile.READ();
             }
 

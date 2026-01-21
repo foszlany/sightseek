@@ -9,7 +9,7 @@ import static com.hu.sightseek.util.GeometryUtils.createLineStringFromPolyline;
 import static com.hu.sightseek.util.GeometryUtils.createPolygonFromLineString;
 import static com.hu.sightseek.util.GeometryUtils.getTouchedCountries;
 
-import android.content.Context;
+import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
@@ -52,11 +52,11 @@ public final class RegionalLeaderboardUtils {
 
     /**
      * Batch version of calculateNewRegionalDistance()
-     * @param context Context
+     * @param activity Activity
      * @param vectorizedDataRecords Data records of the vectorized activities
      * @param countryCodes Merged country codes of the touched countries
      */
-    public static Map<String, Double> batchCalculateNewRegionalDistance(Context context, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
+    public static Map<String, Double> batchCalculateNewRegionalDistance(Activity activity, List<VectorizedDataRecord> vectorizedDataRecords, Set<String> countryCodes) {
         if(vectorizedDataRecords == null || vectorizedDataRecords.isEmpty()) {
             return null;
         }
@@ -74,16 +74,16 @@ public final class RegionalLeaderboardUtils {
         Geometry mergedNewRoads = UnaryUnionOp.union(newRoads);
 
         // Load all vectors from activities
-        MultiLineString allRoads = getAllRoads(context, geometryFactory, routePolygons);
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygons);
 
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
-        List<String> shapefiles = getSmallestAvailableRegionFilenames(context, countryCodes);
+        List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
         // Get unique roads
         Geometry uniqueRoads = getUniqueRoads(mergedNewRoads, allRoads, geometryFactory);
 
         // Calculate the distance per region along with the containing geometries
-        List<RegionalEntry> entries = getDistances(context, geometryFactory, uniqueRoads, shapefiles);
+        List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
 
         // Convert distances to map
         return aggregateDistances(entries);
@@ -91,12 +91,12 @@ public final class RegionalLeaderboardUtils {
 
     /**
      * Calculates unique distances per region for a new activity
-     * @param context Context
+     * @param activity Activity
      * @param vectorizedDataRecord Data records of the vectorized activity
      * @param ignoredActivity ID of the activity the regional distance is being calculated for, set to a negative number if not needed
      * @return Map containing regions with their unique distances or null if the vectorized road dataset is null
      */
-    private static Map<String, Double> calculateNewRegionalDistance(Context context, VectorizedDataRecord vectorizedDataRecord, int ignoredActivity) {
+    private static Map<String, Double> calculateNewRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord, int ignoredActivity) {
         Geometry newRoads = vectorizedDataRecord.getVectorizedDataGeometry();
         Polygon routePolygon = vectorizedDataRecord.getRoutePolygon();
         Set<String> countryCodes = vectorizedDataRecord.getCountryCodes();
@@ -108,16 +108,16 @@ public final class RegionalLeaderboardUtils {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(1e4));
 
         // Load all vectors from activities
-        MultiLineString allRoads = getAllRoads(context, geometryFactory, routePolygon, ignoredActivity);
+        MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon, ignoredActivity);
 
         // Detect which shp files exist, select smallest (smallregion -> largeregion -> country)
-        List<String> shapefiles = getSmallestAvailableRegionFilenames(context, countryCodes);
+        List<String> shapefiles = getSmallestAvailableRegionFilenames(activity, countryCodes);
 
         // Get unique roads
         Geometry uniqueRoads = getUniqueRoads(newRoads, allRoads, geometryFactory);
 
         // Calculate the distance per region along with the containing geometries
-        List<RegionalEntry> entries = getDistances(context, geometryFactory, uniqueRoads, shapefiles);
+        List<RegionalEntry> entries = getDistances(activity, geometryFactory, uniqueRoads, shapefiles);
 
         // Convert distances to map
         return aggregateDistances(entries);
@@ -125,22 +125,22 @@ public final class RegionalLeaderboardUtils {
 
     /**
      * Calculates unique distances per region for a new activity
-     * @param context Context
+     * @param activity Activity
      * @param vectorizedDataRecord Data records of the vectorized activity
      * @return Map containing regions with their unique distances or null if the vectorized road dataset is null
      */
-    public static Map<String, Double> calculateNewRegionalDistance(Context context, VectorizedDataRecord vectorizedDataRecord) {
-        return calculateNewRegionalDistance(context, vectorizedDataRecord, -1);
+    public static Map<String, Double> calculateNewRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
+        return calculateNewRegionalDistance(activity, vectorizedDataRecord, -1);
     }
 
     /** Calculates unique distances per region for an already existing activity
-     * @param context Context
+     * @param activity Activity
      * @param vectorizedRoads Vectorized roads
      * @param route Route polyline
      * @param activityId ID of the activity
      * @return Map containing regions with their unique distances or null if vectorizedRoads is null
      */
-    public static Map<String, Double> calculateCurrentRegionalDistance(Context context, Geometry vectorizedRoads, Polyline route, int activityId) {
+    public static Map<String, Double> calculateCurrentRegionalDistance(Activity activity, Geometry vectorizedRoads, Polyline route, int activityId) {
         if(vectorizedRoads == null || vectorizedRoads.isEmpty()) {
             return null;
         }
@@ -153,22 +153,22 @@ public final class RegionalLeaderboardUtils {
         Polygon routePolygon = createPolygonFromLineString(routeLineString, TOLERANCE);
 
         // Get country codes
-        Set<String> countryCodes = getTouchedCountries(context, routeLineString);
+        Set<String> countryCodes = getTouchedCountries(activity, routeLineString);
 
         // Calculate regional distance
         VectorizedDataRecord vectorizedDataRecord = new VectorizedDataRecord(vectorizedRoads, routePolygon, countryCodes);
-        return calculateNewRegionalDistance(context, vectorizedDataRecord, activityId);
+        return calculateNewRegionalDistance(activity, vectorizedDataRecord, activityId);
     }
 
     /**
      * Gets all relevant roads from the database based on the buffered polygon.
-     * @param context Context
+     * @param activity Activity
      * @param geometryFactory Geometry factory
      * @param routePolygon Buffered polygon of the roads
      * @return Roads as a MultiLineString
      */
-    private static MultiLineString getAllRoads(Context context, GeometryFactory geometryFactory, Polygon routePolygon, int ignoredActivity) {
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(context);
+    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, Polygon routePolygon, int ignoredActivity) {
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
         List<Geometry> allRoads = dao.getAllVectorizedRoads(ignoredActivity);
         dao.close();
 
@@ -196,13 +196,13 @@ public final class RegionalLeaderboardUtils {
 
     /**
      * Gets all relevant roads from the database based on a list of buffered polygons.
-     * @param context Context
+     * @param activity Activity
      * @param geometryFactory Geometry factory
      * @param routePolygons List of the buffered polygons of the roads
      * @return Roads as a MultiLineString
      */
-    private static MultiLineString getAllRoads(Context context, GeometryFactory geometryFactory, List<Polygon> routePolygons) {
-        LocalDatabaseDAO dao = new LocalDatabaseDAO(context);
+    private static MultiLineString getAllRoads(Activity activity, GeometryFactory geometryFactory, List<Polygon> routePolygons) {
+        LocalDatabaseDAO dao = new LocalDatabaseDAO(activity);
         List<Geometry> allRoads = dao.getAllVectorizedRoads();
         dao.close();
 
@@ -234,18 +234,18 @@ public final class RegionalLeaderboardUtils {
 
     /**
      * Gets the list of shapefiles to be opened based on available region divisions.
-     * @param context Context
+     * @param activity Activity
      * @param countryCodes Country codes of the touched countries
      * @return List of shapefile names.
      */
-    private static List<String> getSmallestAvailableRegionFilenames(Context context, Set<String> countryCodes) {
+    private static List<String> getSmallestAvailableRegionFilenames(Activity activity, Set<String> countryCodes) {
         List<String> shapeFiles = new ArrayList<>();
 
         for(String code : countryCodes) {
             for(String region : regionTypes) {
                 String filename = code + "_" + region;
 
-                if(copyShapefileToInternalStorage(context, filename)) {
+                if(copyShapefileToInternalStorage(activity, filename)) {
                     shapeFiles.add(filename);
                     break;
                 }
@@ -257,13 +257,13 @@ public final class RegionalLeaderboardUtils {
 
     /**
      * Calculates the distance inside the smallest available regions.
-     * @param context Context
+     * @param activity Activity
      * @param geometryFactory Geometry factory
      * @param uniqueRoads Unique roads
      * @param shapefiles Shapefiles to open
      * @return List of RegionalEntries holding the distances.
      */
-    private static List<RegionalEntry> getDistances(Context context, GeometryFactory geometryFactory, Geometry uniqueRoads, List<String> shapefiles) {
+    private static List<RegionalEntry> getDistances(Activity activity, GeometryFactory geometryFactory, Geometry uniqueRoads, List<String> shapefiles) {
         List<RegionalEntry> regionalEntries = new ArrayList<>();
 
         uniqueRoads = GeometryFixer.fix(uniqueRoads);
@@ -271,7 +271,7 @@ public final class RegionalLeaderboardUtils {
         for(String shpFilename : shapefiles) {
             try {
                 // Read shapefile
-                List<ShpPolygon> shapes = getShpPolygons(context, shpFilename);
+                List<ShpPolygon> shapes = getShpPolygons(activity, shpFilename);
 
                 // Detect necessary regions using route with contains operation
                 for(ShpPolygon shp : shapes) {
@@ -332,14 +332,14 @@ public final class RegionalLeaderboardUtils {
 
     /**
      * Gets the shapefile polygons from a shapefile.
-     * @param context Context
+     * @param activity Activity
      * @param shpFilename Shapefile name
      * @return List of polygons
      */
     @NonNull
-    private static List<ShpPolygon> getShpPolygons(Context context, String shpFilename) {
+    private static List<ShpPolygon> getShpPolygons(Activity activity, String shpFilename) {
         try {
-            ShapeFile shapefile = new ShapeFile(context.getFilesDir().getAbsolutePath(), shpFilename);
+            ShapeFile shapefile = new ShapeFile(activity.getFilesDir().getAbsolutePath(), shpFilename);
             shapefile.READ();
 
             List<ShpPolygon> shapes = new ArrayList<>();
