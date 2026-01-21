@@ -22,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -148,6 +150,14 @@ public class SaveActivity extends AppCompatActivity {
                 title = "Untitled activity";
             }
 
+            // Loading icon
+            saveButton.setVisibility(GONE);
+
+            ImageView loadingIcon = findViewById(R.id.save_loadingicon);
+            Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
+            loadingIcon.setVisibility(VISIBLE);
+            loadingIcon.startAnimation(rotate);
+
             daoExecutor.execute(() -> {
                 byte[] vectorizedDataBlob = null;
 
@@ -173,6 +183,8 @@ public class SaveActivity extends AppCompatActivity {
 
                 bundle.putInt("id", (int) id);
                 intent.putExtras(bundle);
+
+                runOnUiThread(loadingIcon::clearAnimation);
 
                 startActivity(intent);
                 finish();

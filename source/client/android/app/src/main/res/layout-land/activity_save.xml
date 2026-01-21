@@ -93,6 +93,14 @@
             android:gravity="center"
             android:layout_marginTop="10dp">
 
+            <ImageView
+                android:id="@+id/save_loadingicon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="gone"
+                android:src="@drawable/baseline_change_circle_24"
+                android:contentDescription="@string/idea_loading" />
+
             <Button
                 android:id="@+id/save_savebtn"
                 android:layout_width="160dp"

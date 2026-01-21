@@ -151,6 +151,14 @@
             android:textSize="27sp"
             app:backgroundTint="@color/theme_main" />
 
+        <ImageView
+            android:id="@+id/save_loadingicon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:src="@drawable/baseline_change_circle_24"
+            android:contentDescription="@string/idea_loading" />
+
         <Button
             android:id="@+id/save_discardbtn"
             android:layout_width="wrap_content"
