@@ -25,10 +25,6 @@ import diewald_shapeFile.shapeFile.ShapeFile;
 public final class GeometryUtils {
     /** Value used to create an extra buffer around polylines */
     public static final double TOLERANCE = 0.0002;
-
-    /** Default sublist size for partitioning */
-    public static final int DEFAULT_PARTITION_SIZE = 200;
-
     /** Private constructor */
     private GeometryUtils() {}
 
@@ -78,8 +74,8 @@ public final class GeometryUtils {
 
     /**
      * Gets the countries touched by a polyline (a polyline touches a country when it has at least one point inside it)
-     * @param activity         Activity
-     * @param route            Route as a LineString
+     * @param activity Activity
+     * @param route Route as a LineString
      * @param countryShapefile Countries shapefile. If null, it will be opened.
      * @return Set of countries a polyline touches.
      */
