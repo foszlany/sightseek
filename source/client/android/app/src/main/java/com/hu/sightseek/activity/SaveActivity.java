@@ -396,11 +396,13 @@ public class SaveActivity extends AppCompatActivity {
                 paint.setStrokeWidth(4.0f);
                 paint.setAntiAlias(false);
 
-                for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
-                    p.getOutlinePaint().set(paint);
-                    mapView.getOverlays().add(p);
+                if(vectorizedDataRecord.getVectorizedDataPolylines() != null) {
+                    for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
+                        p.getOutlinePaint().set(paint);
+                        mapView.getOverlays().add(p);
+                    }
+                    mapView.invalidate();
                 }
-                mapView.invalidate();
             }
             catch(ExecutionException | InterruptedException e) {
                 throw new RuntimeException(e);
