@@ -63,7 +63,6 @@ public final class VectorizationUtils {
         // Convert to LineString and detect countries
         List<Future<RouteData>> routeDataFutures = new ArrayList<>();
         for(int i = 0; i < routes.size(); i++) {
-            final int position = i;
             final Polyline route = routes.get(i);
 
             routeDataFutures.add(executor.submit(() -> {
@@ -75,7 +74,7 @@ public final class VectorizationUtils {
                 Set<String> routeCountryCodes = getTouchedCountries(activity, lineString, countryShapefile);
                 countryCodes.addAll(routeCountryCodes);
 
-                return new RouteData(position, route, lineString, routeCountryCodes);
+                return new RouteData(lineString, routeCountryCodes);
             }));
         }
 
@@ -157,10 +156,6 @@ public final class VectorizationUtils {
 
     /** Holds extra data about a route */
     private static class RouteData {
-        /** Position inside the array */
-        final int position;
-        /** Route as a Polyline */
-        final Polyline polyline;
         /** Route as a LineString */
         final LineString lineString;
         /** Country codes */
@@ -169,14 +164,10 @@ public final class VectorizationUtils {
         final Envelope envelope;
 
         /** Constructor
-         * @param position Position inside the array
-         * @param polyline Route as a Polyline
          * @param lineString Route as a LineString
          * @param countryCodes Country codes
          */
-        RouteData(int position, Polyline polyline, LineString lineString, Set<String> countryCodes) {
-            this.position = position;
-            this.polyline = polyline;
+        RouteData(LineString lineString, Set<String> countryCodes) {
             this.lineString = lineString;
             this.countryCodes = countryCodes;
 

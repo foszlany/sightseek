@@ -79,7 +79,7 @@ public class IdeaOverlayProvider {
 
             InfoWindow.closeAllInfoWindowsOn(mapView);
 
-            IdeaInfoWindow info = new IdeaInfoWindow(R.layout.popup_idea, mapView, layoutStyle, points, ideaOverlay, ideaButton);
+            IdeaInfoWindow info = new IdeaInfoWindow(R.layout.popup_idea, mapView, layoutStyle, points, ideaButton);
             info.open(ideaPoint, new GeoPoint(ideaPoint.getLatitude(), ideaPoint.getLongitude()), 0, 0);
         });
 

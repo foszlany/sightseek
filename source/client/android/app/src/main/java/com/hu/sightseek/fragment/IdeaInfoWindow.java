@@ -34,15 +34,13 @@ public class IdeaInfoWindow extends InfoWindow {
 
     SimpleFastPointOverlayOptions layoutStyle;
     List<IGeoPoint> points;
-    SimpleFastPointOverlay ideasOverlay;
     ImageButton ideaButton;
 
-    public IdeaInfoWindow(int layoutResId, MapView mapView, SimpleFastPointOverlayOptions layoutStyle, List<IGeoPoint> points, SimpleFastPointOverlay ideasOverlay, ImageButton ideaButton) {
+    public IdeaInfoWindow(int layoutResId, MapView mapView, SimpleFastPointOverlayOptions layoutStyle, List<IGeoPoint> points, ImageButton ideaButton) {
         super(layoutResId, mapView);
 
         this.layoutStyle = layoutStyle;
         this.points = points;
-        this.ideasOverlay = ideasOverlay;
         this.ideaButton = ideaButton;
     }
 
@@ -68,7 +66,6 @@ public class IdeaInfoWindow extends InfoWindow {
                 }
 
                 points.remove(ideaPoint);
-                ideasOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
                 mMapView.postInvalidate();
 
                 if(points.size() >= 2000) {
@@ -90,7 +87,6 @@ public class IdeaInfoWindow extends InfoWindow {
                 }
 
                 points.remove(ideaPoint);
-                ideasOverlay = new SimpleFastPointOverlay(new SimplePointTheme(points, true), layoutStyle);
                 mMapView.postInvalidate();
 
                 if(points.size() >= 2000) {
