@@ -3,6 +3,15 @@ package com.hu.sightseek.activity;
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_APPROX_CALORIES_HIGH;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_APPROX_CALORIES_LOW;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_AVERAGE_SPEED;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_MEDIAN_LAT;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_MEDIAN_LON;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_POINTS;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_TIME;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_VISITED_CELLS;
 import static com.hu.sightseek.util.GenericUtils.createScreenshot;
 import static com.hu.sightseek.provider.StatisticsProvider.getCategorySpecificStatistics;
 import static com.hu.sightseek.provider.StatisticsProvider.getDetailedGenericStatistics;
@@ -141,10 +150,10 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Double valueHolder;
 
-        valueHolder = (Double) baseStatistics.get("total_distance");
+        valueHolder = (Double) baseStatistics.get(STATISTICS_KEY_TOTAL_DISTANCE);
         totalDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = (Double) baseStatistics.get("total_time");
+        valueHolder = (Double) baseStatistics.get(STATISTICS_KEY_TOTAL_TIME);
         totalDays = (valueHolder != null) ? (valueHolder / 86400.0) : 0.0;
 
         valueHolder = (Double) baseStatistics.get("longest_distance");
@@ -502,7 +511,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         TextView totalPointsTextView = findViewById(R.id.statistics_generalcard_totalpoints);
         totalPointsTextView.setText(
-                getString(R.string.statistics_generalcard_totalpoints, (Double)detailedGenericStatistics.get("total_points"))
+                getString(R.string.statistics_generalcard_totalpoints, (Double)detailedGenericStatistics.get(STATISTICS_KEY_TOTAL_POINTS))
         );
 
         TextView totalKilometersTextView = findViewById(R.id.statistics_generalcard_totalkilometers);
@@ -525,7 +534,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 getString(R.string.statistics_generalcard_mainactivitytype, mainCategory.toShortString())
         );
 
-        Double visitedCellsHolder = (Double)detailedGenericStatistics.get("visited_cells");
+        Double visitedCellsHolder = (Double)detailedGenericStatistics.get(STATISTICS_KEY_VISITED_CELLS);
         double visitedCells = visitedCellsHolder == null ? 0 : visitedCellsHolder;
         TextView visitedCellsTextView = findViewById(R.id.statistics_generalcard_visitedcells);
         if(visitedCells == -1) {
@@ -547,8 +556,8 @@ public class StatisticsActivity extends AppCompatActivity {
                 getString(R.string.statistics_generalcard_longesttime, longestTimeText)
         );
 
-        Double medianLatitude = (Double)detailedGenericStatistics.get("median_lat");
-        Double medianLongitude = (Double)detailedGenericStatistics.get("median_lon");
+        Double medianLatitude = (Double)detailedGenericStatistics.get(STATISTICS_KEY_MEDIAN_LAT);
+        Double medianLongitude = (Double)detailedGenericStatistics.get(STATISTICS_KEY_MEDIAN_LON);
         if(medianLatitude == null || medianLongitude == null) {
             throw new ClassCastException();
         }
@@ -578,20 +587,20 @@ public class StatisticsActivity extends AppCompatActivity {
         );
 
         TextView totalDistanceTextView = findViewById(R.id.statistics_percategory_totaldistance);
-        valueHolder = (Double)values.get("total_distance");
+        valueHolder = (Double)values.get(STATISTICS_KEY_TOTAL_DISTANCE);
         totalDistanceTextView.setText(
                 getString(R.string.statistics_percategory_totaldistance, valueHolder == null ? 0 : (valueHolder / 1000.0))
         );
 
         TextView totalTimeTextView = findViewById(R.id.statistics_percategory_totaltime);
-        valueHolder = (Double)values.get("total_time");
+        valueHolder = (Double)values.get(STATISTICS_KEY_TOTAL_TIME);
         totalTimeTextView.setText(
                 getString(R.string.statistics_percategory_totaltime, valueHolder == null ? 0 : (valueHolder / 86400.0))
         );
 
         TextView averageSpeedTextView = findViewById(R.id.statistics_percategory_averagespeed);
         averageSpeedTextView.setText(
-                getString(R.string.statistics_percategory_averagespeed, (Double)values.get("average_speed"))
+                getString(R.string.statistics_percategory_averagespeed, (Double)values.get(STATISTICS_KEY_AVERAGE_SPEED))
         );
 
         TextView longestDistanceTextView = findViewById(R.id.statistics_percategory_longestdistance);
@@ -609,7 +618,7 @@ public class StatisticsActivity extends AppCompatActivity {
         );
 
         TextView approxCaloriesBurntTextView = findViewById(R.id.statistics_percategory_approximatecaloriesburnt);
-        valueHolder = (Double)values.get("approx_calories_high");
+        valueHolder = (Double)values.get(STATISTICS_KEY_APPROX_CALORIES_HIGH);
         double caloriesHigh = valueHolder == null ? 0 : valueHolder;
         if(caloriesHigh < 0.5) {
             approxCaloriesBurntTextView.setText(
@@ -618,7 +627,7 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         else {
             approxCaloriesBurntTextView.setText(
-                    getString(R.string.statistics_percategory_approximatecaloriesburnt, (Double)values.get("approx_calories_low"), (Double)values.get("approx_calories_high"))
+                    getString(R.string.statistics_percategory_approximatecaloriesburnt, (Double)values.get(STATISTICS_KEY_APPROX_CALORIES_LOW), (Double)values.get(STATISTICS_KEY_APPROX_CALORIES_HIGH))
             );
         }
     }
