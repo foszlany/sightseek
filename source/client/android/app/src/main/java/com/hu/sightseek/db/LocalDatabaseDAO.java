@@ -1,5 +1,12 @@
 package com.hu.sightseek.db;
 
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_LONGEST_DISTANCE;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_LONGEST_TIME;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_TIME;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -84,23 +91,23 @@ public class LocalDatabaseDAO {
         if(category == TravelCategory.INVALID) {
             sql =
                 "SELECT " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS total_distance, " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS total_time, " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS longest_distance, " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS longest_time, " +
-                "COUNT(*) AS activity_count, " +
-                "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS imported_count " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_TOTAL_DISTANCE + ", " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_TOTAL_TIME + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_LONGEST_DISTANCE + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_LONGEST_TIME + ", " +
+                "COUNT(*) AS " + STATISTICS_KEY_ACTIVITY_COUNT + ", " +
+                "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + STATISTICS_KEY_IMPORTED_COUNT + " " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE;
         }
         else {
             sql =
                 "SELECT " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS total_distance, " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS total_time, " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS longest_distance, " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS longest_time, " +
-                "COUNT(*) AS activity_count, " +
-                "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS imported_count " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_TOTAL_DISTANCE + ", " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_TOTAL_TIME + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_LONGEST_DISTANCE + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_LONGEST_TIME + ", " +
+                "COUNT(*) AS " + STATISTICS_KEY_ACTIVITY_COUNT + ", " +
+                "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + STATISTICS_KEY_IMPORTED_COUNT + " " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
                 "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = " + category.getIndex();
         }
@@ -109,12 +116,12 @@ public class LocalDatabaseDAO {
 
         HashMap<String, Serializable> res = new HashMap<>();
         if(cursor.moveToFirst()) {
-            res.put("total_distance", cursor.getDouble(cursor.getColumnIndexOrThrow("total_distance")));
-            res.put("total_time", cursor.getDouble(cursor.getColumnIndexOrThrow("total_time")));
-            res.put("longest_distance", cursor.getDouble(cursor.getColumnIndexOrThrow("longest_distance")));
-            res.put("longest_time", cursor.getDouble(cursor.getColumnIndexOrThrow("longest_time")));
-            res.put("activity_count", cursor.getDouble(cursor.getColumnIndexOrThrow("activity_count")));
-            res.put("imported_count", cursor.getDouble(cursor.getColumnIndexOrThrow("imported_count")));
+            res.put(STATISTICS_KEY_TOTAL_DISTANCE, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_TOTAL_DISTANCE)));
+            res.put(STATISTICS_KEY_TOTAL_TIME, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_TOTAL_TIME)));
+            res.put(STATISTICS_KEY_LONGEST_DISTANCE, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_LONGEST_DISTANCE)));
+            res.put(STATISTICS_KEY_LONGEST_TIME, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_LONGEST_TIME)));
+            res.put(STATISTICS_KEY_ACTIVITY_COUNT, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_ACTIVITY_COUNT)));
+            res.put(STATISTICS_KEY_IMPORTED_COUNT, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_IMPORTED_COUNT)));
         }
 
         cursor.close();
