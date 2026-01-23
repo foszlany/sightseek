@@ -19,6 +19,26 @@ import java.util.Map;
 
 /** Provides statistics based on stored user data. */
 public final class StatisticsProvider {
+    /** Key for the number of visited cells */
+    public static final String STATISTICS_KEY_VISITED_CELLS = "visited_cells";
+    /** Key for the total recorded distance */
+    public static final String STATISTICS_KEY_TOTAL_DISTANCE = "total_distance";
+    /** Key for the total recorded time */
+    public static final String STATISTICS_KEY_TOTAL_TIME = "total_time";
+    /** Key for the calculated average speed */
+    public static final String STATISTICS_KEY_AVERAGE_SPEED = "average_speed";
+    /** Key for the lower estimate of burned calories */
+    public static final String STATISTICS_KEY_APPROX_CALORIES_LOW = "approx_calories_low";
+    /** Key for the higher estimate of burned calories */
+    public static final String STATISTICS_KEY_APPROX_CALORIES_HIGH = "approx_calories_high";
+    /** Key for the total number of recorded points */
+    public static final String STATISTICS_KEY_TOTAL_POINTS = "total_points";
+    /** Key for the median latitude of all recorded points */
+    public static final String STATISTICS_KEY_MEDIAN_LAT = "median_lat";
+    /** Key for the median longitude of all recorded points. */
+    public static final String STATISTICS_KEY_MEDIAN_LON = "median_lon";
+
+
     /** Private constructor */
     private StatisticsProvider() {}
 
@@ -43,7 +63,7 @@ public final class StatisticsProvider {
 
                         if(task.isSuccessful() && task.getResult().exists()) {
                             Map<String, Object> data = task.getResult().getData();
-                            
+
                             if(data != null && data.containsKey("visitedCells")) {
                                 Object visitedCellsObj = data.get("visitedCells");
                                 if(visitedCellsObj instanceof Map) {
@@ -52,14 +72,14 @@ public final class StatisticsProvider {
                                 }
                             }
                         }
-                        values.put("visited_cells", visited);
+                        values.put(STATISTICS_KEY_VISITED_CELLS, visited);
 
                         fillLocalStats(ctx, values);
                         source.setResult(values);
                     });
         }
         else {
-            values.put("visited_cells", -1.0);
+            values.put(STATISTICS_KEY_VISITED_CELLS, -1.0);
             fillLocalStats(ctx, values);
             source.setResult(values);
         }
@@ -81,13 +101,13 @@ public final class StatisticsProvider {
         Double valueHolder;
 
         // Speed
-        valueHolder = (Double)values.get("total_distance");
+        valueHolder = (Double)values.get(STATISTICS_KEY_TOTAL_DISTANCE);
         double totalDistance = (valueHolder != null) ? (valueHolder) : 0.0;
 
-        valueHolder = (Double)values.get("total_time");
+        valueHolder = (Double)values.get(STATISTICS_KEY_TOTAL_TIME);
         double totalTime = (valueHolder != null) ? (valueHolder) : 0.0;
 
-        values.put("average_speed", (totalTime != 0) ? ((totalDistance / totalTime) * 3.6) : 0);
+        values.put(STATISTICS_KEY_AVERAGE_SPEED, (totalTime != 0) ? ((totalDistance / totalTime) * 3.6) : 0);
 
         // Calories
         double approxCaloriesLow = 0;
@@ -108,8 +128,8 @@ public final class StatisticsProvider {
                 approxCaloriesHigh = 10 * (totalTime / 3600.0);
                 break;
         }
-        values.put("approx_calories_low", approxCaloriesLow);
-        values.put("approx_calories_high", approxCaloriesHigh);
+        values.put(STATISTICS_KEY_APPROX_CALORIES_LOW, approxCaloriesLow);
+        values.put(STATISTICS_KEY_APPROX_CALORIES_HIGH, approxCaloriesHigh);
 
         return values;
     }
@@ -124,11 +144,11 @@ public final class StatisticsProvider {
         ArrayList<LatLng> allPoints = dao.getAllPoints();
         dao.close();
 
-        values.put("total_points", (double) allPoints.size());
+        values.put(STATISTICS_KEY_TOTAL_POINTS, (double) allPoints.size());
 
         LatLng medianPoint = getMedianPoint(allPoints);
-        values.put("median_lat", medianPoint.latitude);
-        values.put("median_lon", medianPoint.longitude);
+        values.put(STATISTICS_KEY_MEDIAN_LAT, medianPoint.latitude);
+        values.put(STATISTICS_KEY_MEDIAN_LON, medianPoint.longitude);
     }
 
     /**
