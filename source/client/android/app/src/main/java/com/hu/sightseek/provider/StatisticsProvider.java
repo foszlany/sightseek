@@ -37,6 +37,15 @@ public final class StatisticsProvider {
     public static final String STATISTICS_KEY_MEDIAN_LAT = "median_lat";
     /** Key for the median longitude of all recorded points. */
     public static final String STATISTICS_KEY_MEDIAN_LON = "median_lon";
+    /** Key for the total recorded distance. */
+    public static final String STATISTICS_KEY_LONGEST_DISTANCE = "longest_distance";
+    /** Key for the longest single recorded activity time */
+    public static final String STATISTICS_KEY_LONGEST_TIME = "longest_time";
+    /** Key for the total number of recorded activities */
+    public static final String STATISTICS_KEY_ACTIVITY_COUNT = "activity_count";
+    /** Key for the number of imported (Strava) activities */
+    public static final String STATISTICS_KEY_IMPORTED_COUNT = "imported_count";
+
 
 
     /** Private constructor */

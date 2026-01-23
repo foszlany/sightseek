@@ -3,9 +3,13 @@ package com.hu.sightseek.activity;
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_APPROX_CALORIES_HIGH;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_APPROX_CALORIES_LOW;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_AVERAGE_SPEED;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_LONGEST_DISTANCE;
+import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_LONGEST_TIME;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_MEDIAN_LAT;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_MEDIAN_LON;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE;
@@ -156,16 +160,16 @@ public class StatisticsActivity extends AppCompatActivity {
         valueHolder = (Double) baseStatistics.get(STATISTICS_KEY_TOTAL_TIME);
         totalDays = (valueHolder != null) ? (valueHolder / 86400.0) : 0.0;
 
-        valueHolder = (Double) baseStatistics.get("longest_distance");
+        valueHolder = (Double) baseStatistics.get(STATISTICS_KEY_LONGEST_DISTANCE);
         longestDistance = (valueHolder != null) ? (valueHolder / 1000.0) : 0.0;
 
-        valueHolder = (Double) baseStatistics.get("longest_time");
+        valueHolder = (Double) baseStatistics.get(STATISTICS_KEY_LONGEST_TIME);
         longestTime = (valueHolder != null) ? valueHolder : 0.0;
 
-        valueHolder = (Double) baseStatistics.get("activity_count");
+        valueHolder = (Double) baseStatistics.get(STATISTICS_KEY_ACTIVITY_COUNT);
         activityCount = (valueHolder != null) ? valueHolder : 0.0;
 
-        valueHolder = (Double) baseStatistics.get("imported_count");
+        valueHolder = (Double) baseStatistics.get(STATISTICS_KEY_IMPORTED_COUNT);
         importedCount = (valueHolder != null) ? valueHolder : 0.0;
 
         initCardView();
@@ -581,7 +585,7 @@ public class StatisticsActivity extends AppCompatActivity {
         Double valueHolder;
 
         TextView totalActivitiesTextView = findViewById(R.id.statistics_percategory_activitiescreated);
-        valueHolder = (Double)values.get("activity_count");
+        valueHolder = (Double)values.get(STATISTICS_KEY_ACTIVITY_COUNT);
         totalActivitiesTextView.setText(
                 getString(R.string.statistics_percategory_activitiescreated, valueHolder == null ? 0 : valueHolder)
         );
@@ -604,13 +608,13 @@ public class StatisticsActivity extends AppCompatActivity {
         );
 
         TextView longestDistanceTextView = findViewById(R.id.statistics_percategory_longestdistance);
-        valueHolder = (Double)values.get("longest_distance");
+        valueHolder = (Double)values.get(STATISTICS_KEY_LONGEST_DISTANCE);
         longestDistanceTextView.setText(
                 getString(R.string.statistics_percategory_longestdistance, valueHolder == null ? 0 : (valueHolder / 1000.0))
         );
 
         TextView longestTimeTextView = findViewById(R.id.statistics_percategory_longesttime);
-        valueHolder = (Double)values.get("longest_time");
+        valueHolder = (Double)values.get(STATISTICS_KEY_LONGEST_TIME);
         double longestTimeCategory = valueHolder == null ? 0 : valueHolder;
         longestTimeText = String.format(Locale.US, "%02d:%02d:%02d", (int) longestTimeCategory / 3600, ((int) longestTimeCategory % 3600) / 60, (int) longestTimeCategory % 60);
         longestTimeTextView.setText(
