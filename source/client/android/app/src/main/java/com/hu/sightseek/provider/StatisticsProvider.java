@@ -17,9 +17,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Provides statistics based on stored user data. */
 public final class StatisticsProvider {
+    /** Private constructor */
     private StatisticsProvider() {}
 
+    /**
+     * Gets generic statistics based on your profile
+     * @param ctx Context
+     * @return Map with generic statistics
+     */
     public static Task<HashMap<String, Serializable>> getDetailedGenericStatistics(Context ctx) {
         TaskCompletionSource<HashMap<String, Serializable>> source = new TaskCompletionSource<>();
         HashMap<String, Serializable> values = new HashMap<>();
@@ -36,6 +43,7 @@ public final class StatisticsProvider {
 
                         if(task.isSuccessful() && task.getResult().exists()) {
                             Map<String, Object> data = task.getResult().getData();
+                            
                             if(data != null && data.containsKey("visitedCells")) {
                                 Object visitedCellsObj = data.get("visitedCells");
                                 if(visitedCellsObj instanceof Map) {
@@ -59,6 +67,12 @@ public final class StatisticsProvider {
         return source.getTask();
     }
 
+    /**
+     * Gets category specific statistics based on your profile
+     * @param ctx Context
+     * @param category Travel category
+     * @return Map with the category specific statistics
+     */
     public static HashMap<String, Serializable> getCategorySpecificStatistics(Context ctx, TravelCategory category) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
         HashMap<String, Serializable> values = dao.getBaseStatistics(category);
@@ -100,6 +114,11 @@ public final class StatisticsProvider {
         return values;
     }
 
+    /**
+     * Adds "total points" and "median point" to a map of statistics
+     * @param ctx Context
+     * @param values Map to put values into
+     */
     private static void fillLocalStats(Context ctx, HashMap<String, Serializable> values) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
         ArrayList<LatLng> allPoints = dao.getAllPoints();
@@ -112,6 +131,11 @@ public final class StatisticsProvider {
         values.put("median_lon", medianPoint.longitude);
     }
 
+    /**
+     * Finds the median point based on all recorded activities
+     * @param allPoints List of all points
+     * @return Median point
+     */
     public static LatLng getMedianPoint(ArrayList<LatLng> allPoints) {
         int n = allPoints.size();
         double[] lats = new double[n];
