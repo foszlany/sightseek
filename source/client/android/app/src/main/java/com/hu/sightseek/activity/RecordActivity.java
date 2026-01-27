@@ -633,7 +633,7 @@ public class RecordActivity extends AppCompatActivity {
                     // Import polylines if necessary
                     if(polylineGroup.getItems().isEmpty()) {
                         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                        ArrayList<Polyline> polylines = dao.getAllPolylines(8);
+                        List<Polyline> polylines = dao.getAllPolylines(8);
                         dao.close();
 
                         for(Polyline p : polylines) {

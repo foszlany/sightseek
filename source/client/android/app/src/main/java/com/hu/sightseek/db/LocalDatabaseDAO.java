@@ -415,7 +415,7 @@ public class LocalDatabaseDAO {
      * @param tolerance When positive, the polylines will be simplified by tolerance meters
      * @return List of Polyline objects
      */
-    public ArrayList<Polyline> getAllPolylines(int tolerance) {
+    public List<Polyline> getAllPolylines(int tolerance) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Polyline> polylines = new ArrayList<>();
 
