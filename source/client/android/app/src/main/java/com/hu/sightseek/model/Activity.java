@@ -24,7 +24,7 @@ public class Activity {
     private final double distance;
     /** Strava ID, -1 if activity is not imported */
     private final long stravaId;
-    /** Vectorized data as WKB (Well-known binary) format. */
+    /** Vectorized data as WKB (Well-known binary) format */
     private byte[] vectorizedData;
 
     /**

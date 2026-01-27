@@ -123,16 +123,6 @@ public final class RegionalLeaderboardUtils {
         return aggregateDistances(entries);
     }
 
-    /**
-     * Calculates unique distances per region for a new activity
-     * @param activity Activity
-     * @param vectorizedDataRecord Data records of the vectorized activity
-     * @return Map containing regions with their unique distances or null if the vectorized road dataset is null
-     */
-    public static Map<String, Double> calculateNewRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
-        return calculateNewRegionalDistance(activity, vectorizedDataRecord, -1);
-    }
-
     /** Calculates unique distances per region for an already existing activity
      * @param activity Activity
      * @param vectorizedRoads Vectorized roads
@@ -158,6 +148,16 @@ public final class RegionalLeaderboardUtils {
         // Calculate regional distance
         VectorizedDataRecord vectorizedDataRecord = new VectorizedDataRecord(vectorizedRoads, routePolygon, countryCodes);
         return calculateNewRegionalDistance(activity, vectorizedDataRecord, activityId);
+    }
+
+    /**
+     * Calculates unique distances per region for a new activity
+     * @param activity Activity
+     * @param vectorizedDataRecord Data records of the vectorized activity
+     * @return Map containing regions with their unique distances or null if the vectorized road dataset is null
+     */
+    public static Map<String, Double> calculateNewRegionalDistance(Activity activity, VectorizedDataRecord vectorizedDataRecord) {
+        return calculateNewRegionalDistance(activity, vectorizedDataRecord, -1);
     }
 
     /**
