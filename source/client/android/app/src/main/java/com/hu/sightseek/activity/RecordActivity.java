@@ -92,6 +92,7 @@ import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
@@ -113,8 +114,8 @@ public class RecordActivity extends AppCompatActivity {
     private DirectedLocationOverlay locationOverlay;
     private BroadcastReceiver locationModeReceiver;
     private Intent recordServiceIntent;
-    private ArrayList<LatLng> importedPoints;
-    private ArrayList<LatLng> recordedPoints;
+    private List<LatLng> importedPoints;
+    private List<LatLng> recordedPoints;
     private boolean isRecording;
     private boolean didPressStopWhileLowPointCount;
     private String startTime;

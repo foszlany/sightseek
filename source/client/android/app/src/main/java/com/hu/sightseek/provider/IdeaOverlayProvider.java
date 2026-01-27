@@ -36,7 +36,7 @@ public class IdeaOverlayProvider {
      */
     public static SimpleFastPointOverlay getIdeasOverlay(Context ctx, MapView mapView, ImageButton ideaButton) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
-        ArrayList<Idea> ideas = dao.getSavedIdeas();
+        List<Idea> ideas = dao.getSavedIdeas();
         dao.close();
 
         List<IGeoPoint> points = new ArrayList<>();

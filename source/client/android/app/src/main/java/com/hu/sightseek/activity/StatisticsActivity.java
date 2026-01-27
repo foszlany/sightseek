@@ -133,7 +133,7 @@ public class StatisticsActivity extends AppCompatActivity {
         otherStatistics = new HashMap<>();
         monthlyTotalDistance = new HashMap<>();
 
-        HashMap<String, Serializable> baseStatistics = dao.getBaseStatistics(TravelCategory.INVALID);
+        HashMap<String, Serializable> baseStatistics = dao.getBaseStatistics();
         mainCategory = dao.getMainTravelCategory();
 
         dao.close();

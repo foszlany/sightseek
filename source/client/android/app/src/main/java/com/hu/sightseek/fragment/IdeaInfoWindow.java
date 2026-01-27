@@ -56,7 +56,7 @@ public class IdeaInfoWindow extends InfoWindow {
         visitedButton.setOnClickListener(v -> {
             executor.execute(() -> {
                 LocalDatabaseDAO dao2 = new LocalDatabaseDAO(view.getContext());
-                dao2.updateIdeaStatus(ideaPoint.getId(), SavedIdeaStatus.VISITED.getIndex());
+                dao2.updateIdeaStatus(ideaPoint.getId(), SavedIdeaStatus.VISITED);
                 dao2.close();
 
                 if(points.size() >= 2000) {

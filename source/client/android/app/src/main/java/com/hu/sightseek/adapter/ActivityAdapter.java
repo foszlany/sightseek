@@ -44,9 +44,9 @@ import java.util.concurrent.TimeUnit;
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder> implements Filterable {
     private static final int w = 400, h = 400;
 
-    private final ArrayList<Activity> activityListFull;
-    private final ArrayList<Activity> activityListFilteredByCategory;
-    private ArrayList<Activity> activityListFiltered;
+    private final List<Activity> activityListFull;
+    private final List<Activity> activityListFilteredByCategory;
+    private List<Activity> activityListFiltered;
     private String searchQuery;
 
     private final Context context;
@@ -54,7 +54,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     private final MapView mapView;
     private final Executor executor;
 
-    public ActivityAdapter(Context context, ArrayList<Activity> activityList) {
+    public ActivityAdapter(Context context, List<Activity> activityList) {
         this.context = context;
         this.activityListFull = new ArrayList<>(activityList);
         this.activityListFilteredByCategory = new ArrayList<>(activityList);
@@ -239,7 +239,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
 
             String filterPattern = constraint == null ? "" : constraint.toString().toLowerCase().trim();
 
-            ArrayList<Activity> baseActivityList = activityListFilteredByCategory.isEmpty() ? activityListFull : activityListFilteredByCategory;
+            List<Activity> baseActivityList = activityListFilteredByCategory.isEmpty() ? activityListFull : activityListFilteredByCategory;
 
             if(filterPattern.isEmpty()) {
                 filteredList.addAll(baseActivityList);

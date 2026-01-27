@@ -37,11 +37,12 @@ import com.hu.sightseek.db.LocalDatabaseDAO;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ActivityAdapter adapter;
-    private ArrayList<Activity> activities;
+    private List<Activity> activities;
     private int checkedSortByMethod;
     private boolean isLocoChecked;
     private boolean isMicroChecked;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         SwipeRefreshLayout swipeRefresh = findViewById(R.id.main_swipecontainer);
         swipeRefresh.setOnRefreshListener(() -> {
             LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
-            ArrayList<Activity> newActivities = dao2.getAllActivities();
+            List<Activity> newActivities = dao2.getAllActivities();
             dao2.close();
 
             if(newActivities.size() != activities.size()) {

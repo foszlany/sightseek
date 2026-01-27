@@ -59,13 +59,13 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
 
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 
 public class IdeaActivity extends AppCompatActivity {
     private Idea currentIdea;
@@ -78,7 +78,7 @@ public class IdeaActivity extends AppCompatActivity {
     private String type;
     private int radius;
 
-    private ArrayList<Activity> activities;
+    private List<Activity> activities;
 
     private TextView nameTextView;
     private TextView typeTextView;
@@ -635,8 +635,10 @@ public class IdeaActivity extends AppCompatActivity {
                 return;
             }
 
+            Idea idea = new Idea(currentIdea.getId(), currentIdea.getName(), currentIdea.getPlace(), currentIdea.getLatitude(), currentIdea.getLongitude(), SavedIdeaStatus.SAVED);
+
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addIdea(currentIdea.getId(), currentIdea.getName(), currentIdea.getPlace(), currentIdea.getLatitude(), currentIdea.getLongitude(), SavedIdeaStatus.SAVED.getIndex());
+            dao.addIdea(idea);
             dao.close();
 
             ignoredIds.add(currentIdea.getId());
@@ -653,8 +655,10 @@ public class IdeaActivity extends AppCompatActivity {
                 return;
             }
 
+            Idea idea = new Idea(currentIdea.getId(), currentIdea.getName(), currentIdea.getPlace(), currentIdea.getLatitude(), currentIdea.getLongitude(), SavedIdeaStatus.IGNORED);
+
             LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-            dao.addIdea(currentIdea.getId(), currentIdea.getName(), currentIdea.getPlace(), currentIdea.getLatitude(), currentIdea.getLongitude(), SavedIdeaStatus.IGNORED.getIndex());
+            dao.addIdea(idea);
             dao.close();
 
             ignoredIds.add(currentIdea.getId());

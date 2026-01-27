@@ -35,10 +35,11 @@ import com.hu.sightseek.model.Idea;
 import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class IdeaManagerActivity extends AppCompatActivity {
     private IdeaAdapter adapter;
-    private ArrayList<Idea> ideas;
+    private List<Idea> ideas;
     private int checkedSortByMethod;
     private boolean isSavedChecked;
     private boolean isIgnoredChecked;

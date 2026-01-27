@@ -26,14 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IdeaAdapter extends RecyclerView.Adapter<IdeaAdapter.IdeaViewHolder> implements Filterable {
-    private final ArrayList<Idea> ideaListFull;
-    private final ArrayList<Idea> ideaListFilteredByCategory;
-    private ArrayList<Idea> ideaListFiltered;
+    private final List<Idea> ideaListFull;
+    private final List<Idea> ideaListFilteredByCategory;
+    private List<Idea> ideaListFiltered;
     private String searchQuery;
 
     private final Context context;
 
-    public IdeaAdapter(Context context, ArrayList<Idea> ideaList) {
+    public IdeaAdapter(Context context, List<Idea> ideaList) {
         this.context = context;
         this.ideaListFull = new ArrayList<>(ideaList);
         this.ideaListFilteredByCategory = new ArrayList<>(ideaList);
@@ -115,7 +115,7 @@ public class IdeaAdapter extends RecyclerView.Adapter<IdeaAdapter.IdeaViewHolder
     private void changeStatus(Idea idea, SavedIdeaStatus status, @NonNull IdeaViewHolder holder, int position) {
         if(idea.getStatus() != status) {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(holder.itemView.getContext());
-            dao.updateIdeaStatus(idea.getId(), status.getIndex());
+            dao.updateIdeaStatus(idea.getId(), status);
             dao.close();
 
             idea.setStatus(status);
@@ -154,7 +154,7 @@ public class IdeaAdapter extends RecyclerView.Adapter<IdeaAdapter.IdeaViewHolder
 
             String filterPattern = constraint == null ? "" : constraint.toString().toLowerCase().trim();
 
-            ArrayList<Idea> baseIdeaList = ideaListFilteredByCategory.isEmpty() ? ideaListFull : ideaListFilteredByCategory;
+            List<Idea> baseIdeaList = ideaListFilteredByCategory.isEmpty() ? ideaListFull : ideaListFilteredByCategory;
 
             if(filterPattern.isEmpty()) {
                 filteredList.addAll(baseIdeaList);

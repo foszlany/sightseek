@@ -43,6 +43,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.VectorizedDataRecord;
 import com.hu.sightseek.util.RegionalLeaderboardUtils;
 import com.hu.sightseek.util.SpatialUtils;
@@ -170,8 +171,10 @@ public class SaveActivity extends AppCompatActivity {
                     vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
                 }
 
+                Activity activity = new Activity(0, title.strip(), categoryIndex, polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
+
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(title.strip(), categoryIndex.getIndex(), polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
+                long id = dao.addActivity(activity);
 
                 if(auth.getCurrentUser() != null) {
                     Map<String, Integer> visitedCells = getVisitedCells(pointList);

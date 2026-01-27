@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Provides statistics based on stored user data. */
@@ -150,7 +151,7 @@ public final class StatisticsProvider {
      */
     private static void fillLocalStats(Context ctx, HashMap<String, Serializable> values) {
         LocalDatabaseDAO dao = new LocalDatabaseDAO(ctx);
-        ArrayList<LatLng> allPoints = dao.getAllPoints();
+        List<LatLng> allPoints = dao.getAllPoints();
         dao.close();
 
         values.put(STATISTICS_KEY_TOTAL_POINTS, (double) allPoints.size());
@@ -165,7 +166,7 @@ public final class StatisticsProvider {
      * @param allPoints List of all points
      * @return Median point
      */
-    public static LatLng getMedianPoint(ArrayList<LatLng> allPoints) {
+    public static LatLng getMedianPoint(List<LatLng> allPoints) {
         int n = allPoints.size();
         double[] lats = new double[n];
         double[] lons = new double[n];

@@ -32,30 +32,45 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+/** Provides data access from the local database */
 public class LocalDatabaseDAO {
+    /** Implementation */
     private final LocalDatabaseImpl dbHelper;
 
+    /**
+     * Constructor
+     * @param context Context
+     */
     public LocalDatabaseDAO(Context context) {
         dbHelper = new LocalDatabaseImpl(context);
     }
 
+    /**
+     * Closes database
+     */
     public void close() {
         dbHelper.close();
     }
 
     /* ############### ACTIVITIES ############### */
-    public long addActivity(String name, int category, String polyline, String startTime, double elapsedTime, double distance, long stravaid, byte[] vectorizedData) {
+
+    /**
+     * Adds an Activity to the database
+     * @param activity Activity
+     * @return ID of the inserted Activity
+     */
+    public long addActivity(Activity activity) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(LocalDatabaseImpl.ACTIVITIES_NAME, name);
-        values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, category);
-        values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, polyline);
-        values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, startTime);
-        values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, elapsedTime);
-        values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, distance);
-        values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, stravaid);
-        values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, vectorizedData);
+        values.put(LocalDatabaseImpl.ACTIVITIES_NAME, activity.getName());
+        values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, activity.getCategory().getIndex());
+        values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, activity.getPolyline());
+        values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, activity.getStartTime());
+        values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedTime());
+        values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, activity.getDistance());
+        values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
+        values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
 
         long id = db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
         db.close();
@@ -63,6 +78,10 @@ public class LocalDatabaseDAO {
         return id;
     }
 
+    /**
+     * Adds a list of Activity to the database
+     * @param activities List of Activity objects
+     */
     public void addActivities(List<Activity> activities) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -83,7 +102,11 @@ public class LocalDatabaseDAO {
         db.close();
     }
 
-
+    /**
+     * Gets the following statistics: total distance, total time, longest distance, longest time, activity count, imported activity count
+     * @param category Category to get the statistics of. When "Invalid', the data will include all activities.
+     * @return Map containing the statistics
+     */
     public HashMap<String, Serializable> getBaseStatistics(TravelCategory category) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -130,6 +153,18 @@ public class LocalDatabaseDAO {
         return res;
     }
 
+    /**
+     * Gets the following statistics regardless of category: total distance, total time, longest distance, longest time, activity count, imported activity count
+     * @return Map containing the statistics
+     */
+    public HashMap<String, Serializable> getBaseStatistics() {
+        return getBaseStatistics(TravelCategory.INVALID);
+    }
+
+    /**
+     * Gets the monthly distances
+     * @return Map containing the month as an integer (1-12) and their associated distance values
+     */
     public HashMap<Integer, Double> getMonthlyTotalDistance() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         HashMap<Integer, Double> data = new HashMap<>();
@@ -157,6 +192,10 @@ public class LocalDatabaseDAO {
         return data;
     }
 
+    /**
+     * Gets the most common used TravelCategory
+     * @return Most used TravelCategory
+     */
     public TravelCategory getMainTravelCategory() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -187,6 +226,11 @@ public class LocalDatabaseDAO {
         }
     }
 
+    /**
+     * Gets an Activity
+     * @param id ID of the Activity
+     * @return Activity
+     */
     public Activity getActivity(int id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -223,15 +267,23 @@ public class LocalDatabaseDAO {
         }
     }
 
+    /**
+     * Deletes an Activity
+     * @param id ID of the Activity
+     */
     public void deleteActivity(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 
-    public ArrayList<Activity> getAllActivities() {
+    /**
+     * Gets all activities
+     * @return List of Activity objects
+     */
+    public List<Activity> getAllActivities() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<Activity> activities = new ArrayList<>();
+        List<Activity> activities = new ArrayList<>();
 
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
@@ -265,6 +317,10 @@ public class LocalDatabaseDAO {
         return activities;
     }
 
+    /**
+     * Gets all Strava IDs from the imported activities
+     * @return Set of Strava IDs
+     */
     public HashSet<Long> getAllStravaIds() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         HashSet<Long> ids = new HashSet<>();
@@ -292,9 +348,13 @@ public class LocalDatabaseDAO {
         return ids;
     }
 
-    public ArrayList<LatLng> getAllPoints() {
+    /**
+     * Gets all route points
+     * @return List of points
+     */
+    public List<LatLng> getAllPoints() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<LatLng> polylines = new ArrayList<>();
+        List<LatLng> polylines = new ArrayList<>();
 
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
@@ -319,9 +379,13 @@ public class LocalDatabaseDAO {
         return polylines;
     }
 
-    public ArrayList<GeoPoint> getAllImportedPoints() {
+    /**
+     * Gets all imported route points
+     * @return List of imported points
+     */
+    public List<GeoPoint> getAllImportedPoints() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<GeoPoint> points = new ArrayList<>();
+        List<GeoPoint> points = new ArrayList<>();
 
         String sql =
                 "SELECT " + LocalDatabaseImpl.ACTIVITIES_POLYLINE +
@@ -346,6 +410,11 @@ public class LocalDatabaseDAO {
         return points;
     }
 
+    /**
+     * Gets all route Polylines
+     * @param tolerance When positive, the polylines will be simplified by tolerance meters
+     * @return List of Polyline objects
+     */
     public ArrayList<Polyline> getAllPolylines(int tolerance) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Polyline> polylines = new ArrayList<>();
@@ -390,10 +459,19 @@ public class LocalDatabaseDAO {
         return polylines;
     }
 
+    /**
+     * Gets all vectorized roads
+     * @return List of vectorized roads
+     */
     public List<Geometry> getAllVectorizedRoads() {
         return getAllVectorizedRoads(-1);
     }
 
+    /**
+     * Gets all vectorized roads except one
+     * @param ignoredActivity ID of the activity to ignore
+     * @return List of vectorized roads
+     */
     public List<Geometry> getAllVectorizedRoads(long ignoredActivity) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Geometry> roads = new ArrayList<>();
@@ -435,12 +513,18 @@ public class LocalDatabaseDAO {
         return roads;
     }
 
+    /**
+     * Deletes all imported Activities
+     */
     public void deleteImportedActivities() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1", null);
         db.close();
     }
 
+    /**
+     * Prints all Activities for debug purposes
+     */
     public void printAllActivities() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -462,9 +546,13 @@ public class LocalDatabaseDAO {
 
     /* ############### IDEAS ############### */
 
-    public ArrayList<Idea> getAllIdeas() {
+    /**
+     * Gets all Ideas
+     * @return List of Idea objects
+     */
+    public List<Idea> getAllIdeas() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ArrayList<Idea> ideas = new ArrayList<>();
+        List<Idea> ideas = new ArrayList<>();
 
         Cursor cursor = db.query(
                 LocalDatabaseImpl.IDEAS_TABLE,
@@ -495,7 +583,11 @@ public class LocalDatabaseDAO {
         return ideas;
     }
 
-    public ArrayList<Idea> getSavedIdeas() {
+    /**
+     * Gets all Ideas with Saved status
+     * @return List of Idea objects
+     */
+    public List<Idea> getSavedIdeas() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ArrayList<Idea> ideas = new ArrayList<>();
 
@@ -528,30 +620,37 @@ public class LocalDatabaseDAO {
         return ideas;
     }
 
-    public long addIdea(long id, String name, String place, double latitude, double longitude, int status) {
+    /**
+     * Adds an Idea to the database
+     * @param idea Idea
+     */
+    public void addIdea(Idea idea) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(LocalDatabaseImpl.IDEAS_ID, id);
-        values.put(LocalDatabaseImpl.IDEAS_NAME, name);
-        values.put(LocalDatabaseImpl.IDEAS_PLACE, place);
-        values.put(LocalDatabaseImpl.IDEAS_LATITUDE, latitude);
-        values.put(LocalDatabaseImpl.IDEAS_LONGITUDE, longitude);
-        values.put(LocalDatabaseImpl.IDEAS_STATUS, status);
+        values.put(LocalDatabaseImpl.IDEAS_ID, idea.getId());
+        values.put(LocalDatabaseImpl.IDEAS_NAME, idea.getName());
+        values.put(LocalDatabaseImpl.IDEAS_PLACE, idea.getPlace());
+        values.put(LocalDatabaseImpl.IDEAS_LATITUDE, idea.getLatitude());
+        values.put(LocalDatabaseImpl.IDEAS_LONGITUDE, idea.getLongitude());
+        values.put(LocalDatabaseImpl.IDEAS_STATUS, idea.getStatus().getIndex());
 
         db.insert(LocalDatabaseImpl.IDEAS_TABLE, null, values);
         db.close();
-
-        return id;
     }
 
-    public int updateIdeaStatus(long id, int newStatus) {
+    /**
+     * Updates the status of an Idea
+     * @param id ID of the Idea
+     * @param newStatus New status
+     */
+    public void updateIdeaStatus(long id, SavedIdeaStatus newStatus) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(LocalDatabaseImpl.IDEAS_STATUS, newStatus);
+        values.put(LocalDatabaseImpl.IDEAS_STATUS, newStatus.getIndex());
 
-        int rowsAffected = db.update(
+        db.update(
                 LocalDatabaseImpl.IDEAS_TABLE,
                 values,
                 LocalDatabaseImpl.IDEAS_ID + " = ?",
@@ -559,9 +658,12 @@ public class LocalDatabaseDAO {
         );
 
         db.close();
-        return rowsAffected;
     }
 
+    /**
+     * Gets all Idea ids
+     * @return Set of ids
+     */
     public HashSet<Long> getIdeaIds() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         HashSet<Long> ids = new HashSet<>();
@@ -589,12 +691,19 @@ public class LocalDatabaseDAO {
         return ids;
     }
 
+    /**
+     * Deletes an Idea
+     * @param id ID of the Idea
+     */
     public void deleteIdea(long id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(LocalDatabaseImpl.IDEAS_TABLE, "id = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 
+    /**
+     * Prints all Ideas for debug purposes
+     */
     public void printAllIdeas() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 

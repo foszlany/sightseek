@@ -44,6 +44,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -210,7 +211,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     }
                                     else {
                                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
-                                        ArrayList<GeoPoint> points = dao2.getAllImportedPoints();
+                                        List<GeoPoint> points = dao2.getAllImportedPoints();
                                         dao2.deleteImportedActivities();
                                         dao2.close();
 
