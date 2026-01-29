@@ -1,5 +1,6 @@
 package com.hu.sightseek.db;
 
+import static com.hu.sightseek.db.LocalDatabaseImpl.ACTIVITIES_ID;
 import static com.hu.sightseek.db.LocalDatabaseImpl.ACTIVITIES_STRAVAID;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT;
 import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT;
@@ -239,7 +240,7 @@ public class LocalDatabaseDAO {
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
                 null,
-                "id=" + id,
+                ACTIVITIES_ID + "=" + id,
                 null,
                 null,
                 null,
@@ -275,7 +276,7 @@ public class LocalDatabaseDAO {
      */
     public void deleteActivity(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
+        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 
@@ -299,7 +300,7 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(ACTIVITIES_ID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
                 int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
                 String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
@@ -432,7 +433,7 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(ACTIVITIES_ID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
                 int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
                 String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
@@ -537,7 +538,7 @@ public class LocalDatabaseDAO {
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
                 new String[]{
-                        LocalDatabaseImpl.ACTIVITIES_ID,
+                        ACTIVITIES_ID,
                         LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA
                 },
                 null,
@@ -550,7 +551,7 @@ public class LocalDatabaseDAO {
         if(cursor.moveToFirst()) {
             do {
                 try {
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(ACTIVITIES_ID));
                     byte[] vectorizedDataBlob = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
                     if(vectorizedDataBlob == null || vectorizedDataBlob.length == 0 || id == ignoredActivity || (ignoredActivities != null && ignoredActivities.contains(id))) {
                         continue;
