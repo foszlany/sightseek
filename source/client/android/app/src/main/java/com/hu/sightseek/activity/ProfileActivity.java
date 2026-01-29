@@ -189,64 +189,56 @@ public class ProfileActivity extends AppCompatActivity {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("Confirmation")
                     .setMessage("Are you sure you want to unlink your account? This will delete all activities that were imported!")
-                    .setPositiveButton("Yes", (d, which) -> {
-                        Executors.newSingleThreadExecutor().execute(() -> {
-                            SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-                            if(prefs.contains("StravaLatestImportDate")) {
-                                prefs.edit().remove("StravaLatestImportDate").apply();
-                            }
+                    .setPositiveButton("Yes", (d, which) -> Executors.newSingleThreadExecutor().execute(() -> {
+                        SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+                        if(prefs.contains("StravaLatestImportDate")) {
+                            prefs.edit().remove("StravaLatestImportDate").apply();
+                        }
 
-                            String uid = Objects.requireNonNull(auth.getUid());
-                            DocumentReference userDocument = FirebaseFirestore.getInstance()
-                                    .collection("users")
-                                    .document(uid);
+                        String uid = Objects.requireNonNull(auth.getUid());
+                        DocumentReference userDocument = FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(uid);
 
-                            userDocument.get().addOnSuccessListener(documentSnapshot -> {
-                                if(documentSnapshot.contains("stravaId")) {
-                                    Long stravaIdHolder = documentSnapshot.getLong("stravaId");
-                                    long stravaId = stravaIdHolder == null ? -1 : stravaIdHolder;
+                        userDocument.get().addOnSuccessListener(documentSnapshot -> {
+                            if(documentSnapshot.contains("stravaId")) {
+                                Long stravaIdHolder = documentSnapshot.getLong("stravaId");
+                                long stravaId = stravaIdHolder == null ? -1 : stravaIdHolder;
 
-                                    if(stravaId == -1) {
-                                        runOnUiThread(() -> {
-                                            Toast.makeText(this, "You don't have anything linked.", Toast.LENGTH_LONG).show();
-                                        });
-                                    }
-                                    else {
-                                        LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
-
-                                        List<Activity> importedActivities = dao2.getAllImportedActivities();
-                                        List<GeoPoint> points = dao2.getAllImportedPoints();
-
-                                        dao2.deleteImportedActivities();
-                                        dao2.close();
-
-                                        Map<String, Integer> cells = getVisitedCells(points);
-                                        updateCells(cells, true);
-
-                                        userDocument.update("stravaId", -1);
-
-                                        DocumentReference stravaIdDoc = FirebaseFirestore.getInstance()
-                                                .collection("strava_ids")
-                                                .document(String.valueOf(stravaId));
-
-                                        stravaIdDoc.delete();
-
-                                        Map<String, Double> regionalDistances = batchCalculateCurrentRegionalDistance(ProfileActivity.this, importedActivities);
-                                        updateRegionalLeaderboard(regionalDistances, true);
-
-                                        runOnUiThread(() -> {
-                                            Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
-                                        });
-                                    }
+                                if(stravaId == -1) {
+                                    runOnUiThread(() -> Toast.makeText(this, "You don't have anything linked.", Toast.LENGTH_LONG).show());
                                 }
                                 else {
-                                    runOnUiThread(() -> {
-                                        Toast.makeText(this, "You don't have anything linked", Toast.LENGTH_LONG).show();
-                                    });
+                                    LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
+
+                                    List<Activity> importedActivities = dao2.getAllImportedActivities();
+                                    List<GeoPoint> points = dao2.getAllImportedPoints();
+
+                                    dao2.deleteImportedActivities();
+                                    dao2.close();
+
+                                    Map<String, Integer> cells = getVisitedCells(points);
+                                    updateCells(cells, true);
+
+                                    userDocument.update("stravaId", -1);
+
+                                    DocumentReference stravaIdDoc = FirebaseFirestore.getInstance()
+                                            .collection("strava_ids")
+                                            .document(String.valueOf(stravaId));
+
+                                    stravaIdDoc.delete();
+
+                                    Map<String, Double> regionalDistances = batchCalculateCurrentRegionalDistance(ProfileActivity.this, importedActivities);
+                                    updateRegionalLeaderboard(regionalDistances, true);
+
+                                    runOnUiThread(() -> Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show());
                                 }
-                            });
+                            }
+                            else {
+                                runOnUiThread(() -> Toast.makeText(this, "You don't have anything linked", Toast.LENGTH_LONG).show());
+                            }
                         });
-                    })
+                    }))
                     .setNegativeButton("No", (d, which) -> d.dismiss())
                     .setCancelable(true)
                     .create();
