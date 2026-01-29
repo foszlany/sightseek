@@ -112,6 +112,10 @@ public final class FirebaseUtils {
      * @param isRemoval Whether to subtract
      */
     public static void updateRegionalLeaderboard(Map<String, Double> distanceMap, boolean isRemoval) {
+        if(distanceMap == null || distanceMap.isEmpty()) {
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String uid = auth.getUid();

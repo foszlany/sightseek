@@ -2,6 +2,8 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
+import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
+import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateCurrentRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
@@ -39,11 +41,11 @@ import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.DeleteAccountFragment;
+import com.hu.sightseek.model.Activity;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -211,7 +213,10 @@ public class ProfileActivity extends AppCompatActivity {
                                     }
                                     else {
                                         LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);
+
+                                        List<Activity> importedActivities = dao2.getAllImportedActivities();
                                         List<GeoPoint> points = dao2.getAllImportedPoints();
+
                                         dao2.deleteImportedActivities();
                                         dao2.close();
 
@@ -225,6 +230,9 @@ public class ProfileActivity extends AppCompatActivity {
                                                 .document(String.valueOf(stravaId));
 
                                         stravaIdDoc.delete();
+
+                                        Map<String, Double> regionalDistances = batchCalculateCurrentRegionalDistance(ProfileActivity.this, importedActivities);
+                                        updateRegionalLeaderboard(regionalDistances, true);
 
                                         runOnUiThread(() -> {
                                             Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show();
