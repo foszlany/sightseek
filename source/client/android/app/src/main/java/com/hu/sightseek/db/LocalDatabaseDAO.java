@@ -324,15 +324,12 @@ public class LocalDatabaseDAO {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         HashSet<Long> ids = new HashSet<>();
 
-        Cursor cursor = db.query(
-                LocalDatabaseImpl.ACTIVITIES_TABLE,
-                new String[]{LocalDatabaseImpl.ACTIVITIES_STRAVAID},
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        String sql =
+                "SELECT " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + getUidFilter() + " " +
+                "ORDER BY " + LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC";
+
+        Cursor cursor = db.rawQuery(sql, null);
 
         if(cursor.moveToFirst()) {
             do {
@@ -355,15 +352,12 @@ public class LocalDatabaseDAO {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         List<LatLng> polylines = new ArrayList<>();
 
-        Cursor cursor = db.query(
-                LocalDatabaseImpl.ACTIVITIES_TABLE,
-                new String[]{LocalDatabaseImpl.ACTIVITIES_POLYLINE},
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        String sql =
+                "SELECT " + LocalDatabaseImpl.ACTIVITIES_POLYLINE + " FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + getUidFilter() + " " +
+                "ORDER BY " + LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC";
+
+        Cursor cursor = db.rawQuery(sql, null);
 
         if(cursor.moveToFirst()) {
             do {
@@ -387,9 +381,10 @@ public class LocalDatabaseDAO {
         List<GeoPoint> points = new ArrayList<>();
 
         String sql =
-                "SELECT " + LocalDatabaseImpl.ACTIVITIES_POLYLINE +
-                " FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE +
-                " WHERE " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1";
+                "SELECT " + LocalDatabaseImpl.ACTIVITIES_POLYLINE + " " +
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 " +
+                "AND " + getUidFilter();
 
         Cursor cursor = db.rawQuery(sql, null);
 
@@ -417,15 +412,12 @@ public class LocalDatabaseDAO {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         List<Activity> importedActivities = new ArrayList<>();
 
-        Cursor cursor = db.query(
-                LocalDatabaseImpl.ACTIVITIES_TABLE,
-                null,
-                LocalDatabaseImpl.ACTIVITIES_STRAVAID + "!= -1",
-                null,
-                null,
-                null,
-                null
-        );
+        String sql =
+                "SELECT * FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 " +
+                "AND " + getUidFilter();
+
+        Cursor cursor = db.rawQuery(sql, null);
 
         if(cursor.moveToFirst()) {
             do {
