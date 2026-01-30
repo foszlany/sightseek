@@ -133,11 +133,11 @@ public class LocalDatabaseDAO {
                 "COUNT(*) AS " + StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT + ", " +
                 "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT + " " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
-                "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = " + category.getIndex() + " " +
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = ? " +
                 "AND " + getUidFilter();
         }
 
-        Cursor cursor = db.rawQuery(sql, null);
+        Cursor cursor = db.rawQuery(sql, category == TravelCategory.INVALID ? null : new String[]{String.valueOf(category.getIndex())});
 
         HashMap<String, Serializable> res = new HashMap<>();
         if(cursor.moveToFirst()) {
