@@ -10,6 +10,8 @@ import java.util.Arrays;
 public class Activity {
     /** ID */
     private final int id;
+    /** User ID, null if not present */
+    private final String uid;
     /** Name */
     private final String name;
     /** Travel category */
@@ -30,6 +32,7 @@ public class Activity {
     /**
      * Constructor
      * @param id ID
+     * @param uid User ID, null if not present
      * @param name Name
      * @param category Category
      * @param polyline Encoded polyline
@@ -39,8 +42,9 @@ public class Activity {
      * @param stravaId Strava ID, -1 if activity is not imported
      * @param vectorizedData Vectorized data as WKB (Well-known binary) format
      */
-    public Activity(int id, String name, TravelCategory category, String polyline, String startTime, double elapsedTime, double distance, long stravaId, byte[] vectorizedData) {
+    public Activity(int id, String uid, String name, TravelCategory category, String polyline, String startTime, double elapsedTime, double distance, long stravaId, byte[] vectorizedData) {
         this.id = id;
+        this.uid = uid;
         this.name = name;
         this.category = category;
         this.polyline = polyline;
@@ -79,6 +83,10 @@ public class Activity {
         return distance;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
     public long getStravaId() {
         return stravaId;
     }
@@ -96,14 +104,15 @@ public class Activity {
     public String toString() {
         return "Activity{" +
                 "id=" + id +
+                ", uid='" + uid + '\'' +
                 ", name='" + name + '\'' +
                 ", category=" + category +
                 ", polyline='" + polyline + '\'' +
-                ", starttime='" + startTime + '\'' +
-                ", elapsedtime=" + elapsedTime +
+                ", startTime='" + startTime + '\'' +
+                ", elapsedTime=" + elapsedTime +
                 ", distance=" + distance +
                 ", stravaId=" + stravaId +
-                ", vectorizedData='" + Arrays.toString(vectorizedData) + '\'' +
+                ", vectorizedData=" + Arrays.toString(vectorizedData) +
                 '}';
     }
 }

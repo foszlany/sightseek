@@ -58,6 +58,7 @@ import org.osmdroid.views.overlay.TilesOverlay;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -171,7 +172,9 @@ public class SaveActivity extends AppCompatActivity {
                     vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
                 }
 
-                Activity activity = new Activity(0, title.strip(), categoryIndex, polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
+                String uid = FirebaseAuth.getInstance().getCurrentUser() == null ? null : FirebaseAuth.getInstance().getCurrentUser().getUid();
+                Activity activity = new Activity(0, uid, title.strip(), categoryIndex, polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
+                System.out.println(activity);
 
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                 long id = dao.addActivity(activity);

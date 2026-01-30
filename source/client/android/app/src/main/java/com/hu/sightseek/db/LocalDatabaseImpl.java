@@ -11,13 +11,15 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "activities.db";
 
     /** Schema version for migrations. */
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 14;
 
     // Activity table
     /** Table storing recorded activities. */
     public static final String ACTIVITIES_TABLE = "activities";
     /** ID */
     public static final String ACTIVITIES_ID = "id";
+    /** User ID, null if not present */
+    public static final String ACTIVITIES_UID = "uid";
     /** Name */
     public static final String ACTIVITIES_NAME = "name";
     /** Travel category */
@@ -54,6 +56,7 @@ public class LocalDatabaseImpl extends SQLiteOpenHelper {
     private static final String ACTIVITIES_TABLE_CREATE =
             "CREATE TABLE " + ACTIVITIES_TABLE + " (" +
                     ACTIVITIES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    ACTIVITIES_UID + " TEXT, " +
                     ACTIVITIES_NAME + " TEXT NOT NULL, " +
                     ACTIVITIES_CATEGORY + " INTEGER NOT NULL, " +
                     ACTIVITIES_POLYLINE + " TEXT NOT NULL, " +

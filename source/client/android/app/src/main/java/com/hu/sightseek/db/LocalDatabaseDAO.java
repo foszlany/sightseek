@@ -1,14 +1,5 @@
 package com.hu.sightseek.db;
 
-import static com.hu.sightseek.db.LocalDatabaseImpl.ACTIVITIES_ID;
-import static com.hu.sightseek.db.LocalDatabaseImpl.ACTIVITIES_STRAVAID;
-import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT;
-import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT;
-import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_LONGEST_DISTANCE;
-import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_LONGEST_TIME;
-import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE;
-import static com.hu.sightseek.provider.StatisticsProvider.STATISTICS_KEY_TOTAL_TIME;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,6 +12,7 @@ import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.helper.WKConverter;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Idea;
+import com.hu.sightseek.provider.StatisticsProvider;
 import com.hu.sightseek.util.SpatialUtils;
 
 import org.locationtech.jts.geom.Geometry;
@@ -67,12 +59,13 @@ public class LocalDatabaseDAO {
         ContentValues values = new ContentValues();
 
         values.put(LocalDatabaseImpl.ACTIVITIES_NAME, activity.getName());
+        values.put(LocalDatabaseImpl.ACTIVITIES_UID, activity.getUid());
         values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, activity.getCategory().getIndex());
         values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, activity.getPolyline());
         values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, activity.getStartTime());
         values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedTime());
         values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, activity.getDistance());
-        values.put(ACTIVITIES_STRAVAID, activity.getStravaId());
+        values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
         values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
 
         long id = db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
@@ -91,12 +84,13 @@ public class LocalDatabaseDAO {
         for(Activity activity : activities) {
             ContentValues values = new ContentValues();
             values.put(LocalDatabaseImpl.ACTIVITIES_NAME, activity.getName());
+            values.put(LocalDatabaseImpl.ACTIVITIES_UID, activity.getUid());
             values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, activity.getCategory().getIndex());
             values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, activity.getPolyline());
             values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, activity.getStartTime());
             values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedTime());
             values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, activity.getDistance());
-            values.put(ACTIVITIES_STRAVAID, activity.getStravaId());
+            values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
             values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
 
             db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
@@ -117,23 +111,23 @@ public class LocalDatabaseDAO {
         if(category == TravelCategory.INVALID) {
             sql =
                 "SELECT " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_TOTAL_DISTANCE + ", " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_TOTAL_TIME + ", " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_LONGEST_DISTANCE + ", " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_LONGEST_TIME + ", " +
-                "COUNT(*) AS " + STATISTICS_KEY_ACTIVITY_COUNT + ", " +
-                "SUM(CASE WHEN " + ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + STATISTICS_KEY_IMPORTED_COUNT + " " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE + ", " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_TOTAL_TIME + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_LONGEST_DISTANCE + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_LONGEST_TIME + ", " +
+                "COUNT(*) AS " + StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT + ", " +
+                "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT + " " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE;
         }
         else {
             sql =
                 "SELECT " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_TOTAL_DISTANCE + ", " +
-                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_TOTAL_TIME + ", " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + STATISTICS_KEY_LONGEST_DISTANCE + ", " +
-                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + STATISTICS_KEY_LONGEST_TIME + ", " +
-                "COUNT(*) AS " + STATISTICS_KEY_ACTIVITY_COUNT + ", " +
-                "SUM(CASE WHEN " + ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + STATISTICS_KEY_IMPORTED_COUNT + " " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE + ", " +
+                "IFNULL(SUM(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_TOTAL_TIME + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_LONGEST_DISTANCE + ", " +
+                "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_LONGEST_TIME + ", " +
+                "COUNT(*) AS " + StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT + ", " +
+                "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT + " " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
                 "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = " + category.getIndex();
         }
@@ -142,12 +136,12 @@ public class LocalDatabaseDAO {
 
         HashMap<String, Serializable> res = new HashMap<>();
         if(cursor.moveToFirst()) {
-            res.put(STATISTICS_KEY_TOTAL_DISTANCE, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_TOTAL_DISTANCE)));
-            res.put(STATISTICS_KEY_TOTAL_TIME, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_TOTAL_TIME)));
-            res.put(STATISTICS_KEY_LONGEST_DISTANCE, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_LONGEST_DISTANCE)));
-            res.put(STATISTICS_KEY_LONGEST_TIME, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_LONGEST_TIME)));
-            res.put(STATISTICS_KEY_ACTIVITY_COUNT, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_ACTIVITY_COUNT)));
-            res.put(STATISTICS_KEY_IMPORTED_COUNT, cursor.getDouble(cursor.getColumnIndexOrThrow(STATISTICS_KEY_IMPORTED_COUNT)));
+            res.put(StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE, cursor.getDouble(cursor.getColumnIndexOrThrow(StatisticsProvider.STATISTICS_KEY_TOTAL_DISTANCE)));
+            res.put(StatisticsProvider.STATISTICS_KEY_TOTAL_TIME, cursor.getDouble(cursor.getColumnIndexOrThrow(StatisticsProvider.STATISTICS_KEY_TOTAL_TIME)));
+            res.put(StatisticsProvider.STATISTICS_KEY_LONGEST_DISTANCE, cursor.getDouble(cursor.getColumnIndexOrThrow(StatisticsProvider.STATISTICS_KEY_LONGEST_DISTANCE)));
+            res.put(StatisticsProvider.STATISTICS_KEY_LONGEST_TIME, cursor.getDouble(cursor.getColumnIndexOrThrow(StatisticsProvider.STATISTICS_KEY_LONGEST_TIME)));
+            res.put(StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT, cursor.getDouble(cursor.getColumnIndexOrThrow(StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT)));
+            res.put(StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT, cursor.getDouble(cursor.getColumnIndexOrThrow(StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT)));
         }
 
         cursor.close();
@@ -240,7 +234,7 @@ public class LocalDatabaseDAO {
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
                 null,
-                ACTIVITIES_ID + "=" + id,
+                LocalDatabaseImpl.ACTIVITIES_ID + "=" + id,
                 null,
                 null,
                 null,
@@ -249,18 +243,19 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
+            String uid = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_UID));
             int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
             String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
             String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
             double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
             double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
-            long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(ACTIVITIES_STRAVAID));
+            long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
             byte[] vectorizedData = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
             cursor.close();
             db.close();
 
-            return new Activity(id, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData);
+            return new Activity(id, uid, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData);
         }
         else {
             cursor.close();
@@ -276,7 +271,7 @@ public class LocalDatabaseDAO {
      */
     public void deleteActivity(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
+        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 
@@ -300,17 +295,18 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(ACTIVITIES_ID));
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_UID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
                 int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
                 String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
                 String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
                 double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
                 double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
-                long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(ACTIVITIES_STRAVAID));
+                long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
                 byte[] vectorizedData = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
-                activities.add(new Activity(id, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
+                activities.add(new Activity(id, uid, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
             } while(cursor.moveToNext());
         }
 
@@ -330,7 +326,7 @@ public class LocalDatabaseDAO {
 
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
-                new String[]{ACTIVITIES_STRAVAID},
+                new String[]{LocalDatabaseImpl.ACTIVITIES_STRAVAID},
                 null,
                 null,
                 null,
@@ -340,7 +336,7 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(ACTIVITIES_STRAVAID));
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
                 ids.add(id);
             } while(cursor.moveToNext());
         }
@@ -393,7 +389,7 @@ public class LocalDatabaseDAO {
         String sql =
                 "SELECT " + LocalDatabaseImpl.ACTIVITIES_POLYLINE +
                 " FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE +
-                " WHERE " + ACTIVITIES_STRAVAID + " != -1";
+                " WHERE " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1";
 
         Cursor cursor = db.rawQuery(sql, null);
 
@@ -424,7 +420,7 @@ public class LocalDatabaseDAO {
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
                 null,
-                ACTIVITIES_STRAVAID + "!= -1",
+                LocalDatabaseImpl.ACTIVITIES_STRAVAID + "!= -1",
                 null,
                 null,
                 null,
@@ -433,17 +429,18 @@ public class LocalDatabaseDAO {
 
         if(cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(ACTIVITIES_ID));
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_UID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
                 int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
                 String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
                 String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
                 double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
                 double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
-                long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(ACTIVITIES_STRAVAID));
+                long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
                 byte[] vectorizedData = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
 
-                importedActivities.add(new Activity(id, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
+                importedActivities.add(new Activity(id, uid, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
             } while(cursor.moveToNext());
         }
 
@@ -538,7 +535,7 @@ public class LocalDatabaseDAO {
         Cursor cursor = db.query(
                 LocalDatabaseImpl.ACTIVITIES_TABLE,
                 new String[]{
-                        ACTIVITIES_ID,
+                        LocalDatabaseImpl.ACTIVITIES_ID,
                         LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA
                 },
                 null,
@@ -551,7 +548,7 @@ public class LocalDatabaseDAO {
         if(cursor.moveToFirst()) {
             do {
                 try {
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(ACTIVITIES_ID));
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
                     byte[] vectorizedDataBlob = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
                     if(vectorizedDataBlob == null || vectorizedDataBlob.length == 0 || id == ignoredActivity || (ignoredActivities != null && ignoredActivities.contains(id))) {
                         continue;
@@ -577,7 +574,7 @@ public class LocalDatabaseDAO {
      */
     public void deleteImportedActivities() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, ACTIVITIES_STRAVAID + " != -1", null);
+        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1", null);
         db.close();
     }
 

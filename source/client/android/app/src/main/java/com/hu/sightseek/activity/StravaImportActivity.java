@@ -457,7 +457,8 @@ public class StravaImportActivity extends AppCompatActivity {
                                 int elapsedTime = jsonActivity.getInt("moving_time");
                                 int distance = jsonActivity.getInt("distance");
 
-                                Activity a = new Activity(0, name, category, polyline, startDate, elapsedTime, distance, stravaId, null);
+                                String uid = FirebaseAuth.getInstance().getCurrentUser() == null ? null : FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                Activity a = new Activity(0, uid, name, category, polyline, startDate, elapsedTime, distance, stravaId, null);
                                 activities.add(a);
 
                                 List<GeoPoint> pointList = decode(polyline);
