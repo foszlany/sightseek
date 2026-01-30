@@ -238,15 +238,11 @@ public class LocalDatabaseDAO {
     public Activity getActivity(int id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(
-                LocalDatabaseImpl.ACTIVITIES_TABLE,
-                null,
-                LocalDatabaseImpl.ACTIVITIES_ID + "=" + id,
-                null,
-                null,
-                null,
-                null
-        );
+        String sql =
+                "SELECT * FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_ID + "= ?";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(id)});
 
         if(cursor.moveToFirst()) {
             String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
@@ -273,16 +269,6 @@ public class LocalDatabaseDAO {
     }
 
     /**
-     * Deletes an Activity
-     * @param id ID of the Activity
-     */
-    public void deleteActivity(int id) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-    /**
      * Gets all activities
      * @return List of Activity objects
      */
@@ -290,31 +276,12 @@ public class LocalDatabaseDAO {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         List<Activity> activities = new ArrayList<>();
 
-        String currentUid = FirebaseAuth.getInstance().getUid();
+        String sql =
+                "SELECT * FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + getUidFilter() + " " +
+                "ORDER BY " + LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC";
 
-        Cursor cursor;
-        if(currentUid == null) {
-            cursor = db.query(
-                    LocalDatabaseImpl.ACTIVITIES_TABLE,
-                    null,
-                    LocalDatabaseImpl.ACTIVITIES_UID + " IS NULL",
-                    null,
-                    null,
-                    null,
-                    LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC"
-            );
-        }
-        else {
-            cursor = db.query(
-                    LocalDatabaseImpl.ACTIVITIES_TABLE,
-                    null,
-                    LocalDatabaseImpl.ACTIVITIES_UID + " = ?",
-                    new String[]{currentUid},
-                    null,
-                    null,
-                    LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC"
-            );
-        }
+        Cursor cursor = db.rawQuery(sql, null);
 
         if(cursor.moveToFirst()) {
             do {
@@ -337,6 +304,16 @@ public class LocalDatabaseDAO {
         db.close();
 
         return activities;
+    }
+
+    /**
+     * Deletes an Activity
+     * @param id ID of the Activity
+     */
+    public void deleteActivity(int id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(LocalDatabaseImpl.ACTIVITIES_TABLE, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(id)});
+        db.close();
     }
 
     /**
