@@ -662,8 +662,7 @@ public class RecordActivity extends AppCompatActivity {
         // Ideas button
         ImageButton ideaButton = findViewById(R.id.record_ideabtn);
         if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-            ideaButton.setVisibility(INVISIBLE);
-            return;
+            ideaButton.setVisibility(GONE);
         }
         else {
             ideaButton.setOnClickListener(v -> {
