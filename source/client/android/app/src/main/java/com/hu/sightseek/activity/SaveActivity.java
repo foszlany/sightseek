@@ -58,7 +58,6 @@ import org.osmdroid.views.overlay.TilesOverlay;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -325,7 +324,7 @@ public class SaveActivity extends AppCompatActivity {
         });
 
         // Start vectorization if needed
-        if(auth.getCurrentUser() != null && !isVectorizationStarted) {
+        if(!isVectorizationStarted) {
             startVectorization(mapView);
         }
     }
@@ -355,22 +354,20 @@ public class SaveActivity extends AppCompatActivity {
         mapView.getOverlays().add(savedPolyline);
 
         // Restart vectorization if not completed before layout change
-        if(auth.getCurrentUser() != null) {
-            if(isVectorizationStarted && !isVectorizationComplete) {
-                startVectorization(mapView);
-            }
-            else {
-                Paint paint = new Paint();
-                paint.setColor(Color.parseColor("#FF0000"));
-                paint.setStrokeWidth(4.0f);
-                paint.setAntiAlias(false);
+        if(isVectorizationStarted && !isVectorizationComplete) {
+            startVectorization(mapView);
+        }
+        else {
+            Paint paint = new Paint();
+            paint.setColor(Color.parseColor("#FF0000"));
+            paint.setStrokeWidth(4.0f);
+            paint.setAntiAlias(false);
 
-                for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
-                    p.getOutlinePaint().set(paint);
-                    mapView.getOverlays().add(p);
-                }
-                mapView.invalidate();
+            for(Polyline p : vectorizedDataRecord.getVectorizedDataPolylines()) {
+                p.getOutlinePaint().set(paint);
+                mapView.getOverlays().add(p);
             }
+            mapView.invalidate();
         }
 
         // Calculate bounding box
