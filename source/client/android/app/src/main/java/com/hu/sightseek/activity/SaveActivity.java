@@ -174,7 +174,6 @@ public class SaveActivity extends AppCompatActivity {
 
                 String uid = FirebaseAuth.getInstance().getCurrentUser() == null ? null : FirebaseAuth.getInstance().getCurrentUser().getUid();
                 Activity activity = new Activity(0, uid, title.strip(), categoryIndex, polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
-                System.out.println(activity);
 
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                 long id = dao.addActivity(activity);

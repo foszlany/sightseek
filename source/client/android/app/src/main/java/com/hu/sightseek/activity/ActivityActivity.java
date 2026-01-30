@@ -239,54 +239,52 @@ public class ActivityActivity extends AppCompatActivity {
         });
 
         // Processed data button
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-            processedDataButton.setVisibility(VISIBLE);
+        processedDataButton.setVisibility(VISIBLE);
 
-            processedDataButton.setOnClickListener(v -> {
-                isVectorizedDataVisible = !isVectorizedDataVisible;
+        processedDataButton.setOnClickListener(v -> {
+            isVectorizedDataVisible = !isVectorizedDataVisible;
 
-                if(vectorizedDataGroup == null) {
-                    vectorizedDataGroup = new FolderOverlay();
+            if(vectorizedDataGroup == null) {
+                vectorizedDataGroup = new FolderOverlay();
 
-                    Paint paint = new Paint();
-                    paint.setColor(Color.parseColor("#FF0000"));
-                    paint.setStrokeWidth(7.0f);
-                    paint.setAntiAlias(false);
+                Paint paint = new Paint();
+                paint.setColor(Color.parseColor("#FF0000"));
+                paint.setStrokeWidth(7.0f);
+                paint.setAntiAlias(false);
 
-                    Executors.newSingleThreadExecutor().execute(() -> {
-                        byte[] vectorizedDataBlob = activity.getVectorizedData();
-                        try {
-                            List<Polyline> vectorizedDataPolylines = convertWKBToPolylines(vectorizedDataBlob);
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    byte[] vectorizedDataBlob = activity.getVectorizedData();
+                    try {
+                        List<Polyline> vectorizedDataPolylines = convertWKBToPolylines(vectorizedDataBlob);
 
-                            for(Polyline p : vectorizedDataPolylines) {
-                                p.getOutlinePaint().set(paint);
+                        for(Polyline p : vectorizedDataPolylines) {
+                            p.getOutlinePaint().set(paint);
 
-                                vectorizedDataGroup.add(p);
-                            }
+                            vectorizedDataGroup.add(p);
                         }
-                        catch(NullPointerException e) {
-                            runOnUiThread(() -> Toast.makeText(this, "Activity does not contain road data.", Toast.LENGTH_LONG).show());
-                        }
-                        catch(ParseException e) {
-                            throw new RuntimeException("Unable to parse WKB.");
-                        }
+                    }
+                    catch(NullPointerException e) {
+                        runOnUiThread(() -> Toast.makeText(this, "Activity does not contain road data.", Toast.LENGTH_LONG).show());
+                    }
+                    catch(ParseException e) {
+                        throw new RuntimeException("Unable to parse WKB.");
+                    }
 
-                        mapView.getOverlays().add(1, vectorizedDataGroup);
+                    mapView.getOverlays().add(1, vectorizedDataGroup);
 
-                        runOnUiThread(() -> {
-                            mapView.invalidate();
-                            updateProcessedDataButton(isVectorizedDataVisible);
-                        });
+                    runOnUiThread(() -> {
+                        mapView.invalidate();
+                        updateProcessedDataButton(isVectorizedDataVisible);
                     });
-                }
-                else {
-                    vectorizedDataGroup.setEnabled(isVectorizedDataVisible);
-                    mapView.invalidate();
+                });
+            }
+            else {
+                vectorizedDataGroup.setEnabled(isVectorizedDataVisible);
+                mapView.invalidate();
 
-                    updateProcessedDataButton(isVectorizedDataVisible);
-                }
-            });
-        }
+                updateProcessedDataButton(isVectorizedDataVisible);
+            }
+        });
 
         // Screenshot button
         ImageButton screenshotButton = findViewById(R.id.activity_screenshotbtn);
