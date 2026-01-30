@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
 import com.hu.sightseek.enums.SavedIdeaStatus;
 import com.hu.sightseek.enums.TravelCategory;
@@ -283,15 +284,31 @@ public class LocalDatabaseDAO {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         List<Activity> activities = new ArrayList<>();
 
-        Cursor cursor = db.query(
-                LocalDatabaseImpl.ACTIVITIES_TABLE,
-                null,
-                null,
-                null,
-                null,
-                null,
-                LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC"
-        );
+        String currentUid = FirebaseAuth.getInstance().getUid();
+
+        Cursor cursor;
+        if(currentUid == null) {
+            cursor = db.query(
+                    LocalDatabaseImpl.ACTIVITIES_TABLE,
+                    null,
+                    LocalDatabaseImpl.ACTIVITIES_UID + " IS NULL",
+                    null,
+                    null,
+                    null,
+                    LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC"
+            );
+        }
+        else {
+            cursor = db.query(
+                    LocalDatabaseImpl.ACTIVITIES_TABLE,
+                    null,
+                    LocalDatabaseImpl.ACTIVITIES_UID + " = ?",
+                    new String[]{currentUid},
+                    null,
+                    null,
+                    LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC"
+            );
+        }
 
         if(cursor.moveToFirst()) {
             do {
