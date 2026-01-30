@@ -163,7 +163,7 @@
     <string name="strava_importmissing">Import missing</string>
     <string name="strava_importlatest">Import latest</string>
     <string name="profile_unlink">Unlink Strava account</string>
-    <string name="strava_unlinkwarn">You may only have one account linked.</string>
+    <string name="profile_unlinkwarn">You may only have one account linked.</string>
     <string name="statistics_percategory">Per category</string>
     <string name="profile_accountmanagement">Account management</string>
     <string name="profile_strava">Strava</string>
@@ -201,4 +201,7 @@
     <string name="deleteaccountpopup_disclaimer">This action is irreversible.</string>
     <string name="ideamanager_popup_changestatus">Change Status</string>
     <string name="record_strongheatmapdesc">Stronger colors</string>
+    <string name="profile_import">Import</string>
+    <string name="profile_importoffline">Import offline activities</string>
+    <string name="profile_offlinewarn">Here you can import all offline recorded activities into this account.</string>
 </resources>

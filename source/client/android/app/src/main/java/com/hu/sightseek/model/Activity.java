@@ -11,7 +11,7 @@ public class Activity {
     /** ID */
     private final int id;
     /** User ID, null if not present */
-    private final String uid;
+    private String uid;
     /** Name */
     private final String name;
     /** Travel category */
@@ -93,6 +93,10 @@ public class Activity {
 
     public byte[] getVectorizedData() {
         return vectorizedData;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public void setVectorizedData(byte[] vectorizedData) {

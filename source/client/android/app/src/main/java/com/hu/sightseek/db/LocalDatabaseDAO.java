@@ -53,7 +53,7 @@ public class LocalDatabaseDAO {
     /* ############### ACTIVITIES ############### */
 
     /**
-     * Adds an Activity to the database
+     * Adds an Activity
      * @param activity Activity
      * @return ID of the inserted Activity
      */
@@ -78,7 +78,7 @@ public class LocalDatabaseDAO {
     }
 
     /**
-     * Adds a list of Activity to the database
+     * Adds a list of Activities
      * @param activities List of Activity objects
      */
     public void addActivities(List<Activity> activities) {
@@ -97,6 +97,31 @@ public class LocalDatabaseDAO {
             values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
 
             db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
+        }
+
+        db.close();
+    }
+
+    /**
+     * Updates a list of Activities
+     * @param activities List of Activity objects
+     */
+    public void updateActivities(List<Activity> activities) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        for(Activity activity : activities) {
+            ContentValues values = new ContentValues();
+            values.put(LocalDatabaseImpl.ACTIVITIES_NAME, activity.getName());
+            values.put(LocalDatabaseImpl.ACTIVITIES_UID, activity.getUid());
+            values.put(LocalDatabaseImpl.ACTIVITIES_CATEGORY, activity.getCategory().getIndex());
+            values.put(LocalDatabaseImpl.ACTIVITIES_POLYLINE, activity.getPolyline());
+            values.put(LocalDatabaseImpl.ACTIVITIES_STARTTIME, activity.getStartTime());
+            values.put(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME, activity.getElapsedTime());
+            values.put(LocalDatabaseImpl.ACTIVITIES_DISTANCE, activity.getDistance());
+            values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
+            values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
+
+            db.update(LocalDatabaseImpl.ACTIVITIES_TABLE, values, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(activity.getId())});
         }
 
         db.close();
@@ -282,6 +307,44 @@ public class LocalDatabaseDAO {
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
                 "WHERE " + getUidFilter() + " " +
                 "ORDER BY " + LocalDatabaseImpl.ACTIVITIES_STARTTIME + " DESC";
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ID));
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_UID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_NAME));
+                int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_CATEGORY));
+                String polyline = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_POLYLINE));
+                String starttime = cursor.getString(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STARTTIME));
+                double elapsedtime = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME));
+                double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_DISTANCE));
+                long stravaId = cursor.getLong(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_STRAVAID));
+                byte[] vectorizedData = cursor.getBlob(cursor.getColumnIndexOrThrow(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA));
+
+                activities.add(new Activity(id, uid, name, TravelCategory.values()[categoryIndex], polyline, starttime, elapsedtime, distance, stravaId, vectorizedData));
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return activities;
+    }
+
+    /**
+     * Gets all offline activities (Activities that were recorded when the user wasn't logged in)
+     * @return List of offline Activity objects
+     */
+    public List<Activity> getOfflineActivities() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<Activity> activities = new ArrayList<>();
+
+        String sql =
+                "SELECT * " +
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_UID + " IS NULL";
 
         Cursor cursor = db.rawQuery(sql, null);
 

@@ -167,8 +167,29 @@ public class ProfileActivity extends AppCompatActivity {
                     });
         });
 
+        // Import offline activities
+        Button offlineButton = findViewById(R.id.profile_offlinebtn);
+        offlineButton.setOnClickListener(v -> {
+            LocalDatabaseDAO dao = new LocalDatabaseDAO(ProfileActivity.this);
+            List<Activity> offlineActivities = dao.getOfflineActivities();
+
+            if(offlineActivities == null || offlineActivities.isEmpty()) {
+                Toast.makeText(this, "You have no offline activities to import.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            for(Activity offlineActivity : offlineActivities) {
+                offlineActivity.setUid(FirebaseAuth.getInstance().getUid());
+            }
+
+            dao.updateActivities(offlineActivities);
+            dao.close();
+
+            Toast.makeText(this, "Importing has finished", Toast.LENGTH_LONG).show();
+        });
+
         // Strava
-        Button stravaButton = findViewById(R.id.profile_strava);
+        Button stravaButton = findViewById(R.id.profile_stravabtn);
         stravaButton.setOnClickListener(v -> {
             Uri uri = Uri.parse("https://www.strava.com/oauth/mobile/authorize")
                     .buildUpon()

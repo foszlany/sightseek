@@ -122,6 +122,37 @@
                 android:textColor="@color/red"
                 android:textSize="16sp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/profile_importoffline"
+                android:textColor="@color/white"
+                android:textSize="28sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                android:background="@color/hint" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_offlinewarn"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/profile_offlinebtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/generic_rounded_background"
+                android:text="@string/profile_import"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:backgroundTint="@color/bronze" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -140,12 +171,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/strava_unlinkwarn"
+                android:text="@string/profile_unlinkwarn"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
             <Button
-                android:id="@+id/profile_strava"
+                android:id="@+id/profile_stravabtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
