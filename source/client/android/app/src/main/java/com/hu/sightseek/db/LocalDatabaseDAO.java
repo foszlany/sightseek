@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.PolyUtil;
@@ -118,7 +120,8 @@ public class LocalDatabaseDAO {
                 "IFNULL(MAX(" + LocalDatabaseImpl.ACTIVITIES_ELAPSEDTIME + "), 0) AS " + StatisticsProvider.STATISTICS_KEY_LONGEST_TIME + ", " +
                 "COUNT(*) AS " + StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT + ", " +
                 "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT + " " +
-                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE;
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + getUidFilter();
         }
         else {
             sql =
@@ -130,7 +133,8 @@ public class LocalDatabaseDAO {
                 "COUNT(*) AS " + StatisticsProvider.STATISTICS_KEY_ACTIVITY_COUNT + ", " +
                 "SUM(CASE WHEN " + LocalDatabaseImpl.ACTIVITIES_STRAVAID + " != -1 THEN 1 ELSE 0 END) AS " + StatisticsProvider.STATISTICS_KEY_IMPORTED_COUNT + " " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
-                "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = " + category.getIndex();
+                "WHERE " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " = " + category.getIndex() + " " +
+                "AND " + getUidFilter();
         }
 
         Cursor cursor = db.rawQuery(sql, null);
@@ -173,9 +177,10 @@ public class LocalDatabaseDAO {
         String sql =
                 "SELECT strftime('%m', " + LocalDatabaseImpl.ACTIVITIES_STARTTIME + ") AS month, " +
                 "SUM (" + LocalDatabaseImpl.ACTIVITIES_DISTANCE + ") AS total_distance " +
-                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE +
-                " GROUP BY month" +
-                " ORDER BY month ASC";
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + getUidFilter() + " " +
+                "GROUP BY month" + " " +
+                "ORDER BY month ASC";
 
         Cursor cursor = db.rawQuery(sql, null);
 
@@ -201,6 +206,7 @@ public class LocalDatabaseDAO {
                 "SELECT " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " AS category, " +
                 "COUNT(*) AS occurrences " +
                 "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + getUidFilter() + " " +
                 "GROUP BY " + LocalDatabaseImpl.ACTIVITIES_CATEGORY + " " +
                 "ORDER BY occurrences DESC " +
                 "LIMIT 1";
@@ -794,5 +800,18 @@ public class LocalDatabaseDAO {
         }
 
         db.close();
+    }
+
+    @NonNull
+    private static String getUidFilter() {
+        String currentUid = FirebaseAuth.getInstance().getUid();
+        String uidFilter;
+        if(currentUid == null) {
+            uidFilter = LocalDatabaseImpl.ACTIVITIES_UID + " IS NULL";
+        }
+        else {
+            uidFilter = LocalDatabaseImpl.ACTIVITIES_UID + " = '" + currentUid + "'";
+        }
+        return uidFilter;
     }
 }
