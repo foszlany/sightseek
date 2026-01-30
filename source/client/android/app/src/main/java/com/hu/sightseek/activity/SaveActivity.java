@@ -140,7 +140,7 @@ public class SaveActivity extends AppCompatActivity {
         // Save button
         Button saveButton = findViewById(R.id.save_savebtn);
         saveButton.setOnClickListener(view -> {
-            if(auth.getCurrentUser() != null && isVectorizationStarted && !isVectorizationComplete) {
+            if(isVectorizationStarted && !isVectorizationComplete) {
                 Toast.makeText(this, "Please wait for vectorization to finish!", Toast.LENGTH_LONG).show();
                 return;
             }
