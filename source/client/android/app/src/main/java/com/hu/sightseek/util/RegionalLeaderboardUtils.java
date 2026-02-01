@@ -104,13 +104,32 @@ public final class RegionalLeaderboardUtils {
         return batchCalculateRegionalDistance(activity, vectorizedDataRecords, countryCodes, null);
     }
 
-    // TODO: PERFORMANCE
+    /**
+     * Batch version of calculateNewRegionalDistance()
+     * @param activity Activity
+     * @param activities List of Activities to process
+     */
+    public static Map<String, Double> batchCalculateNewRegionalDistance(Activity activity, List<com.hu.sightseek.model.Activity> activities) {
+        return batchCalculateRegionalDistance(activity, activities, false);
+    }
+
     /** Batch version of calculateCurrentRegionalDistance()
      * @param activity Activity
      * @param activities List of Activities to process
      * @return Map containing regions with their unique distances or null if none of the activities contain vectorized data
      */
     public static Map<String, Double> batchCalculateCurrentRegionalDistance(Activity activity, List<com.hu.sightseek.model.Activity> activities) {
+        return batchCalculateRegionalDistance(activity, activities, true);
+    }
+
+    // TODO: PERFORMANCE
+    /** Batch version of calculateRegionalDistance()
+     * @param activity Activity
+     * @param activities List of Activities to process
+     * @param areCalculated Whether the regional distances have been calculated already. If false, all activities' road data will be taken into account when calculating the regional distances.
+     * @return Map containing regions with their unique distances or null if none of the activities contain vectorized data
+     */
+    private static Map<String, Double> batchCalculateRegionalDistance(Activity activity, List<com.hu.sightseek.model.Activity> activities, boolean areCalculated) {
         if(activities == null || activities.isEmpty()) {
             return null;
         }
@@ -144,22 +163,20 @@ public final class RegionalLeaderboardUtils {
             // Calculate regional distance
             try {
                 Geometry vectorizedRoads = convertWKBToGeometry(activities.get(i).getVectorizedData());
-                if(vectorizedRoads != null && !vectorizedDataRecords.isEmpty()) {
+                if(vectorizedRoads != null && !vectorizedRoads.isEmpty()) {
                     isAllEmpty = false;
                 }
 
                 vectorizedDataRecords.add(new VectorizedDataRecord(vectorizedRoads, routePolygon, countryCodes));
             }
-            catch(ParseException e) {
-                throw new RuntimeException(e);
-            }
+            catch(ParseException ignored) {}
         }
 
         if(isAllEmpty) {
             return null;
         }
 
-        return batchCalculateRegionalDistance(activity, vectorizedDataRecords, countryCodes, activityIds);
+        return batchCalculateRegionalDistance(activity, vectorizedDataRecords, countryCodes, areCalculated ? activityIds : null);
     }
 
     /**

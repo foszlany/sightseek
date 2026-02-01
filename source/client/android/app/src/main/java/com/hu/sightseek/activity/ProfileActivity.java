@@ -1,9 +1,11 @@
 package com.hu.sightseek.activity;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateCurrentRegionalDistance;
+import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateNewRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
@@ -25,6 +27,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,13 +45,16 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.DeleteAccountFragment;
 import com.hu.sightseek.model.Activity;
+import com.hu.sightseek.util.SpatialUtils;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -169,24 +175,54 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Import offline activities
         Button offlineButton = findViewById(R.id.profile_offlinebtn);
-        offlineButton.setOnClickListener(v -> {
+        offlineButton.setOnClickListener(v -> Executors.newSingleThreadExecutor().execute(() -> {
             LocalDatabaseDAO dao = new LocalDatabaseDAO(ProfileActivity.this);
             List<Activity> offlineActivities = dao.getOfflineActivities();
 
+            // Get non-null UID activities
             if(offlineActivities == null || offlineActivities.isEmpty()) {
-                Toast.makeText(this, "You have no offline activities to import.", Toast.LENGTH_LONG).show();
+                runOnUiThread(() -> Toast.makeText(this, "You have no offline activities to import.", Toast.LENGTH_LONG).show());
                 return;
             }
 
+            // Loading icon
+            ImageView loadingIcon = findViewById(R.id.profile_loadingicon);
+            runOnUiThread(() -> {
+                offlineButton.setVisibility(GONE);
+                Animation rotate = AnimationUtils.loadAnimation(this, R.anim.looping_rotation);
+                loadingIcon.setVisibility(VISIBLE);
+                loadingIcon.startAnimation(rotate);
+            });
+
+            // Change UIDs
+            List<GeoPoint> pointList = new ArrayList<>();
             for(Activity offlineActivity : offlineActivities) {
                 offlineActivity.setUid(FirebaseAuth.getInstance().getUid());
+
+                List<GeoPoint> points = SpatialUtils.decode(offlineActivity.getPolyline());
+                pointList.addAll(points);
             }
 
+            // Update cells
+            Map<String, Integer> visitedCells = getVisitedCells(pointList);
+            updateCells(visitedCells, false);
+
+            // Update regional distances
+            Map<String, Double> regionalDistances = batchCalculateNewRegionalDistance(ProfileActivity.this, offlineActivities);
+            updateRegionalLeaderboard(regionalDistances, false);
+
+            // Update activities
             dao.updateActivities(offlineActivities);
             dao.close();
 
-            Toast.makeText(this, "Importing has finished", Toast.LENGTH_LONG).show();
-        });
+            // Clear animation
+            runOnUiThread(() -> {
+                loadingIcon.clearAnimation();
+                loadingIcon.setVisibility(GONE);
+                offlineButton.setVisibility(VISIBLE);
+                Toast.makeText(this, "Importing has finished", Toast.LENGTH_LONG).show();
+            });
+        }));
 
         // Strava
         Button stravaButton = findViewById(R.id.profile_stravabtn);

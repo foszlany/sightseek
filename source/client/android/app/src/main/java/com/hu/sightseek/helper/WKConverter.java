@@ -35,6 +35,10 @@ public final class WKConverter {
      * @throws ParseException Thrown when wkb is unreadable
      */
     public static Geometry convertWKBToGeometry(byte[] wkb) throws ParseException {
+        if(wkb == null) {
+            return null;
+        }
+
         WKBReader reader = new WKBReader();
         return reader.read(wkb);
     }

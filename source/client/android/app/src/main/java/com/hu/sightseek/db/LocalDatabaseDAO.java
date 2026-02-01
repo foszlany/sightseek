@@ -592,7 +592,8 @@ public class LocalDatabaseDAO {
         String sql =
                 "SELECT " + LocalDatabaseImpl.ACTIVITIES_ID + ", " +
                         LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA + " " +
-                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE;
+                "FROM " + LocalDatabaseImpl.ACTIVITIES_TABLE + " " +
+                "WHERE " + getUidFilter();
 
         Cursor cursor = db.rawQuery(sql, null);
 
