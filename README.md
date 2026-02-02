@@ -2,9 +2,9 @@
 Sightseek is a mobile application that motivates you to visit new places.
 
 <p align="center">
-  <img src="https://i.ibb.co/67nRjZM3/1.png" alt="Main Menu" width="250" hspace="10"/>
-  <img src="https://i.ibb.co/yBpLtgQg/2.png" alt="Map with heatmap and attractions turned on" width="250" hspace="10"/>
-  <img src="https://i.ibb.co/5gnWXDr5/3.png" alt="Activity showing processed street data" width="250" hspace="10"/>
+  <img src="./preview/preview.png" alt="Main Menu" width="250" hspace="10"/>
+  <img src="./preview/map.png" alt="Map with heatmap and attractions turned on" width="250" hspace="10"/>
+  <img src="./preview/activity.png" alt="Activity showing processed street data" width="250" hspace="10"/>
 </p>
 
 ## Features
@@ -23,8 +23,8 @@ Sightseek has two leaderboards available:
     - Want to be the very best in your region? Walk on unique paths and the distance will determine your placing.
 
 <div align="center">
-  <img src="https://i.ibb.co/fdg0ghQc/image.png" alt="Cell based leaderboard" width="250" hspace="10"/>
-  <img src="https://i.ibb.co/b5mYPY78/image.png" alt="Regional leaderboard" width="250" hspace="10"/>
+  <img src="./preview/cells.png" alt="Cell based leaderboard" width="250" hspace="10"/>
+  <img src="./preview/regional.png" alt="Regional leaderboard" width="250" hspace="10"/>
 </div>
 
 ## Limitations
