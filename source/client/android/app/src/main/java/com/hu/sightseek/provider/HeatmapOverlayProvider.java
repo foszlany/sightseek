@@ -15,15 +15,28 @@ import org.osmdroid.views.overlay.GroundOverlay;
 import java.util.List;
 
 public class HeatmapOverlayProvider {
-    private static final int RADIUS = 6;
-    private static final double SIGMA = 3.0;
+    /** Smallest possible grid height (pixel height) for the heatmap overlay */
     private static final int minGridHeight = 250;
+    /** Largest possible grid height (pixel height) for the heatmap overlay */
     private static final int maxGridHeight = 850;
 
+    /** Kernel for Gaussian blur */
     private static double[][] kernel;
+    /** Radius for Gaussian blur */
+    private static final int RADIUS = 6;
+    /** Sigma for Gaussian blur */
+    private static final double SIGMA = 3.0;
 
+    /** Private constructor */
     private HeatmapOverlayProvider() {}
 
+    /**
+     * Creates a local heatmap overlay for a MapView
+     * @param mapView MapView to calculate for
+     * @param points List of visited points
+     * @param isStrong Whether the heatmap should be strong. Strong heatmap makes everything way more visible and calculates maximum values locally
+     * @return Heatmap overlay
+     */
     public static GroundOverlay createHeatmapOverlay(MapView mapView, List<LatLng> points, boolean isStrong) {
         if(kernel == null) {
             setKernel();
@@ -152,6 +165,12 @@ public class HeatmapOverlayProvider {
         return overlay;
     }
 
+    /**
+     * Applies a 1D horizontal maximum filter to a 2D array
+     * @param src Density map as a 2D array
+     * @param radius Radius (half of the sliding window)
+     * @return A 2D array where each element contains the local horizontal maximum
+     */
     private static int[][] maxFilterHorizontal(int[][] src, int radius) {
         int h = src.length;
         int w = src[0].length;
@@ -195,6 +214,12 @@ public class HeatmapOverlayProvider {
         return out;
     }
 
+    /**
+     * Applies a 1D vertical maximum filter to a 2D array
+     * @param src Density map as a 2D array
+     * @param radius Radius (half of the sliding window)
+     * @return A 2D array where each element contains the local vertical maximum
+     */
     private static int[][] maxFilterVertical(int[][] src, int radius) {
         int h = src.length;
         int w = src[0].length;
@@ -242,11 +267,18 @@ public class HeatmapOverlayProvider {
         return out;
     }
 
-    private static int[][] computeLocalMax(int[][] density, int radius) {
-        int[][] h = maxFilterHorizontal(density, radius);
+    /**
+     * Calculates the local maximum in a square neighborhood using van Herk / Gil-Werman max filter algorithm
+     * @param src Density map as a 2D array
+     * @param radius Radius (half of the sliding window)
+     * @return a 2D array where each element contains the local maximum in its neighborhood
+     */
+    private static int[][] computeLocalMax(int[][] src, int radius) {
+        int[][] h = maxFilterHorizontal(src, radius);
         return maxFilterVertical(h, radius);
     }
 
+    /** Calculates the kernel for Gaussian blur */
     private static void setKernel() {
         double twoSigmaSquared = 2 * SIGMA * SIGMA;
 
@@ -259,6 +291,12 @@ public class HeatmapOverlayProvider {
         }
     }
 
+    /**
+     * Gets a heatmap color for an intensity
+     * @param intensity Intensity, 0-1
+     * @param isStrong Whether the color should be slightly stronger
+     * @return 32-bit ARGB color
+     */
     private static int getHeatmapColor(float intensity, boolean isStrong) {
         if(isStrong) {
             float k = 12;
