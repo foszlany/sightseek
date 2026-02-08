@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
+import static com.hu.sightseek.util.FirebaseUtils.uploadActivities;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateNewRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.decode;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
@@ -78,7 +79,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private SharedPreferences prefs;
-    private ArrayList<Activity> activities;
+    private List<Activity> activities;
     private HashSet<Long> stravaIds;
     HashMap<String, Integer> visitedCells;
     private String importDate;
@@ -408,17 +409,17 @@ public class StravaImportActivity extends AppCompatActivity {
                                         });
 
                                         Map<String, Double> regionalDistances = batchCalculateNewRegionalDistance(StravaImportActivity.this, vectorizedDataRecords, countryCodes);
-                                        if(regionalDistances != null && !regionalDistances.isEmpty()) {
-                                            updateRegionalLeaderboard(regionalDistances, false);
-                                        }
+                                        updateRegionalLeaderboard(regionalDistances, false);
+
 
                                         runOnUiThread(() -> {
                                             isImporting = false;
                                             LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
-                                            dao.addActivities(activities);
+                                            activities = dao.addActivities(activities);
                                             dao.close();
 
                                             updateCells(visitedCells, false);
+                                            uploadActivities(activities);
 
                                             if("after".equals(mode)) {
                                                 prefs.edit().putString("StravaLatestImportDate", tempImportDate).apply();

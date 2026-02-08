@@ -81,7 +81,7 @@ public class LocalDatabaseDAO {
      * Adds a list of Activities
      * @param activities List of Activity objects
      */
-    public void addActivities(List<Activity> activities) {
+    public List<Activity> addActivities(List<Activity> activities) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         for(Activity activity : activities) {
@@ -96,10 +96,13 @@ public class LocalDatabaseDAO {
             values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
             values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
 
-            db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
+            long id = db.insert(LocalDatabaseImpl.ACTIVITIES_TABLE, null, values);
+            activity.setId((int) id);
         }
 
         db.close();
+
+        return activities;
     }
 
     /**

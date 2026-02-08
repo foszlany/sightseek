@@ -5,10 +5,12 @@ import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.FirestoreActivity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Utilities to update cells in Firebase */
@@ -21,6 +23,10 @@ public final class FirebaseUtils {
      * @param activity Activity to upload
      */
     public static void uploadActivity(Activity activity) {
+        if(activity == null) {
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Blob vectorizedDataBlob = activity.getVectorizedData() != null ? Blob.fromBytes(activity.getVectorizedData()) : null;
@@ -32,6 +38,34 @@ public final class FirebaseUtils {
                 .document(String.valueOf(firestoreActivity.getId()))
                 .set(firestoreActivity);
     }
+
+    /**
+     * Uploads a list of activities for a user
+     * @param activities List of Activities to upload
+     */
+    public static void uploadActivities(List<Activity> activities) {
+        if(activities == null || activities.isEmpty()) {
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        WriteBatch batch = db.batch();
+
+        for(Activity activity : activities) {
+            Blob vectorizedDataBlob = activity.getVectorizedData() != null ? Blob.fromBytes(activity.getVectorizedData()) : null;
+            FirestoreActivity firestoreActivity = new FirestoreActivity(activity.getId(), activity.getUid(), activity.getName(), activity.getCategory(), activity.getPolyline(), activity.getStartTime(), activity.getElapsedTime(), activity.getDistance(), activity.getStravaId(), vectorizedDataBlob);
+
+            DocumentReference docRef = db.collection("users")
+                    .document(activity.getUid())
+                    .collection("activities")
+                    .document(String.valueOf(activity.getId()));
+
+            batch.set(docRef, firestoreActivity);
+        }
+
+        batch.commit();
+    }
+
 
     /**
      * Updates celldata for a user
