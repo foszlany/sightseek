@@ -56,6 +56,7 @@ import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -254,20 +255,26 @@ public class ActivityActivity extends AppCompatActivity {
 
                 Executors.newSingleThreadExecutor().execute(() -> {
                     byte[] vectorizedDataBlob = activity.getVectorizedData();
-                    try {
-                        List<Polyline> vectorizedDataPolylines = convertWKBToPolylines(vectorizedDataBlob);
 
-                        for(Polyline p : vectorizedDataPolylines) {
-                            p.getOutlinePaint().set(paint);
+                    if(vectorizedDataBlob == null) {
+                        runOnUiThread(() -> Toast.makeText(this, "Activity does not contain road data.", Toast.LENGTH_SHORT).show());
+                    }
+                    else {
+                        try {
+                            List<Polyline> vectorizedDataPolylines = convertWKBToPolylines(vectorizedDataBlob);
 
-                            vectorizedDataGroup.add(p);
+                            for(Polyline p : vectorizedDataPolylines) {
+                                p.getOutlinePaint().set(paint);
+
+                                vectorizedDataGroup.add(p);
+                            }
                         }
-                    }
-                    catch(NullPointerException e) {
-                        runOnUiThread(() -> Toast.makeText(this, "Activity does not contain road data.", Toast.LENGTH_LONG).show());
-                    }
-                    catch(ParseException e) {
-                        throw new RuntimeException("Unable to parse WKB.");
+                        catch(NullPointerException e) {
+                            runOnUiThread(() -> Toast.makeText(this, "Activity does not contain road data or data is malformed.", Toast.LENGTH_SHORT).show());
+                        }
+                        catch(ParseException e) {
+                            throw new RuntimeException("Unable to parse WKB.");
+                        }
                     }
 
                     mapView.getOverlays().add(1, vectorizedDataGroup);

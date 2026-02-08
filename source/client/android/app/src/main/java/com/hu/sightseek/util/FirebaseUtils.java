@@ -1,7 +1,6 @@
 package com.hu.sightseek.util;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
