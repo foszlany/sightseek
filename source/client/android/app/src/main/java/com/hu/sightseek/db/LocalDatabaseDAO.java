@@ -80,6 +80,7 @@ public class LocalDatabaseDAO {
     /**
      * Adds a list of Activities
      * @param activities List of Activity objects
+     * @return Updated list of activities with added Ids
      */
     public List<Activity> addActivities(List<Activity> activities) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();

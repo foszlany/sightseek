@@ -29,8 +29,7 @@ public final class FirebaseUtils {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Blob vectorizedDataBlob = activity.getVectorizedData() != null ? Blob.fromBytes(activity.getVectorizedData()) : null;
-        FirestoreActivity firestoreActivity = new FirestoreActivity(activity.getId(), activity.getUid(), activity.getName(), activity.getCategory(), activity.getPolyline(), activity.getStartTime(), activity.getElapsedTime(), activity.getDistance(), activity.getStravaId(), vectorizedDataBlob);
+        FirestoreActivity firestoreActivity = new FirestoreActivity(activity.getId(), activity.getUid(), activity.getName(), activity.getCategory(), activity.getPolyline(), activity.getStartTime(), activity.getElapsedTime(), activity.getDistance(), activity.getStravaId(), activity.getVectorizedData());
 
         db.collection("users")
                 .document(activity.getUid())
@@ -52,8 +51,7 @@ public final class FirebaseUtils {
         WriteBatch batch = db.batch();
 
         for(Activity activity : activities) {
-            Blob vectorizedDataBlob = activity.getVectorizedData() != null ? Blob.fromBytes(activity.getVectorizedData()) : null;
-            FirestoreActivity firestoreActivity = new FirestoreActivity(activity.getId(), activity.getUid(), activity.getName(), activity.getCategory(), activity.getPolyline(), activity.getStartTime(), activity.getElapsedTime(), activity.getDistance(), activity.getStravaId(), vectorizedDataBlob);
+            FirestoreActivity firestoreActivity = new FirestoreActivity(activity.getId(), activity.getUid(), activity.getName(), activity.getCategory(), activity.getPolyline(), activity.getStartTime(), activity.getElapsedTime(), activity.getDistance(), activity.getStravaId(), activity.getVectorizedData());
 
             DocumentReference docRef = db.collection("users")
                     .document(activity.getUid())
