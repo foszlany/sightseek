@@ -5,6 +5,7 @@ import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helper.WKConverter.convertGeometryToWKB;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
+import static com.hu.sightseek.util.FirebaseUtils.uploadActivity;
 import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
@@ -162,16 +163,6 @@ public class SaveActivity extends AppCompatActivity {
             daoExecutor.execute(() -> {
                 byte[] vectorizedDataBlob = null;
 
-                if(auth.getCurrentUser() != null) {
-                    Map<String, Integer> visitedCells = getVisitedCells(pointList);
-                    updateCells(visitedCells, false);
-
-                    Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateNewRegionalDistance(SaveActivity.this, vectorizedDataRecord);
-                    if(regionalDistances != null && !regionalDistances.isEmpty()) {
-                        updateRegionalLeaderboard(regionalDistances, false);
-                    }
-                }
-
                 if(vectorizedDataRecord != null && vectorizedDataRecord.getVectorizedDataGeometry() != null && !vectorizedDataRecord.getVectorizedDataGeometry().isEmpty()) {
                     vectorizedDataBlob = convertGeometryToWKB(vectorizedDataRecord.getVectorizedDataGeometry());
                 }
@@ -181,6 +172,19 @@ public class SaveActivity extends AppCompatActivity {
 
                 LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
                 long id = dao.addActivity(activity);
+
+                if(auth.getCurrentUser() != null) {
+                    Map<String, Integer> visitedCells = getVisitedCells(pointList);
+                    updateCells(visitedCells, false);
+
+                    Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateNewRegionalDistance(SaveActivity.this, vectorizedDataRecord);
+                    if(regionalDistances != null && !regionalDistances.isEmpty()) {
+                        updateRegionalLeaderboard(regionalDistances, false);
+                    }
+
+                    activity.setId((int) id);
+                    uploadActivity(activity);
+                }
 
                 Intent intent = new Intent(this, ActivityActivity.class);
                 Bundle bundle = new Bundle();

@@ -1,9 +1,12 @@
 package com.hu.sightseek.util;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.hu.sightseek.model.Activity;
+import com.hu.sightseek.model.FirestoreActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +15,23 @@ import java.util.Map;
 public final class FirebaseUtils {
     /** Private constructor */
     private FirebaseUtils() {}
+
+    /**
+     * Uploads an activity for a user
+     * @param activity Activity to upload
+     */
+    public static void uploadActivity(Activity activity) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Blob vectorizedDataBlob = activity.getVectorizedData() != null ? Blob.fromBytes(activity.getVectorizedData()) : null;
+        FirestoreActivity firestoreActivity = new FirestoreActivity(activity.getId(), activity.getUid(), activity.getName(), activity.getCategory(), activity.getPolyline(), activity.getStartTime(), activity.getElapsedTime(), activity.getDistance(), activity.getStravaId(), vectorizedDataBlob);
+
+        db.collection("users")
+                .document(activity.getUid())
+                .collection("activities")
+                .document(String.valueOf(firestoreActivity.getId()))
+                .set(firestoreActivity);
+    }
 
     /**
      * Updates celldata for a user

@@ -9,7 +9,7 @@ import java.util.Arrays;
 /** The Activity class that represents a recorded or imported route along with its metadata. */
 public class Activity {
     /** ID */
-    private final int id;
+    private int id;
     /** User ID, null if not present */
     private String uid;
     /** Name */
@@ -55,8 +55,36 @@ public class Activity {
         this.vectorizedData = vectorizedData;
     }
 
+    /**
+     * Constructor
+     * @param id ID
+     * @param uid User ID, null if not present
+     * @param name Name
+     * @param category Category
+     * @param polyline Encoded polyline
+     * @param startTime Start time (Format: YYYY-MM-DDTHH:MM:SS)
+     * @param elapsedTime Elapsed time in seconds
+     * @param distance Distance in meters
+     * @param stravaId Strava ID, -1 if activity is not imported
+     */
+    public Activity(int id, String uid, String name, TravelCategory category, String polyline, String startTime, double elapsedTime, double distance, long stravaId) {
+        this.id = id;
+        this.uid = uid;
+        this.name = name;
+        this.category = category;
+        this.polyline = polyline;
+        this.startTime = startTime;
+        this.elapsedTime = elapsedTime;
+        this.distance = distance;
+        this.stravaId = stravaId;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
