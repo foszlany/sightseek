@@ -109,8 +109,9 @@ public class LocalDatabaseDAO {
     /**
      * Updates a list of Activities
      * @param activities List of Activity objects
+     * @return Updated list of activities with added Ids
      */
-    public void updateActivities(List<Activity> activities) {
+    public List<Activity> updateActivities(List<Activity> activities) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         for(Activity activity : activities) {
@@ -125,10 +126,14 @@ public class LocalDatabaseDAO {
             values.put(LocalDatabaseImpl.ACTIVITIES_STRAVAID, activity.getStravaId());
             values.put(LocalDatabaseImpl.ACTIVITIES_VECTORIZEDDATA, activity.getVectorizedData());
 
-            db.update(LocalDatabaseImpl.ACTIVITIES_TABLE, values, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(activity.getId())});
+            long id = db.update(LocalDatabaseImpl.ACTIVITIES_TABLE, values, LocalDatabaseImpl.ACTIVITIES_ID + " = ?", new String[]{String.valueOf(activity.getId())});
+
+            activity.setId((int) id);
         }
 
         db.close();
+
+        return activities;
     }
 
     /**

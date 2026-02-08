@@ -414,6 +414,7 @@ public class StravaImportActivity extends AppCompatActivity {
 
                                         runOnUiThread(() -> {
                                             isImporting = false;
+
                                             LocalDatabaseDAO dao = new LocalDatabaseDAO(StravaImportActivity.this);
                                             activities = dao.addActivities(activities);
                                             dao.close();

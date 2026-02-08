@@ -4,21 +4,17 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
+import static com.hu.sightseek.util.FirebaseUtils.uploadActivities;
+import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateCurrentRegionalDistance;
 import static com.hu.sightseek.util.RegionalLeaderboardUtils.batchCalculateNewRegionalDistance;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
-import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,12 +27,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -211,8 +209,11 @@ public class ProfileActivity extends AppCompatActivity {
             updateRegionalLeaderboard(regionalDistances, false);
 
             // Update activities
-            dao.updateActivities(offlineActivities);
+            offlineActivities = dao.updateActivities(offlineActivities);
             dao.close();
+
+            // Upload to Firestore
+            uploadActivities(offlineActivities);
 
             // Clear animation
             runOnUiThread(() -> {
