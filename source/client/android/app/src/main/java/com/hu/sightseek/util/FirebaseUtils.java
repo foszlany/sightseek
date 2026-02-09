@@ -83,6 +83,31 @@ public final class FirebaseUtils {
                 .delete();
     }
 
+
+    /**
+     * Deletes a list of activities for a user
+     * @param activities List of Activities to delete
+     */
+    public static void deleteActivities(List<Activity> activities) {
+        if(activities == null || activities.isEmpty()) {
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        WriteBatch batch = db.batch();
+
+        for(Activity activity : activities) {
+            DocumentReference docRef = db.collection("users")
+                    .document(activity.getUid())
+                    .collection("activities")
+                    .document(String.valueOf(activity.getId()));
+
+            batch.delete(docRef);
+        }
+
+        batch.commit();
+    }
+
     /**
      * Updates celldata for a user
      * @param cells Map of cellindexes and their respective counts

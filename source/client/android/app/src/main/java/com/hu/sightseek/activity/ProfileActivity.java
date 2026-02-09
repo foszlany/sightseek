@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.util.FirebaseUtils.deleteActivities;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
 import static com.hu.sightseek.util.FirebaseUtils.uploadActivities;
@@ -287,6 +288,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                                     Map<String, Double> regionalDistances = batchCalculateCurrentRegionalDistance(ProfileActivity.this, importedActivities);
                                     updateRegionalLeaderboard(regionalDistances, true);
+
+                                    deleteActivities(importedActivities);
 
                                     runOnUiThread(() -> Toast.makeText(this, "Successfully unlinked.", Toast.LENGTH_LONG).show());
                                 }
