@@ -4,6 +4,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.hu.sightseek.helper.WKConverter.convertWKBToGeometry;
 import static com.hu.sightseek.helper.WKConverter.convertWKBToPolylines;
+import static com.hu.sightseek.util.FirebaseUtils.deleteActivity;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
 import static com.hu.sightseek.util.GenericUtils.createScreenshot;
 import static com.hu.sightseek.util.GenericUtils.setupRouteLine;
@@ -218,6 +219,9 @@ public class ActivityActivity extends AppCompatActivity {
                             catch(ParseException e) {
                                 throw new RuntimeException("Unable to parse WKB.");
                             }
+
+                            // Delete from Firebase
+                            deleteActivity(activity);
 
                             // Delete from database
                             LocalDatabaseDAO dao2 = new LocalDatabaseDAO(this);

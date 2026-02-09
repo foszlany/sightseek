@@ -63,6 +63,25 @@ public final class FirebaseUtils {
         batch.commit();
     }
 
+    /**
+     * Deletes an activity for a user
+     * @param activity Activity to delete
+     */
+    public static void deleteActivity(Activity activity) {
+        if(activity == null) {
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirestoreActivity firestoreActivity = new FirestoreActivity(activity.getId(), activity.getUid(), activity.getName(), activity.getCategory(), activity.getPolyline(), activity.getStartTime(), activity.getElapsedTime(), activity.getDistance(), activity.getStravaId(), activity.getVectorizedData());
+
+        db.collection("users")
+                .document(activity.getUid())
+                .collection("activities")
+                .document(String.valueOf(firestoreActivity.getId()))
+                .delete();
+    }
 
     /**
      * Updates celldata for a user
