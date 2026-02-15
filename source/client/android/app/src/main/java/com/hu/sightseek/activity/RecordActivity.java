@@ -410,7 +410,9 @@ public class RecordActivity extends AppCompatActivity {
                             speedView.setText(getString(R.string.main_speed, currentSpeed));
 
                             // Distance
-                            totalDist += newDistanceLength;
+                            if(newDistanceLength < 1000) {
+                                totalDist += newDistanceLength;
+                            }
 
                             TextView distanceView = findViewById(R.id.record_distance);
                             distanceView.setText(getString(R.string.main_distance, totalDist / 1000.0));
