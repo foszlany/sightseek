@@ -417,7 +417,6 @@ public class LeaderboardActivity extends AppCompatActivity {
             LinkedHashSet<String> regionOptions = new LinkedHashSet<>();
             regionOptions.add("None");
 
-            // [ISO 3166]_smallregion
             ArrayList<String> subRegionOptions = new ArrayList<>();
             subRegionOptions.add("None");
 

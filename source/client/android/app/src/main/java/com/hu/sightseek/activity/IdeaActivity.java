@@ -484,7 +484,7 @@ public class IdeaActivity extends AppCompatActivity {
         try {
             if(!wikimediaReference.isBlank() && wikimediaReference.startsWith("File:")) {
                 apiUrl = "https://commons.wikimedia.org/w/api.php?action=query&titles=File:"
-                        + URLEncoder.encode( wikimediaReference.substring(5), "UTF-8")
+                        + URLEncoder.encode(wikimediaReference.substring(5), "UTF-8")
                         + "&prop=imageinfo&iiprop=url&format=json";
             }
             else {
