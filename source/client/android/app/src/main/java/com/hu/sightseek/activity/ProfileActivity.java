@@ -354,10 +354,4 @@ public class ProfileActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    // Change language
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(setLocale(newBase));
-    }
 }
