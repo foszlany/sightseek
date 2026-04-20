@@ -204,4 +204,7 @@
     <string name="profile_import">Import</string>
     <string name="profile_importoffline">Import offline activities</string>
     <string name="profile_offlinewarn">Here you can import all offline recorded activities into this account.</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_changelanguage">Change language</string>
+    <string name="profile_chooselanguage">Choose a language</string>
 </resources>

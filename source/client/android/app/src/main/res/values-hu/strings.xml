@@ -20,8 +20,8 @@
     <string name="banner_login">Van már fiókod?</string>
     <string name="banner_useoffline">Folytatás fiók nélkül</string>
     <string name="login_login">Bejelentkezés</string>
-    <string name="register_username">Felhasználónév (3-18 karakter)</string>
-    <string name="register_password1">Jelszó (8-32 karakter)</string>
+    <string name="register_username">Felhasználónév (3–18 karakter)</string>
+    <string name="register_password1">Jelszó (8–32 karakter)</string>
     <string name="register_password2">Jelszó megerősítése</string>
     <string name="register_alreadyhaveaccount">Már van fiókom</string>
     <string name="banner_imgdesc">"Ez a kép egy egyszerű háttérként szolgál a kezdőképernyőhöz. "</string>
@@ -45,7 +45,7 @@
     <string name="travelmethod_other">Egyéb</string>
     <string name="travelmethod_micro">Mikromobilitás</string>
     <string name="main_filterdesc">Szűrés</string>
-    <string name="main_searchhint">Keress címre...</string>
+    <string name="main_searchhint">Keress címre…</string>
     <string name="menu_filter_recent">Új</string>
     <string name="menu_filter_old">Régi</string>
     <string name="menu_filter_smalldist">Távolság (Rövid - Hosszú)</string>
@@ -53,7 +53,7 @@
     <string name="menu_filter_short">Eltelt idő (Rövid - Hosszú)</string>
     <string name="menu_filter_long">Eltelt idő (Hosszú - Rövid)</string>
     <string name="register_error_unknown">Egy ismeretlen hiba történt. Próbálkozz újra később.</string>
-    <string name="idea_title">Mit szólnál...</string>
+    <string name="idea_title">Mit szólnál…</string>
     <string name="idea_ignore">Ignorálás</string>
     <string name="idea_next">Következő</string>
     <string name="idea_imgdesc">Egy kép a látványosságról.</string>
@@ -63,7 +63,7 @@
     <string name="idea_lucky">Jó napom van</string>
     <string name="idea_reference">Kezdőpont</string>
     <string name="idea_radius">Sugár</string>
-    <string name="idea_loading">Töltés...</string>
+    <string name="idea_loading">Töltés…</string>
     <string name="idea_wait">Kérjük várjon.</string>
     <string name="idea_noactivities">Nincsenek aktivitásaid.</string>
     <string name="idea_typelocation">%1$s %2$s alatt</string>
@@ -103,7 +103,7 @@
     <string name="statistics_percategory_totaltime">Összes idő: %1$.2f days</string>
     <string name="statistics_percategory_totaldistance">Összes táv: %1$.2f km</string>
     <string name="save_manageideas">Elmentett aktivitások kezelése</string>
-    <string name="ideamanager_searchhint">Látványosságok keresése...</string>
+    <string name="ideamanager_searchhint">Látványosságok keresése…</string>
     <string name="ideamanager_visited">Meglátogatott</string>
     <string name="ideamanager_remove">Törlés</string>
     <string name="ideamanager_saved">Elmentett</string>
@@ -169,7 +169,7 @@
     <string name="profile_change">Mentés</string>
     <string name="profile_passwordchangesuccess">A jelszód sikeresen meg lett változtatva.</string>
     <string name="profile_passwordcurrent">Jelenlegi jelszó</string>
-    <string name="profile_password1hint">Új jelszó (8-32 karakter)</string>
+    <string name="profile_password1hint">Új jelszó (8–32 karakter)</string>
     <string name="profile_password2hint">Új jelszó megerősítése</string>
     <string name="profile_error_password_oldempty">A jelenlegi jelszó nem lehet üres!</string>
     <string name="profile_error_password_incorrectcurrent">A jelenlegi jelszó helytelen!</string>
@@ -183,10 +183,13 @@
     <string name="record_strongheatmapdesc">Láthatósági mód</string>
     <string name="profile_import">Importálás</string>
     <string name="profile_importoffline">Offline aktivitások importálása</string>
-    <string name="profile_offlinewarn">Itt lehet az összes offline aktivitásot importálni ehhez a fiókhoz.</string>
-    <string name="save_creatingvectordata">Aktivitásod leképezése utcákra...</string>
+    <string name="profile_offlinewarn">Itt lehet az összes offline aktivitást importálni ehhez a fiókhoz.</string>
+    <string name="save_creatingvectordata">Aktivitásod leképezése utcákra…</string>
     <string name="activity_showprocesseddata">Feldolgozott adatok megjelenítése</string>
     <string name="activity_hideprocesseddata">Feldolgozott adatok elrejtése</string>
-    <string name="leaderboard_entry_defaultuser">Töltés...</string>
+    <string name="leaderboard_entry_defaultuser">Töltés…</string>
     <string name="profile_unlink">Strava fiók lecsatolása</string>
+    <string name="profile_language">Nyelv</string>
+    <string name="profile_changelanguage">Nyelv megváltoztatása</string>
+    <string name="profile_chooselanguage">Válassz nyelvet</string>
 </resources>

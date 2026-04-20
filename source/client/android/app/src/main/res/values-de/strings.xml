@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_searchhint">Suche nach einem Titel...</string>
+    <string name="main_searchhint">Suche nach einem Titel…</string>
     <string name="menu_filter_recent">Neu</string>
     <string name="menu_filter_old">Alt</string>
     <string name="leaderboard_cellsdescription">Besuchte Zellen</string>
@@ -50,7 +50,7 @@
     <string name="banner_login">Bereits einen Account?</string>
     <string name="banner_useoffline">App ohne Account verwenden</string>
     <string name="login_login">Anmelden</string>
-    <string name="register_username">Benutzername (3-18 Zeichen)</string>
+    <string name="register_username">Benutzername (3–18 Zeichen)</string>
     <string name="register_password1">Passwort (8–32 Zeichen)</string>
     <string name="register_password2">Passwort bestätigen</string>
     <string name="register_alreadyhaveaccount">Ich habe bereits einen Account</string>
@@ -61,36 +61,12 @@
     <string name="main_leaderboard">Ranglisten</string>
     <string name="profile_profile">Profil</string>
     <string name="statistics_permonthdistance_title">pro Monat</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Monat</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Monat</string>
-    <string name="statistics_permonthdistance_title">Entfernung</string>
-    <string name="statistics_permonthdistance_title">Entfernung</string>
-    <string name="statistics_permonthdistance_title">"Entfernung "</string>
-    <string name="statistics_permonthdistance_title">Entfernung op</string>
-    <string name="statistics_permonthdistance_title">Entfernung op</string>
-    <string name="statistics_permonthdistance_title">Entfernung o</string>
-    <string name="statistics_permonthdistance_title">Entfernung p</string>
-    <string name="statistics_permonthdistance_title">Entfernung p</string>
-    <string name="statistics_permonthdistance_title">Entfernung pr</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro</string>
-    <string name="statistics_permonthdistance_title">"Entfernung pro "</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro M</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro M</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Mo</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Mo</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Mona</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Mona</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Monat</string>
-    <string name="statistics_permonthdistance_title">Entfernung pro Monat</string>
-    <string name="profile_profile">asd</string>
-    <string name="profile_profile">Profil</string>
-    <string name="profile_profile">Profil</string>
     <string name="statistics_distancecard_startingtext">Im Laufe deiner Karriere bei Sightseek bist du gereist:</string>
     <string name="statistics_distancecard_distancevalue">%1$.2f Kilometer</string>
     <string name="ideamanager_ignored">Ignoriert</string>
     <string name="ideamanager_filter_nameaz">Name A-Z</string>
     <string name="ideamanager_filter_nameza">Name A-Z</string>
-    <string name="idea_loading">Wird geladen...</string>
+    <string name="idea_loading">Wird geladen…</string>
     <string name="idea_wait">Bitte warten.</string>
     <string name="idea_reference">Bezugspunkt</string>
     <string name="idea_radius">Radius</string>
@@ -105,7 +81,7 @@
     <string name="menu_filter_short">Verstrichene Zeit (Kurz bis Lang)</string>
     <string name="menu_filter_long">Verstrichene Zeit (Lang bis Kurz)</string>
     <string name="register_error_unknown">Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es später erneut.</string>
-    <string name="idea_title">Wie wäre es mit...</string>
+    <string name="idea_title">Wie wäre es mit…</string>
     <string name="idea_ignore">Ignorieren</string>
     <string name="idea_next">Nächste</string>
     <string name="idea_imgdesc">Ein Bild, das die Attraktivität des Ausflugsziels zeigt.</string>
@@ -128,7 +104,7 @@
     <string name="profile_change">Ändern</string>
     <string name="profile_passwordchangesuccess">Dein Passwort wurde erfolgreich geändert.</string>
     <string name="profile_passwordcurrent">Aktuelles Passwort</string>
-    <string name="profile_password1hint">Neues Passwort (8-32 Zeichen)</string>
+    <string name="profile_password1hint">Neues Passwort (8–32 Zeichen)</string>
     <string name="profile_password2hint">Neues Passwort bestätigen</string>
     <string name="profile_error_password_oldempty">Das aktuelle Passwort darf nicht leer sein!</string>
     <string name="profile_error_password_incorrectcurrent">Das aktuelle Passwort ist falsch!</string>
@@ -213,4 +189,7 @@
     <string name="statistics_detailedbtndesc">Detailansicht</string>
     <string name="statistics_categorycard_startingtext">Deine Lieblingsbeschäftigung ist</string>
     <string name="statistics_categorycard_locomotor">Viel Erfolg!</string>
+    <string name="profile_language">Sprache</string>
+    <string name="profile_changelanguage">Sprache ändern</string>
+    <string name="profile_chooselanguage">Wähle eine Sprache</string>
 </resources>
