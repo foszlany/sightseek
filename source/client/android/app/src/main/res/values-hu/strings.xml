@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sightseek</string>
     <string name="main_stop">Megállítás</string>
     <string name="main_record">Rögzítés</string>
     <string name="main_map">Térkép</string>
@@ -13,8 +12,6 @@
     <string name="save_titlehint">Cím</string>
     <string name="save_distance">Távolság</string>
     <string name="travelmethod_loco">Mozgásszervi</string>
-    <string name="example_sampletext">MINTA SZÖVEG</string>
-    <string name="example_example">PÉLDA</string>
     <string name="banner_extrafeatures">Fiók létrehozásával hozzáférhetsz a ranglistákhoz és sok máshoz is.</string>
     <string name="banner_register">Regisztráció</string>
     <string name="login_password">Jelszó</string>
@@ -69,7 +66,7 @@
     <string name="idea_loading">Töltés...</string>
     <string name="idea_wait">Kérjük várjon.</string>
     <string name="idea_noactivities">Nincsenek aktivitásaid.</string>
-    <string name="idea_typelocation">%1$s in %2$s</string>
+    <string name="idea_typelocation">%1$s %2$s alatt</string>
     <string name="idea_nothingwasfound">Nincs találat</string>
     <string name="idea_increaseradius">Növeld meg a sugarat</string>
     <string name="locationselectpopup_select">Kiválasztás</string>
@@ -85,7 +82,7 @@
     <string name="record_attractionsdesc">Látványosságok</string>
     <string name="ideapopup_markasvisited">Megjelölés látottként</string>
     <string name="statistics_generalcard_activitiescreated">Létrehozott aktivitások: %1$.0f</string>
-    <string name="statistics_generalcard_totalkilometers">Összes kilométer: %1$.2f km</string>
+    <string name="statistics_generalcard_totalkilometers">Összes távolság: %1$.2f km</string>
     <string name="statistics_generalcard_totaltime">Eltelt idő: %1$.2f days</string>
     <string name="statistics_generalcard_mainactivitytype">Kedvenc aktivitástípus: %1$s</string>
     <string name="statistics_generalcard_longestdistance">Leghosszabb táv: %1$.2f km</string>
