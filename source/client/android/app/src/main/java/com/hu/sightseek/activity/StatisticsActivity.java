@@ -56,6 +56,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.enums.TravelCategory;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.helper.LocaleHelper;
+
 import org.osmdroid.config.Configuration;
 
 import java.io.Serializable;
@@ -664,5 +666,11 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

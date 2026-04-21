@@ -69,6 +69,7 @@ import com.google.maps.android.SphericalUtil;
 import com.hu.sightseek.R;
 import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.provider.HeatmapOverlayProvider;
 import com.hu.sightseek.service.RecordingService;
 
@@ -872,6 +873,15 @@ public class RecordActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        if(LocaleHelper.localeVersionChanged(this)) {
+            if(isRecording) {
+                Toast.makeText(this, "Language changes have not been applied because you're recording.", Toast.LENGTH_LONG).show();
+            }
+            else {
+                recreate();
+            }
+        }
+
         locationOverlay.setEnabled(true);
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
@@ -926,5 +936,11 @@ public class RecordActivity extends AppCompatActivity {
         if(locationModeReceiver != null) {
             unregisterReceiver(locationModeReceiver);
         }
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

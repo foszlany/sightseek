@@ -4,17 +4,19 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.hu.sightseek.R;
-import com.hu.sightseek.activity.ProfileActivity;
 
 import java.util.Locale;
 
 public final class LocaleHelper {
+    private static final String KEY_VERSION = "locale_version";
+
     private LocaleHelper() {}
 
     public static Context setLocale(Context ctx) {
@@ -38,7 +40,8 @@ public final class LocaleHelper {
         builder.setTitle(R.string.profile_chooselanguage);
 
         builder.setItems(names, (dialog, which) -> {
-            LocaleHelper.saveLanguage(activity, codes[which]);
+            saveLanguage(activity, codes[which]);
+            bumpLocaleVersion(activity);
             activity.recreate();
         });
 
@@ -55,5 +58,23 @@ public final class LocaleHelper {
     public static String getSavedLanguage(Context ctx) {
         return ctx.getSharedPreferences("settings", MODE_PRIVATE)
                 .getString("app_lang", "en");
+    }
+
+    private static void bumpLocaleVersion(Context ctx) {
+        SharedPreferences prefs = ctx.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        int v = prefs.getInt(KEY_VERSION, 0);
+        prefs.edit().putInt(KEY_VERSION, v + 1).apply();
+    }
+
+    public static boolean localeVersionChanged(Context ctx) {
+        SharedPreferences prefs = ctx.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        int saved = prefs.getInt(KEY_VERSION, 0);
+        int current = prefs.getInt("current_version_runtime", -1);
+
+        if (current != saved) {
+            prefs.edit().putInt("current_version_runtime", saved).apply();
+            return true;
+        }
+        return false;
     }
 }

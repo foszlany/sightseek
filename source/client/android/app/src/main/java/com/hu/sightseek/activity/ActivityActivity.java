@@ -13,6 +13,7 @@ import static com.hu.sightseek.util.SpatialUtils.getBoundingBox;
 import static com.hu.sightseek.util.SpatialUtils.getVisitedCells;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -42,6 +43,7 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.util.FirebaseUtils;
 import com.hu.sightseek.util.RegionalLeaderboardUtils;
@@ -345,5 +347,20 @@ public class ActivityActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

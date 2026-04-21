@@ -1,6 +1,5 @@
 package com.hu.sightseek.activity;
 
-import static com.hu.sightseek.helper.LocaleHelper.setLocale;
 import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
 import android.content.Context;
@@ -271,9 +270,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+    }
+
     // Change language
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(setLocale(newBase));
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

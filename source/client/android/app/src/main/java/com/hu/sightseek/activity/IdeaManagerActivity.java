@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,6 +31,7 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.IdeaAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.SavedIdeaStatus;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.model.Idea;
 
 import org.osmdroid.config.Configuration;
@@ -205,5 +207,20 @@ public class IdeaManagerActivity extends AppCompatActivity {
 
             popupWindow.dismiss();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }
