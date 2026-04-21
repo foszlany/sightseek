@@ -2,6 +2,8 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.util.GenericUtils.DEFAULT_LATITUDE;
+import static com.hu.sightseek.util.GenericUtils.DEFAULT_LONGITUDE;
 import static com.hu.sightseek.util.GenericUtils.moveToDefaultLocation;
 import static com.hu.sightseek.util.GenericUtils.getLocationString;
 import static com.hu.sightseek.provider.StatisticsProvider.getMedianPoint;
@@ -206,12 +208,13 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Current location
         if(checkedId == R.id.idea_radio_locationbtn) {
+
             if(referenceIndex != R.id.idea_radio_locationbtn) {
                 data = null;
                 referenceIndex = R.id.idea_radio_locationbtn;
             }
 
-            referencePoint = locationPoint;
+            referencePoint = locationPoint == null ? new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE) : locationPoint;
 
             findIdea();
         }
