@@ -123,7 +123,7 @@
     <string name="leaderboard_entry_defaultuser">Wird abgerufen…</string>
     <string name="leaderboard_noentries">Es wurden keine Einträge gefunden.</string>
     <string name="leaderboard_motivationaltext">Vielleicht kannst du das ändern.</string>
-    <string name="save_manageideas">Verwalten Sie Ihre gespeicherten Sehenswürdigkeiten</string>
+    <string name="save_manageideas">Verwalten deiner gespeicherten Sehenswürdigkeiten</string>
     <string name="ideamanager_searchhint">Sehenswürdigkeiten suchen…</string>
     <string name="ideamanager_visited">Besucht</string>
     <string name="ideamanager_remove">Entfernen</string>

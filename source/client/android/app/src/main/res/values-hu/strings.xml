@@ -54,7 +54,7 @@
     <string name="menu_filter_long">Eltelt idő (Hosszú - Rövid)</string>
     <string name="register_error_unknown">Egy ismeretlen hiba történt. Próbálkozz újra később.</string>
     <string name="idea_title">Mit szólnál…</string>
-    <string name="idea_ignore">Ignorálás</string>
+    <string name="idea_ignore">Ignorál</string>
     <string name="idea_next">Következő</string>
     <string name="idea_imgdesc">Egy kép a látványosságról.</string>
     <string name="idea_googleicondesc">Egy kép a Google logóról.</string>
@@ -78,7 +78,7 @@
     <string name="main_filtermenu_apply">Mentés</string>
     <string name="login_error_incorrect">Helytelen email vagy jelszó.</string>
     <string name="register_error_email_taken">Az email cím már foglalt.</string>
-    <string name="idea_add">Hozzáadás</string>
+    <string name="idea_add">Hozzáad</string>
     <string name="record_attractionsdesc">Látványosságok</string>
     <string name="ideapopup_markasvisited">Megjelölés látottként</string>
     <string name="statistics_generalcard_activitiescreated">Létrehozott aktivitások: %1$.0f</string>
