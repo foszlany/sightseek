@@ -3,6 +3,7 @@ agp = "8.9.3"
 androidMapsUtils = "3.14.0"
 firebaseBom = "34.6.0"
 firebaseFirestore = "26.0.2"
+flexbox = "3.0.0"
 geofireAndroidCommon = "3.1.0"
 glide = "5.0.4"
 jtsCoreVersion = "1.18.2"
@@ -26,6 +27,7 @@ swiperefreshlayout = "1.2.0"
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
+flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 geofire-android-common = { module = "com.firebase:geofire-android-common", version.ref = "geofireAndroidCommon" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 jts-core-v1180 = { module = "org.locationtech.jts:jts-core", version.ref = "jtsCoreVersion" }

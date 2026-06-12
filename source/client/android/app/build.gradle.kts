@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.mpandroidchart)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.flexbox)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

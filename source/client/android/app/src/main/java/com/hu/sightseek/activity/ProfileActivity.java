@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.helper.LocaleHelper.setLocale;
 import static com.hu.sightseek.util.FirebaseUtils.deleteActivities;
 import static com.hu.sightseek.util.FirebaseUtils.updateCells;
 import static com.hu.sightseek.util.FirebaseUtils.updateRegionalLeaderboard;
@@ -43,6 +44,7 @@ import com.hu.sightseek.BuildConfig;
 import com.hu.sightseek.R;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.fragment.DeleteAccountFragment;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.util.SpatialUtils;
 
@@ -306,6 +308,10 @@ public class ProfileActivity extends AppCompatActivity {
             dialog.show();
         });
 
+        // Change language
+        Button languageButton = findViewById(R.id.profile_languagebtn);
+        languageButton.setOnClickListener(v -> LocaleHelper.showLanguageDialog(ProfileActivity.this));
+
         // Logout
         Button logoutButton = findViewById(R.id.profile_logout);
         logoutButton.setOnClickListener(v -> {
@@ -347,5 +353,11 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Change language
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

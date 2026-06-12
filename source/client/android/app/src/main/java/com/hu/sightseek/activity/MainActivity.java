@@ -2,6 +2,7 @@ package com.hu.sightseek.activity;
 
 import static com.hu.sightseek.util.GenericUtils.hideKeyboard;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hu.sightseek.enums.TravelCategory;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ActivityAdapter;
@@ -60,11 +62,6 @@ public class MainActivity extends AppCompatActivity {
         Configuration.getInstance().setCacheMapTileCount((short) 12);
         Configuration.getInstance().setCacheMapTileOvershoot((short) 2);
 
-        checkedSortByMethod = R.id.main_filtermenu_date_recent;
-        isLocoChecked = true;
-        isMicroChecked = true;
-        isOtherChecked = true;
-
         // Show banner when launching for the first time
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         boolean isFirstLaunch = prefs.getBoolean("isFirstLaunch", true);
@@ -74,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putBoolean("isFirstLaunch", false).apply();
             finish();
         }
+
+        LocaleHelper.setLocale(this);
+
+        checkedSortByMethod = R.id.main_filtermenu_date_recent;
+        isLocoChecked = true;
+        isMicroChecked = true;
+        isOtherChecked = true;
 
         // Setup adapter
         LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
@@ -264,5 +268,20 @@ public class MainActivity extends AppCompatActivity {
 
             popupWindow.dismiss();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+    }
+
+    // Change language
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

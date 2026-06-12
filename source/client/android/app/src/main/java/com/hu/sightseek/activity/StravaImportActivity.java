@@ -35,6 +35,7 @@ import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.ConsoleAdapter;
 import com.hu.sightseek.db.LocalDatabaseDAO;
 import com.hu.sightseek.enums.TravelCategory;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.helper.WKConverter;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.VectorizedDataRecord;
@@ -568,5 +569,25 @@ public class StravaImportActivity extends AppCompatActivity {
     private void logIntoConsole(String message) {
         consoleAdapter.addLog(message);
         consoleRecyclerView.scrollToPosition(consoleAdapter.getItemCount() - 1);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            if(isImporting) {
+                Toast.makeText(this, "Language changes have not been applied because you're importing.", Toast.LENGTH_LONG).show();
+            }
+            else {
+                recreate();
+            }
+        }
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

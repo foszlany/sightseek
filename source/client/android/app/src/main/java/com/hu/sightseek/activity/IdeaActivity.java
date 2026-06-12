@@ -2,12 +2,15 @@ package com.hu.sightseek.activity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.hu.sightseek.util.GenericUtils.DEFAULT_LATITUDE;
+import static com.hu.sightseek.util.GenericUtils.DEFAULT_LONGITUDE;
 import static com.hu.sightseek.util.GenericUtils.moveToDefaultLocation;
 import static com.hu.sightseek.util.GenericUtils.getLocationString;
 import static com.hu.sightseek.provider.StatisticsProvider.getMedianPoint;
 import static com.hu.sightseek.util.GenericUtils.setupZoomSettings;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -39,6 +42,7 @@ import com.hu.sightseek.broadcast.IdeaBroadcaster;
 import com.hu.sightseek.enums.SavedIdeaStatus;
 import com.hu.sightseek.fragment.SelectLocationFragment;
 import com.hu.sightseek.db.LocalDatabaseDAO;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.model.Activity;
 import com.hu.sightseek.model.Idea;
 import com.hu.sightseek.util.SpatialUtils;
@@ -204,12 +208,13 @@ public class IdeaActivity extends AppCompatActivity {
 
         // Current location
         if(checkedId == R.id.idea_radio_locationbtn) {
+
             if(referenceIndex != R.id.idea_radio_locationbtn) {
                 data = null;
                 referenceIndex = R.id.idea_radio_locationbtn;
             }
 
-            referencePoint = locationPoint;
+            referencePoint = locationPoint == null ? new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE) : locationPoint;
 
             findIdea();
         }
@@ -739,6 +744,11 @@ public class IdeaActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+
         if(mapView != null) {
             mapView.onResume();
         }
@@ -754,5 +764,11 @@ public class IdeaActivity extends AppCompatActivity {
 
     public boolean isActivityDead() {
         return (isDestroyed() || isFinishing());
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

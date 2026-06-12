@@ -3,6 +3,7 @@ package com.hu.sightseek.activity;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.hu.sightseek.R;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.hu.sightseek.helper.LocaleHelper;
 
 import org.osmdroid.config.Configuration;
 
@@ -199,5 +201,20 @@ public class RegisterActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

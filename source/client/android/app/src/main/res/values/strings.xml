@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sightseek</string>
+    <string name="app_name" translatable="false">Sightseek</string>
     <string name="main_stop">Stop</string>
     <string name="main_record">Record</string>
     <string name="main_map">Map</string>
@@ -11,17 +11,17 @@
     <string name="save_save">Save</string>
     <string name="save_titlehint">Title</string>
     <string name="save_distance">Distance</string>
-    <string name="main_distancevalue">%1$.2f km</string>
-    <string name="banner_imgdesc">This image features a map with a cup of coffee on top and various other travel-related items.</string>
+    <string name="main_distancevalue" translatable="false">%1$.2f km</string>
+    <string name="banner_imgdesc">This image serves as a simple background for the banner page.</string>
     <string name="banner_main">There is a whole world out ready to be explored.</string>
     <string name="banner_extrafeatures">Creating an account will grant access to leaderboards and much more.</string>
     <string name="banner_register">Register</string>
     <string name="banner_login">Already have an account?</string>
     <string name="banner_useoffline">Use app without an account</string>
     <string name="login_login">Log in</string>
-    <string name="login_email">Email</string>
+    <string name="login_email" translatable="false">Email</string>
     <string name="login_password">Password</string>
-    <string name="login_noaccount">I don\'t have an account yet.</string>
+    <string name="login_noaccount">I don\'t have an account yet</string>
     <string name="register_register">Register</string>
     <string name="register_username">Username (3–18 characters)</string>
     <string name="register_password1">Password (8–32 characters)</string>
@@ -46,15 +46,15 @@
     <string name="travelmethod_other">Other</string>
     <string name="travelmethod_micro">Micromobility</string>
     <string name="travelmethod_loco">Locomotor</string>
-    <string name="example_sampletext">SAMPLE TEXT</string>
-    <string name="example_example">EXAMPLE</string>
-    <string name="example_value">432567</string>
+    <string name="example_sampletext" translatable="false">SAMPLE TEXT</string>
+    <string name="example_example" translatable="false">EXAMPLE</string>
+    <string name="example_value" translatable="false">432567</string>
     <string name="main_filterdesc">Filter</string>
     <string name="main_searchhint">Search for title…</string>
     <string name="menu_filter_recent">New</string>
     <string name="menu_filter_old">Old</string>
-    <string name="menu_filter_az">A-Z</string>
-    <string name="menu_filter_za">Z-A</string>
+    <string name="menu_filter_az" translatable="false">A-Z</string>
+    <string name="menu_filter_za" translatable="false">Z-A</string>
     <string name="menu_filter_smalldist">Distance (Low to High)</string>
     <string name="menu_filter_bigdist">Distance (High to Low)</string>
     <string name="menu_filter_short">Elapsed time (Short to Long)</string>
@@ -72,10 +72,10 @@
     <string name="idea_radius">Radius</string>
     <string name="idea_loading">Loading…</string>
     <string name="idea_wait">Please wait.</string>
-    <string name="idea_sad">:(</string>
+    <string name="idea_sad" translatable="false">:(</string>
     <string name="idea_noactivities">No activities found.</string>
     <string name="idea_typelocation">%1$s in %2$s</string>
-    <string name="idea_radiuskm">%1$.0f km</string>
+    <string name="idea_radiuskm" translatable="false">%1$.0f km</string>
     <string name="idea_nothingwasfound">Nothing was found</string>
     <string name="idea_increaseradius">Try increasing the radius</string>
     <string name="locationselectpopup_select">Select</string>
@@ -100,7 +100,7 @@
     <string name="statistics_categorycard_startingtext">Your favorite type of activity is</string>
     <string name="statistics_categorycard_locomotor">Power to you.</string>
     <string name="statistics_categorycard_micromobility">Distance over details.</string>
-    <string name="statistics_categorycard_default">What?</string>
+    <string name="statistics_categorycard_default">How?</string>
     <string name="statistics_categorycard_other">Filthy cheater.</string>
     <string name="statistics_topcard_startingtext">This is you, at your best.</string>
     <string name="statistics_topcard_longestdistance">Longest distance</string>
@@ -125,7 +125,7 @@
     <string name="ideapopup_removefromsaved">Remove from saved</string>
     <string name="statistics_generalcard_general">General</string>
     <string name="statistics_generalcard_activitiescreated">Activities created: %1$.0f</string>
-    <string name="statistics_generalcard_totalkilometers">Total kilometers: %1$.2f km</string>
+    <string name="statistics_generalcard_totalkilometers">Total distance: %1$.2f km</string>
     <string name="statistics_generalcard_totaltime">Time spent: %1$.2f days</string>
     <string name="statistics_generalcard_mainactivitytype">Favourite type of activity: %1$s</string>
     <string name="statistics_generalcard_longestdistance">Longest distance: %1$.2f km</string>
@@ -166,19 +166,19 @@
     <string name="profile_unlinkwarn">You may only have one account linked.</string>
     <string name="statistics_percategory">Per category</string>
     <string name="profile_accountmanagement">Account management</string>
-    <string name="profile_strava">Strava</string>
-    <string name="profile_profile">Your profile</string>
+    <string name="profile_strava" translatable="false">Strava</string>
+    <string name="profile_profile">Profile</string>
     <string name="statistics_permonthdistance_title">Distance per month</string>
-    <string name="leaderboard_entry_placing">#%1$d</string>
-    <string name="leaderboard_entry_cellvalue">%1$d</string>
-    <string name="leaderboard_entry_distancevalue">%1$.2f km</string>
+    <string name="leaderboard_entry_placing" translatable="false">#%1$d</string>
+    <string name="leaderboard_entry_cellvalue" translatable="false">%1$d</string>
+    <string name="leaderboard_entry_distancevalue" translatable="false">%1$.2f km</string>
     <string name="leaderboard_title">Leaderboard</string>
     <string name="leaderboard_cellsdescription">Cells visited</string>
     <string name="leaderboard_narrowsearch_continent">Continent</string>
     <string name="leaderboard_narrowsearch_country">Country</string>
     <string name="leaderboard_narrowsearch_region">Region</string>
     <string name="leaderboard_narrowsearch_subregion">Subregion</string>
-    <string name="save_imgdesc">This image serves as a simple background featuring pins on a map.</string>
+    <string name="save_imgdesc">This image serves as a simple background for the save page.</string>
     <string name="profile_password">Change password</string>
     <string name="profile_change">Change</string>
     <string name="profile_passwordchangesuccess">Your password was successfully changed.</string>
@@ -186,13 +186,13 @@
     <string name="profile_password1hint">New password (8–32 characters)</string>
     <string name="profile_password2hint">Confirm new password</string>
     <string name="profile_error_password_oldempty">Current password cannot be empty!</string>
-    <string name="profile_error_password_incorrectcurrent">Incorrect current password.</string>
+    <string name="profile_error_password_incorrectcurrent">Current password is incorrect!</string>
     <string name="profile_deleteaccount">Delete my account</string>
     <string name="save_creatingvectordata">Mapping your activity to streets…</string>
     <string name="activity_showprocesseddata">Show processed data</string>
     <string name="activity_hideprocesseddata">Hide processed data</string>
-    <string name="leaderboard_entry_defaultplacing">∞</string>
-    <string name="leaderboard_entry_defaultvalue">0</string>
+    <string name="leaderboard_entry_defaultplacing" translatable="false">∞</string>
+    <string name="leaderboard_entry_defaultvalue" translatable="false">0</string>
     <string name="leaderboard_entry_defaultuser">Fetching…</string>
     <string name="leaderboard_noentries">No entries were found.</string>
     <string name="leaderboard_motivationaltext">Perhaps you can change that.</string>
@@ -200,8 +200,11 @@
     <string name="deleteaccountpopup_confirmpassword">Confirm password</string>
     <string name="deleteaccountpopup_disclaimer">This action is irreversible.</string>
     <string name="ideamanager_popup_changestatus">Change Status</string>
-    <string name="record_strongheatmapdesc">Stronger colors</string>
+    <string name="record_strongheatmapdesc">Visibility mode</string>
     <string name="profile_import">Import</string>
     <string name="profile_importoffline">Import offline activities</string>
     <string name="profile_offlinewarn">Here you can import all offline recorded activities into this account.</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_changelanguage">Change language</string>
+    <string name="profile_chooselanguage">Choose a language</string>
 </resources>

@@ -44,6 +44,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.hu.sightseek.R;
 import com.hu.sightseek.adapter.LeaderboardEntryAdapter;
+import com.hu.sightseek.helper.LocaleHelper;
 import com.hu.sightseek.model.LeaderboardEntry;
 
 import org.osmdroid.config.Configuration;
@@ -679,5 +680,20 @@ public class LeaderboardActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }

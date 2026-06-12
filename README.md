@@ -12,8 +12,9 @@ Sightseek is a mobile application that motivates you to visit new places.
     - Additionally you can import activities from Strava
 - Heatmap
 - Statistics in both shareable and detailed forms
-- Find, save and view attractions on the map.
+- Find, save and view attractions on the map
 - Leaderboards
+- Language support for English, Hungarian, German and Japanese
 
 ## Find your way to the top of the leaderboard
 Sightseek has two leaderboards available:
@@ -30,6 +31,6 @@ Sightseek has two leaderboards available:
 ## Limitations
 The application is a proof of concept created for my Bachelor thesis.
 
-The spatial algorithms run entirely locally and are restricted to a select few locations to prevent the application's file size from skyrocketing.
+The spatial algorithms run entirely locally and are restricted to a select few locations to prevent the application's file size from skyrocketing. This will be worked on in the future.
 
 Documentation is not yet available.

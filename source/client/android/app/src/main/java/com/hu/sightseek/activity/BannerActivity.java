@@ -1,5 +1,6 @@
 package com.hu.sightseek.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hu.sightseek.R;
+import com.hu.sightseek.helper.LocaleHelper;
 
 import org.osmdroid.config.Configuration;
 
@@ -49,5 +51,20 @@ public class BannerActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(LocaleHelper.localeVersionChanged(this)) {
+            recreate();
+        }
+    }
+
+    // Language change
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 }
