@@ -170,18 +170,20 @@ public class SaveActivity extends AppCompatActivity {
                 String uid = FirebaseAuth.getInstance().getCurrentUser() == null ? null : FirebaseAuth.getInstance().getCurrentUser().getUid();
                 Activity activity = new Activity(0, uid, title.strip(), categoryIndex, polylineString, startTime, elapsedTime, totalDist, -1, vectorizedDataBlob);
 
-                LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
-                long id = dao.addActivity(activity);
-
                 if(auth.getCurrentUser() != null) {
-                    Map<String, Integer> visitedCells = getVisitedCells(pointList);
-                    updateCells(visitedCells, false);
-
                     Map<String, Double> regionalDistances = RegionalLeaderboardUtils.calculateNewRegionalDistance(SaveActivity.this, vectorizedDataRecord);
                     if(regionalDistances != null && !regionalDistances.isEmpty()) {
                         updateRegionalLeaderboard(regionalDistances, false);
                     }
 
+                    Map<String, Integer> visitedCells = getVisitedCells(pointList);
+                    updateCells(visitedCells, false);
+                }
+
+                LocalDatabaseDAO dao = new LocalDatabaseDAO(this);
+                long id = dao.addActivity(activity);
+
+                if(auth.getCurrentUser() != null) {
                     activity.setId((int) id);
                     uploadActivity(activity);
                 }

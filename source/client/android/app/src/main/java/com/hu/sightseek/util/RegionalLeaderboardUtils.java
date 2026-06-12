@@ -195,7 +195,7 @@ public final class RegionalLeaderboardUtils {
             return null;
         }
 
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(1e4));
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(1e6));
 
         // Load all vectors from activities
         MultiLineString allRoads = getAllRoads(activity, geometryFactory, routePolygon, ignoredActivity);
