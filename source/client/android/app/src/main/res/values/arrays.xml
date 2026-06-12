@@ -4,13 +4,11 @@
         <item>English</item>
         <item>Magyar</item>
         <item>Deutsch</item>
-        <item>日本語</item>
     </string-array>
 
     <string-array name="language_codes">
         <item>en</item>
         <item>hu</item>
         <item>de</item>
-        <item>ja</item>
     </string-array>
 </resources>
